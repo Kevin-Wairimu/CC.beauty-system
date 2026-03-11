@@ -1,0 +1,80 @@
+@import "tailwindcss";
+
+:root {
+  --primary-gold: #FFD700; /* Brighter, more visible gold */
+  --light-gold: #FFF0AD;
+  --deep-gold: #B8860B;
+  --midnight: #0F0F0F;
+  --graphite: #1C1C1C;
+  --glass-bg: rgba(255, 255, 255, 0.05);
+  --glass-border: rgba(255, 215, 0, 0.3);
+}
+
+body {
+  color: white;
+  font-family: ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  letter-spacing: 0.025em;
+  line-height: 1.625;
+  background-color: var(--midnight);
+  /* Added more contrast to background glows */
+  background-image: 
+    radial-gradient(circle at 10% 10%, rgba(255, 215, 0, 0.1) 0%, transparent 50%),
+    radial-gradient(circle at 90% 90%, rgba(255, 215, 0, 0.1) 0%, transparent 50%);
+  background-attachment: fixed;
+}
+
+.glass-nav {
+  background: rgba(15, 15, 15, 0.95); /* Increased opacity from 0.85 */
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 2px solid var(--primary-gold); /* Thicker border */
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.8);
+}
+
+.glass-panel {
+  background: rgba(28, 28, 28, 0.8);
+  backdrop-filter: blur(20px);
+  border: 1px solid var(--glass-border);
+  box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.btn-gold {
+  @apply bg-gradient-to-r from-[#B8860B] via-[#FFD700] to-[#FFF0AD] text-white font-extrabold py-4 px-10 rounded-sm hover:brightness-125 hover:text-white transition-all duration-500 shadow-2xl shadow-[#FFD700]/20 uppercase tracking-[0.2em] text-sm;
+}
+
+.text-gold { color: var(--primary-gold); }
+.border-gold { border-color: var(--primary-gold); }
+
+/* Visibility Helpers */
+.text-high-contrast {
+  color: #FFFFFF;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.subtext-visibility {
+  @apply text-gray-300 uppercase tracking-[0.3em] font-bold;
+  font-size: 0.75rem; /* Minimum 12px */
+}
+
+/* Custom Luxury Scrollbar */
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-track { background: #000; }
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, var(--deep-gold), var(--primary-gold));
+  border-radius: 0px;
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 5px; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: var(--primary-gold); }
+
+@keyframes pulse-slow {
+  0%, 100% { opacity: 1; filter: brightness(1); }
+  50% { opacity: 0.85; filter: brightness(1.2); box-shadow: 0 0 40px rgba(255, 215, 0, 0.4); }
+}
+
+.animate-pulse-slow {
+  animation: pulse-slow 3s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }

@@ -1,0 +1,19 @@
+/* Clean slate for luxury design */
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+.max-w-7xl {
+  max-width: 80rem;
+}
+
+/* Base styles to complement index.css */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #000;
+  overflow-x: hidden;
+}
