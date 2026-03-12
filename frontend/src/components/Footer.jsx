@@ -15,7 +15,7 @@ const Footer = () => {
               </h3>
             </div>
             <p className="text-gray-400 font-light leading-relaxed mb-6 italic">
-              Elite Spa & Salon Experience. Where luxury meets beauty in every
+              Premium Spa & Salon Experience. Where luxury meets beauty in every
               detail.
             </p>
             <div className="flex space-x-4">
@@ -69,6 +69,14 @@ const Footer = () => {
               </li>
               <li>
                 <a
+                  href="/#reviews"
+                  className="hover:text-gold transition-colors"
+                >
+                  Guest Reviews
+                </a>
+              </li>
+              <li>
+                <a
                   href="/contact"
                   className="hover:text-gold transition-colors"
                 >
@@ -108,11 +116,16 @@ const Footer = () => {
             </h3>
             <ul className="space-y-4 text-gray-400 font-light">
               <li className="flex items-start gap-3">
-                <span className="text-gray-200">
-                  Roasters, Kilimanjaro arcade
+                <a 
+                  href="https://www.google.com/maps/place/CC+Beauty+Clinic/@-1.228597,36.8677963,17z/data=!4m6!3m5!1s0x182f3f0032d473b1:0xd4353544f547715e!8m2!3d-1.2286024!4d36.8703712" 
+                  target="_blank" 
+                  rel="noopener noreferrer"
+                  className="text-gray-200 hover:text-gold transition-colors"
+                >
+                  CC Beauty Clinic,
                   <br />
-                  Nairobi, Kenya
-                </span>
+                  Kilimanjaro City Arcade, Nairobi
+                </a>
               </li>
               <li className="text-gray-200">+254 759 934 198</li>
               <li className="text-gray-200 italic">

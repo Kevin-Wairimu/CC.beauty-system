@@ -140,7 +140,7 @@ const Admin = () => {
               <div className="bg-gold/10 p-2 border border-gold/20">
                 <Layout className="h-6 w-6" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-serif font-bold uppercase tracking-widest">Elite Dashboard</h1>
+              <h1 className="text-3xl md:text-4xl font-serif font-bold uppercase tracking-widest">Studio Dashboard</h1>
             </div>
             <p className="text-gray-500 text-xs uppercase tracking-[0.3em] font-black">Studio Management Suite</p>
           </div>

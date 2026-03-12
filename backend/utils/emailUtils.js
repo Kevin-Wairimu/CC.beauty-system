@@ -75,7 +75,7 @@ export const sendApprovalEmail = async (booking) => {
         <p><strong>Service:</strong> ${booking.service}</p>
         <p><strong>Date:</strong> ${booking.date}</p>
         <p><strong>Time:</strong> ${booking.time}</p>
-        <p><strong>Location:</strong> Kilimanjaro City Arcade, Nairobi CBD</p>
+        <p><strong>Location:</strong> Kilimanjaro City Arcade, Nairobi, Kenya</p>
         <div style="background: #fdfaf0; padding: 20px; border-left: 4px solid #D4AF37; margin-top: 20px;">
           <p style="margin: 0; font-size: 14px; line-height: 1.6;">Please arrive 10 minutes prior to your appointment. If you need to reschedule, kindly notify us at least 24 hours in advance.</p>
         </div>

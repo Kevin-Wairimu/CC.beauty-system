@@ -50,7 +50,7 @@ const Login = () => {
             <Sparkles className="text-gold h-10 w-10 md:h-12 md:w-12 animate-pulse" />
           </div>
           <h1 className="text-4xl md:text-7xl font-serif font-bold uppercase tracking-tighter text-white mb-4 leading-tight">
-            Elite <span className="text-gold italic">Login</span>
+            Private <span className="text-gold italic">Login</span>
           </h1>
           <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-gray-400 font-black">
             CC Beauty Portal
@@ -119,6 +119,7 @@ const Login = () => {
                   Confirm Access <ArrowRight className="h-5 w-5" />
                 </>
               )}
+              {/*  */}
             </button>
           </form>
 

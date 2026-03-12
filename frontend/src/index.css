@@ -78,3 +78,27 @@ body {
 
 .no-scrollbar::-webkit-scrollbar { display: none; }
 .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Trustindex Widget Fix */
+#reviews .ti-widget,
+#reviews .ti-widget-container,
+#reviews iframe {
+  position: relative !important;
+  width: 100% !important;
+  display: block !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+}
+
+/* Prevent the script from appending floating badges to the body */
+body > .ti-widget,
+body > div[class*="ti-"] {
+  display: none !important;
+}
+
+#reviews .ti-widget {
+  display: block !important;
+  min-height: auto !important;
+}

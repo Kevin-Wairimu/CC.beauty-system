@@ -62,7 +62,7 @@ const ResetPassword = () => {
           <form onSubmit={handleSubmit} className="space-y-12">
             <div className="group">
               <label className="block text-xs font-black uppercase tracking-[0.3em] text-gold mb-4 group-focus-within:text-white transition-colors">
-                New Elite Password
+                New Signature Password
               </label>
               <div className="flex items-center border-b-2 border-white/10 group-focus-within:border-gold transition-all pb-3">
                 <Lock className="h-5 w-5 text-gray-500 mr-4" />

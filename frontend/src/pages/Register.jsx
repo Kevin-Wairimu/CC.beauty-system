@@ -18,7 +18,7 @@ const Register = () => {
     setLoading(true);
     try {
       await register(name, email, password);
-      toast.success('Welcome to CC Beauty Elite.');
+      toast.success('Welcome to CC Beauty.');
       navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration Failed');
@@ -41,7 +41,7 @@ const Register = () => {
             <UserPlus className="text-gold h-10 w-10 md:h-12 md:w-12" />
           </div>
           <h1 className="text-4xl md:text-7xl font-serif font-bold uppercase tracking-tighter text-white mb-4 leading-tight">
-            Join <span className="text-gold italic">Elite</span>
+            Join <span className="text-gold italic">Private</span>
           </h1>
           <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-gray-400 font-black">Create Your Studio Member Profile</p>
         </div>
