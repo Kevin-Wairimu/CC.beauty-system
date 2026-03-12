@@ -1,6 +1,7 @@
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
 import crypto from 'crypto';
+import { sendResetPasswordEmail } from '../utils/emailUtils.js';
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
@@ -48,30 +49,50 @@ export const registerUser = async (req, res) => {
   }
 };
 
-// @desc    Forgot Password (Mock)
+// @desc    Forgot Password
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   const user = await User.findOne({ email });
 
   if (!user) {
-    return res.status(404).json({ message: 'User not found' });
+    return res.status(404).json({ message: 'User with this email does not exist' });
   }
 
-  // In a real app, send email with token. Here we just return success.
-  res.json({ message: 'Reset link sent to your email' });
-};
-
-// @desc    Reset Password (Mock)
-export const resetPassword = async (req, res) => {
-  const { email, newPassword } = req.body;
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    return res.status(404).json({ message: 'User not found' });
-  }
-
-  user.password = newPassword;
+  // Get reset token
+  const resetToken = user.getResetPasswordToken();
   await user.save();
 
-  res.json({ message: 'Password reset successfully' });
+  try {
+    await sendResetPasswordEmail(user, resetToken);
+    res.json({ message: 'Password reset link sent to your email' });
+  } catch (error) {
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpire = undefined;
+    await user.save();
+    res.status(500).json({ message: 'Email could not be sent' });
+  }
+};
+
+// @desc    Reset Password
+export const resetPassword = async (req, res) => {
+  const resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(req.params.token)
+    .digest('hex');
+
+  const user = await User.findOne({
+    resetPasswordToken,
+    resetPasswordExpire: { $gt: Date.now() },
+  });
+
+  if (!user) {
+    return res.status(400).json({ message: 'Invalid or expired reset token' });
+  }
+
+  user.password = req.body.password;
+  user.resetPasswordToken = undefined;
+  user.resetPasswordExpire = undefined;
+  await user.save();
+
+  res.json({ message: 'Password reset successful. You can now login.' });
 };

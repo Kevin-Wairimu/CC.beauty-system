@@ -120,11 +120,21 @@ const Contact = () => {
                   <h3 className="text-gold font-bold uppercase tracking-[0.2em] text-xs mb-3">
                     Studio Location
                   </h3>
-                  <p className="text-gray-100 font-light text-lg tracking-wide leading-relaxed">
-                    Roasters,Kilimanjaro arcade
+                  <p className="text-gray-100 font-light text-lg tracking-wide leading-relaxed mb-4">
+                    CC Beauty Clinic,
                     <br />
-                    Nairobi, Kenya
+                    Kilimanjaro City Arcade,
+                    <br />
+                    Cross Road, Nairobi CBD
                   </p>
+                  <a
+                    href="https://www.google.com/maps/search/CC+Beauty+Clinic+Kilimanjaro+City+Arcade+Nairobi"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-gold hover:text-white transition-colors text-xs font-bold uppercase tracking-widest border-b border-gold/30 pb-1"
+                  >
+                    Get Directions
+                  </a>
                 </div>
               </div>
             </motion.div>
@@ -139,7 +149,7 @@ const Contact = () => {
           >
             <form
               onSubmit={handleSubmit}
-              className="glass-panel p-8 md:p-16 shadow-2xl relative"
+              className="glass-panel p-8 md:p-16 shadow-2xl relative h-full"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-[100px] rounded-full pointer-events-none"></div>
 
@@ -192,7 +202,7 @@ const Contact = () => {
                 <textarea
                   name="message"
                   required
-                  rows="5"
+                  rows="4"
                   value={formData.message}
                   onChange={handleChange}
                   className="w-full bg-black/40 border border-white/10 group-focus-within:border-gold px-4 py-4 outline-none transition-all text-white text-lg"
@@ -218,6 +228,27 @@ const Contact = () => {
             </form>
           </motion.div>
         </div>
+
+        {/* Map Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.6 }}
+          className="mt-20 max-w-4xl mx-auto"
+        >
+          <div className="glass-panel p-2 border-gold/20 bg-black/40 overflow-hidden shadow-2xl h-[300px]">
+            <iframe
+              title="CC Beauty Location"
+              src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3988.81823456789!2d36.82654321!3d-1.28456789!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x182f10d600000001%3A0xabcdef1234567890!2sKilimanjaro%20City%20Arcade!5e0!3m2!1sen!2ske!4v1710240000000!5m2!1sen!2ske"
+              width="100%"
+              height="100%"
+              style={{ border: 0, filter: 'grayscale(1) invert(0.9) contrast(1.2)' }}
+              allowFullScreen=""
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+            ></iframe>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -35,8 +35,8 @@ const Login = () => {
     <div className="bg-[#0F0F0F] min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden">
       {/* Background Section Decor */}
       <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-[600px] h-[600px] bg-gold/10 blur-[150px] rounded-full" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-gold/10 blur-[150px] rounded-full" />
+        <div className="absolute top-[-10%] right-[-10%] w-150 h-150 bg-gold/10 blur-[150px] rounded-full" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-150 h-150 bg-gold/10 blur-[150px] rounded-full" />
       </div>
 
       <motion.section
@@ -45,20 +45,20 @@ const Login = () => {
         className="max-w-xl w-full relative z-10"
       >
         {/* Page Header Section */}
-        <div className="text-center mb-12">
-          <div className="inline-block p-4 border-2 border-gold/30 bg-gold/5 mb-8">
-            <Sparkles className="text-gold h-12 w-12 animate-pulse" />
+        <div className="text-center mb-8 md:mb-12">
+          <div className="inline-block p-3 md:p-4 border-2 border-gold/30 bg-gold/5 mb-6 md:mb-8">
+            <Sparkles className="text-gold h-10 w-10 md:h-12 md:w-12 animate-pulse" />
           </div>
-          <h1 className="text-5xl md:text-7xl font-serif font-bold uppercase tracking-tighter text-white mb-4">
-            Elite <span className="text-gold italic">Access</span>
+          <h1 className="text-4xl md:text-7xl font-serif font-bold uppercase tracking-tighter text-white mb-4 leading-tight">
+            Elite <span className="text-gold italic">Login</span>
           </h1>
-          <p className="text-gray-400 uppercase tracking-[0.4em] text-xs font-black">
-            CC Beauty Private Portal
+          <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-gray-400 font-black">
+            CC Beauty Portal
           </p>
         </div>
 
         {/* Form Section */}
-        <div className="glass-panel p-8 md:p-16 shadow-[0_0_100px_rgba(0,0,0,0.8)] border-gold/30 bg-[#18181B]">
+        <div className="glass-panel p-6 md:p-16 shadow-[0_0_100px_rgba(0,0,0,0.8)] border-gold/30 bg-[#18181B]">
           <form onSubmit={handleSubmit} className="space-y-10">
             <div className="space-y-8">
               <div className="group">
@@ -106,11 +106,11 @@ const Login = () => {
               </Link>
             </div>
 
-            {/* ULTRA VISIBLE LOGIN BUTTON */}
+            {/* LOGIN BUTTON */}
             <button
               type="submit"
               disabled={loading}
-              className="w-full btn-gold !py-6 text-lg uppercase tracking-[0.5em] font-black flex items-center justify-center gap-4 disabled:opacity-50 shadow-[0_20px_50px_rgba(255,215,0,0.2)]"
+              className="py-6! w-full btn-gold text-lg uppercase tracking-[0.5em] font-black flex items-center justify-center gap-4 disabled:opacity-50 shadow-[0_20px_50px_rgba(255,215,0,0.2)]"
             >
               {loading ? (
                 "Verifying..."

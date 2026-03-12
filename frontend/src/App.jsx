@@ -9,6 +9,7 @@ import Admin from './pages/Admin';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
 import ClientDashboard from './pages/ClientDashboard';
 import { AuthProvider } from './context/AuthContext';
 import { Toaster } from 'react-hot-toast';
@@ -17,15 +18,15 @@ function App() {
   return (
     <AuthProvider>
       <Router>
-        <div className="flex flex-col min-h-screen bg-black">
+        <div className="flex flex-col min-h-screen bg-[#0F0F0F]">
           <Toaster 
             position="top-center"
             toastOptions={{
               duration: 4000,
               style: {
                 background: '#1A1A1A',
-                color: '#D4AF37',
-                border: '1px solid #D4AF37'
+                color: '#FFD700',
+                border: '1px solid #FFD700'
               }
             }}
           />
@@ -40,6 +41,7 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />
+              <Route path="/reset-password" element={<ResetPassword />} />
             </Routes>
           </main>
           <Footer />

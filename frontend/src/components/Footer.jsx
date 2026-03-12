@@ -1,5 +1,5 @@
 import React from "react";
-import { Sparkles, Instagram, Facebook, Twitter } from "lucide-react";
+import { Sparkles, Instagram, Facebook, Twitter, Music } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -36,6 +36,14 @@ const Footer = () => {
                 className="text-gold hover:text-white transition-colors"
               >
                 <Twitter className="h-5 w-5" />
+              </a>
+              <a
+                href="https://www.tiktok.com/@cc_beauty_clinic"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-gold hover:text-white transition-colors"
+              >
+                <Music className="h-5 w-5" />
               </a>
             </div>
           </div>
@@ -101,7 +109,7 @@ const Footer = () => {
             <ul className="space-y-4 text-gray-400 font-light">
               <li className="flex items-start gap-3">
                 <span className="text-gray-200">
-                  Roasters,Kilimanjaro arcade
+                  Roasters, Kilimanjaro arcade
                   <br />
                   Nairobi, Kenya
                 </span>
