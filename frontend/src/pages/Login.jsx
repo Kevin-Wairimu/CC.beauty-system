@@ -14,8 +14,19 @@ const Login = () => {
 
   useEffect(() => {
     if (user) {
-      if (user.isAdmin) navigate("/admin");
-      else navigate("/dashboard");
+      const role = user.role?.toLowerCase();
+      // Handle Admin & Manager
+      if (role === "admin" || role === "manager" || user.isAdmin) {
+        navigate("/admin");
+      } 
+      // Handle Staff
+      else if (role === "staff") {
+        navigate("/staff");
+      } 
+      // Default to Client
+      else {
+        navigate("/dashboard");
+      }
     }
   }, [user, navigate]);
 

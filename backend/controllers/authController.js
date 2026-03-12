@@ -17,7 +17,8 @@ export const authUser = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
+      permissions: user.permissions,
       token: generateToken(user._id),
     });
   } else {
@@ -41,7 +42,8 @@ export const registerUser = async (req, res) => {
       _id: user._id,
       name: user.name,
       email: user.email,
-      isAdmin: user.isAdmin,
+      role: user.role,
+      permissions: user.permissions,
       token: generateToken(user._id),
     });
   } else {
@@ -95,4 +97,57 @@ export const resetPassword = async (req, res) => {
   await user.save();
 
   res.json({ message: 'Password reset successful. You can now login.' });
+};
+
+// @desc    Get all users (Admin only)
+export const getUsers = async (req, res) => {
+  try {
+    const users = await User.find({}).select('-password');
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Update user role & permissions (Admin only)
+export const updateUserRole = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (user) {
+      user.role = req.body.role || user.role;
+      if (req.body.permissions) {
+        user.permissions = { ...user.permissions, ...req.body.permissions };
+      }
+      const updatedUser = await user.save();
+      res.json({
+        _id: updatedUser._id,
+        name: updatedUser.name,
+        email: updatedUser.email,
+        role: updatedUser.role,
+        permissions: updatedUser.permissions,
+      });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
+// @desc    Delete user (Admin only)
+export const deleteUser = async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (user) {
+      if (user.role === 'admin') {
+        return res.status(400).json({ message: 'Cannot delete admin user' });
+      }
+      await user.deleteOne();
+      res.json({ message: 'User removed' });
+    } else {
+      res.status(404).json({ message: 'User not found' });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };

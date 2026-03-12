@@ -1,5 +1,9 @@
 import express from 'express';
-import { authUser, registerUser, forgotPassword, resetPassword } from '../controllers/authController.js';
+import { 
+  authUser, registerUser, forgotPassword, resetPassword,
+  getUsers, updateUserRole, deleteUser 
+} from '../controllers/authController.js';
+import { protect, authorize } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
@@ -7,5 +11,10 @@ router.post('/login', authUser);
 router.post('/register', registerUser);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
+
+// Admin only routes
+router.get('/users', protect, authorize('admin'), getUsers);
+router.put('/users/:id/role', protect, authorize('admin'), updateUserRole);
+router.delete('/users/:id', protect, authorize('admin'), deleteUser);
 
 export default router;

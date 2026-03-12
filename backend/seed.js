@@ -93,14 +93,34 @@ const importData = async () => {
 
     await Service.insertMany(services);
 
-    const adminUser = {
-      name: 'Admin User',
-      email: 'admin@ccbeauty.com',
-      password: 'adminpassword123',
-      isAdmin: true
-    };
+    const users = [
+      {
+        name: 'Studio Director',
+        email: 'admin@ccbeauty.com',
+        password: 'adminpassword123',
+        role: 'admin'
+      },
+      {
+        name: 'Studio Manager',
+        email: 'manager@ccbeauty.com',
+        password: 'managerpassword123',
+        role: 'manager'
+      },
+      {
+        name: 'Master Technician',
+        email: 'staff@ccbeauty.com',
+        password: 'staffpassword123',
+        role: 'staff'
+      },
+      {
+        name: 'Private Client',
+        email: 'client@ccbeauty.com',
+        password: 'clientpassword123',
+        role: 'client'
+      }
+    ];
 
-    await User.create(adminUser);
+    await User.create(users);
 
     console.log('Data Imported Successfully!');
     process.exit();

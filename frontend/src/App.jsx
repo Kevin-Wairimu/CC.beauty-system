@@ -7,6 +7,7 @@ import Home from './pages/Home';
 import Booking from './pages/Booking';
 import Contact from './pages/Contact';
 import Admin from './pages/Admin';
+import StaffDashboard from './pages/StaffDashboard';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -39,6 +40,7 @@ function App() {
               <Route path="/booking" element={<Booking />} />
               <Route path="/contact" element={<Contact />} />
               <Route path="/admin" element={<Admin />} />
+              <Route path="/staff" element={<StaffDashboard />} />
               <Route path="/dashboard" element={<ClientDashboard />} />
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />

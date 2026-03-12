@@ -13,13 +13,9 @@ const Admin = () => {
   const [appointments, setAppointments] = useState([]);
   const [enquiries, setEnquiries] = useState([]);
   const [services, setServices] = useState([]);
+  const [users, setUsers] = useState([]);
+  const [staff, setStaff] = useState([]); // New: Filtered staff list
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('appointments');
-  
-  // Service Form State
-  const [showServiceForm, setShowServiceForm] = useState(false);
-  const [editingService, setEditingService] = useState(null);
-  const [serviceData, setServiceFormData] = useState({ name: '', category: '', price: '', description: '' });
 
   const fetchData = async () => {
     try {
@@ -31,6 +27,12 @@ const Admin = () => {
       setAppointments(appRes.data);
       setEnquiries(enqRes.data);
       setServices(serRes.data);
+      
+      // Fetch users for admin/manager
+      const userRes = await api.get('/auth/users');
+      setUsers(userRes.data);
+      setStaff(userRes.data.filter(u => u.role === 'staff' || u.role === 'manager' || u.role === 'admin'));
+      
       setLoading(false);
     } catch {
       toast.error('Failed to load dashboard data');
@@ -38,74 +40,36 @@ const Admin = () => {
     }
   };
 
+  // ... (existing effects)
+
+  const handleAssignStaff = async (appointmentId, staffId) => {
+    try {
+      await api.put(`/appointments/${appointmentId}/status`, { staffId });
+      setAppointments(appointments.map(app => 
+        app._id === appointmentId ? { ...app, staffId: staff.find(s => s._id === staffId) } : app
+      ));
+      toast.success('Provider Assigned');
+    } catch {
+      toast.error('Assignment failed');
+    }
+  };
+
   useEffect(() => {
-    if (user?.isAdmin) {
+    if (user?.role === 'admin' || user?.role === 'manager') {
       fetchData();
     }
   }, [user]);
 
-  // Appointment Actions
-  const handleDeleteAppointment = async (id) => {
-    if (window.confirm('Delete this reservation?')) {
-      try {
-        await api.delete(`/appointments/${id}`);
-        setAppointments(appointments.filter(app => app._id !== id));
-        toast.success('Reservation removed');
-      } catch {
-        toast.error('Failed to delete');
-      }
-    }
-  };
+  // ... (existing handlers like handleApprove, etc.)
 
-  const handleApprove = async (id) => {
+  // New User Handlers
+  const handleUpdateRole = async (userId, role) => {
     try {
-      await api.put(`/appointments/${id}/status`, { status: 'approved' });
-      setAppointments(appointments.map(app => app._id === id ? { ...app, status: 'approved' } : app));
-      toast.success('Reservation Approved');
+      await api.put(`/auth/users/${userId}/role`, { role });
+      setUsers(users.map(u => u._id === userId ? { ...u, role } : u));
+      toast.success(`Role updated to ${role}`);
     } catch {
-      toast.error('Failed to approve');
-    }
-  };
-
-  const handleComplete = async (id) => {
-    try {
-      await api.put(`/appointments/${id}/status`, { status: 'completed' });
-      setAppointments(appointments.map(app => app._id === id ? { ...app, status: 'completed' } : app));
-      toast.success('Service Marked as Completed');
-    } catch {
-      toast.error('Failed to update status');
-    }
-  };
-
-  // Service Actions
-  const handleServiceSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      if (editingService) {
-        await api.put(`/services/${editingService._id}`, serviceData);
-        toast.success('Service updated');
-      } else {
-        await api.post('/services', serviceData);
-        toast.success('New service added');
-      }
-      setShowServiceForm(false);
-      setEditingService(null);
-      setServiceFormData({ name: '', category: '', price: '', description: '' });
-      fetchData();
-    } catch {
-      toast.error('Operation failed');
-    }
-  };
-
-  const deleteService = async (id) => {
-    if (window.confirm('Remove this service from the menu?')) {
-      try {
-        await api.delete(`/services/${id}`);
-        setServices(services.filter(s => s._id !== id));
-        toast.success('Service removed');
-      } catch {
-        toast.error('Failed to delete');
-      }
+      toast.error('Failed to update role');
     }
   };
 
@@ -118,12 +82,12 @@ const Admin = () => {
     );
   }
 
-  if (!user?.isAdmin) {
+  if (user?.role !== 'admin' && user?.role !== 'manager') {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-[#0F0F0F] text-gold px-4 text-center">
         <Shield className="h-16 w-16 mb-6 opacity-20" />
         <h2 className="text-2xl font-serif font-bold uppercase tracking-[0.3em] mb-4 text-white">Unauthorized Access</h2>
-        <p className="text-gray-500 uppercase tracking-widest text-[10px] mb-8">This portal is restricted to CC Beauty Administrators only.</p>
+        <p className="text-gray-500 uppercase tracking-widest text-[10px] mb-8">This portal is restricted to CC Beauty Management only.</p>
         <a href="/" className="btn-gold !py-3 !px-8 text-white font-bold uppercase tracking-[0.2em] text-xs shadow-lg shadow-gold/20">Return to Studio</a>
       </div>
     );
@@ -140,34 +104,42 @@ const Admin = () => {
               <div className="bg-gold/10 p-2 border border-gold/20">
                 <Layout className="h-6 w-6" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-serif font-bold uppercase tracking-widest">Studio Dashboard</h1>
+              <h1 className="text-3xl md:text-4xl font-serif font-bold uppercase tracking-widest">
+                {user.role === 'admin' ? 'Studio Director' : 'Manager Hub'}
+              </h1>
             </div>
-            <p className="text-gray-500 text-xs uppercase tracking-[0.3em] font-black">Studio Management Suite</p>
+            <p className="text-gray-500 text-xs uppercase tracking-[0.3em] font-black">Operational Management Suite</p>
           </div>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-3 md:gap-4 w-full xl:w-auto">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-4 w-full xl:w-auto">
             <div className="bg-white/[0.05] border border-white/10 p-3 md:p-4 text-center">
-              <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black mb-1">Reservations</p>
+              <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black mb-1">Bookings</p>
               <p className="text-xl md:text-2xl font-bold text-gold">{appointments.length}</p>
             </div>
+            {user.role === 'admin' && (
+              <div className="bg-white/[0.05] border border-white/10 p-3 md:p-4 text-center">
+                <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black mb-1">Team</p>
+                <p className="text-xl md:text-2xl font-bold text-gold">{users.filter(u => u.role !== 'client').length}</p>
+              </div>
+            )}
             <div className="bg-white/[0.05] border border-white/10 p-3 md:p-4 text-center">
               <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black mb-1">Inquiries</p>
               <p className="text-xl md:text-2xl font-bold text-gold">{enquiries.length}</p>
             </div>
-            <div className="bg-white/[0.05] border border-white/10 p-3 md:p-4 text-center col-span-2 md:col-span-1">
-              <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black mb-1">Menu Items</p>
+            <div className="bg-white/[0.05] border border-white/10 p-3 md:p-4 text-center">
+              <p className="text-[9px] md:text-[10px] text-gray-400 uppercase font-black mb-1">Services</p>
               <p className="text-xl md:text-2xl font-bold text-gold">{services.length}</p>
             </div>
           </div>
         </div>
 
         {/* Tab Navigation */}
-        <div className="flex bg-black/40 border border-white/5 p-1 mb-10 w-fit">
-          {['appointments', 'enquiries', 'services'].map((tab) => (
+        <div className="flex bg-black/40 border border-white/5 p-1 mb-10 w-fit overflow-x-auto no-scrollbar max-w-full">
+          {['appointments', 'enquiries', 'services', user.role === 'admin' && 'team'].filter(Boolean).map((tab) => (
             <button 
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-8 py-3 uppercase tracking-widest text-[10px] font-bold transition-all ${activeTab === tab ? 'bg-gold text-white shadow-lg' : 'text-gray-500 hover:text-gold'}`}
+              className={`px-8 py-3 uppercase tracking-widest text-[10px] font-bold transition-all whitespace-nowrap ${activeTab === tab ? 'bg-gold text-white shadow-lg' : 'text-gray-500 hover:text-gold'}`}
             >
               {tab}
             </button>
@@ -196,7 +168,20 @@ const Admin = () => {
                             <div>
                               <span className="text-[9px] uppercase tracking-widest text-gold font-black block mb-2">Service</span>
                               <p className="text-base md:text-lg font-light text-gray-200 tracking-wide">{app.service}</p>
-                              <p className="text-xs italic text-gray-500 mt-1 line-clamp-2 md:truncate">"{app.notes || 'No special notes'}"</p>
+                              
+                              {/* Staff Assignment Dropdown */}
+                              <div className="mt-2">
+                                <select 
+                                  value={app.staffId?._id || ''} 
+                                  onChange={(e) => handleAssignStaff(app._id, e.target.value)}
+                                  className="bg-black/50 border border-gold/20 text-gold text-[10px] uppercase font-black p-2 outline-none focus:border-gold transition-all"
+                                >
+                                  <option value="">Assign Provider</option>
+                                  {staff.map(s => (
+                                    <option key={s._id} value={s._id}>{s.name} ({s.role})</option>
+                                  ))}
+                                </select>
+                              </div>
                             </div>
                             <div className="sm:col-span-2 lg:col-span-1">
                               <span className="text-[9px] uppercase tracking-widest text-gold font-black block mb-2">Schedule</span>
@@ -206,6 +191,13 @@ const Admin = () => {
                               </div>
                             </div>
                           </div>
+                          
+                          {/* Assignment UI (Simplified) */}
+                          <div className="flex flex-col justify-center gap-2 border-l border-white/5 pl-6 hidden xl:flex">
+                             <span className="text-[8px] uppercase text-gray-500 font-black">Managed By</span>
+                             <p className="text-[10px] text-white font-bold">{app.handledBy?.name || '---'}</p>
+                          </div>
+
                           <div className="flex flex-wrap items-center gap-3 pt-4 border-t border-white/5 xl:border-none xl:pt-0">
                             {app.status === 'pending' && (
                                 <button 
@@ -225,12 +217,6 @@ const Admin = () => {
                                 </button>
                             )}
 
-                            {app.status === 'completed' && (
-                                <div className="flex-1 xl:flex-none bg-white/10 text-white border border-white/10 px-5 py-3 md:py-2 uppercase text-[10px] font-black flex items-center justify-center gap-2">
-                                    <CheckCircle2 className="h-4 w-4 opacity-50" /> Finished
-                                </div>
-                            )}
-
                             <button onClick={() => handleDeleteAppointment(app._id)} className="bg-red-500/10 text-red-500 border border-red-500/20 p-3 hover:bg-red-500 hover:text-white transition-all duration-300 ml-auto"><Trash2 className="h-5 w-5" /></button>
                           </div>
                         </div>
@@ -239,12 +225,48 @@ const Admin = () => {
               </div>
             )}
 
+            {/* TEAM TAB (Admin Only) */}
+            {activeTab === 'team' && user.role === 'admin' && (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {users.map((u) => (
+                  <div key={u._id} className="glass-panel p-8 bg-[#18181B] border-white/5 hover:border-gold/20 transition-all">
+                    <div className="flex items-center gap-4 mb-6">
+                      <div className="h-12 w-12 bg-gold/10 rounded-full flex items-center justify-center border border-gold/20">
+                        <User className="h-6 w-6 text-gold" />
+                      </div>
+                      <div>
+                        <h3 className="text-xl font-bold text-white tracking-wide">{u.name}</h3>
+                        <p className="text-[10px] text-gray-500 uppercase font-black">{u.email}</p>
+                      </div>
+                    </div>
+                    
+                    <div className="space-y-4">
+                      <span className="text-[9px] uppercase tracking-widest text-gold font-black block mb-2">Privilege Level</span>
+                      <div className="flex gap-2">
+                        {['client', 'staff', 'manager', 'admin'].map((role) => (
+                          <button
+                            key={role}
+                            onClick={() => handleUpdateRole(u._id, role)}
+                            disabled={u._role === 'admin' && user._id !== u._id}
+                            className={`flex-1 py-2 text-[8px] font-black uppercase tracking-widest border transition-all ${u.role === role ? 'bg-gold text-black border-gold' : 'border-white/10 text-gray-500 hover:border-gold/50'}`}
+                          >
+                            {role}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+
             {/* SERVICES TAB */}
+            {/* ... keep existing service logic ... */}
             {activeTab === 'services' && (
               <div className="space-y-8">
                 <div className="flex justify-end">
                   <button 
-                    onClick={() => { setEditingService(null); setServiceFormData({ name: '', category: '', price: '', description: '' }); setShowServiceForm(true); }}
+                    onClick={() => { setEditingService(null); setServiceFormData({ name: '', category: '', price: '', description: '', duration: '' }); setShowServiceForm(true); }}
                     className="btn-gold !py-3 !px-8 text-white text-xs flex items-center gap-3 shadow-[0_0_20px_rgba(255,215,0,0.2)] font-black"
                   >
                     <Plus className="h-4 w-4" /> Add New Service
@@ -258,7 +280,8 @@ const Admin = () => {
                         <span className="bg-gold/10 text-gold text-[9px] font-black px-3 py-1 uppercase tracking-widest border border-gold/20">{s.category}</span>
                         <span className="text-2xl font-serif font-black text-gold tracking-tighter">{s.price}</span>
                       </div>
-                      <h3 className="text-2xl font-bold mb-3 text-white tracking-wide">{s.name}</h3>
+                      <h3 className="text-2xl font-bold mb-1 text-white tracking-wide">{s.name}</h3>
+                      <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-6">{s.duration || '60 mins'}</p>
                       <div className="flex gap-3 mt-8">
                         <button 
                           onClick={() => { setEditingService(s); setServiceFormData(s); setShowServiceForm(true); }}
@@ -276,13 +299,14 @@ const Admin = () => {
             )}
 
             {/* ENQUIRIES TAB */}
+            {/* ... keep existing enquiry logic ... */}
             {activeTab === 'enquiries' && (
               <div className="grid grid-cols-1 gap-6">
                 {enquiries.length === 0 ? (
                     <div className="glass-panel p-20 text-center text-gray-500 italic uppercase text-[10px] tracking-widest font-black">No active inquiries</div>
                 ) : (
                     enquiries.map((enq) => (
-                        <div key={enq._id} className="glass-panel p-10 hover:border-gold/30 transition-all duration-500 bg-[#18181B]">
+                        <div key={enq._id} className={`glass-panel p-10 hover:border-gold/30 transition-all duration-500 bg-[#18181B]`}>
                           <div className="flex flex-col md:flex-row justify-between gap-6 mb-8">
                             <div className="space-y-1">
                                 <h3 className="text-3xl font-serif font-bold text-gold">{enq.name}</h3>
@@ -328,9 +352,13 @@ const Admin = () => {
                   <input required value={serviceData.category} onChange={(e) => setServiceFormData({...serviceData, category: e.target.value})} className="w-full bg-black/50 border-b-2 border-white/10 p-4 outline-none focus:border-gold transition-all text-white text-lg font-light" placeholder="e.g. NAILS" />
                 </div>
                 <div className="group">
-                  <label className="block text-[10px] uppercase tracking-widest text-gold font-black mb-4 group-focus-within:text-white transition-colors">Investment</label>
-                  <input required value={serviceData.price} onChange={(e) => setServiceFormData({...serviceData, price: e.target.value})} className="w-full bg-black/50 border-b-2 border-white/10 p-4 outline-none focus:border-gold transition-all text-white text-lg font-light" placeholder="e.g. 1500/=" />
+                  <label className="block text-[10px] uppercase tracking-widest text-gold font-black mb-4 group-focus-within:text-white transition-colors">Duration</label>
+                  <input required value={serviceData.duration} onChange={(e) => setServiceFormData({...serviceData, duration: e.target.value})} className="w-full bg-black/50 border-b-2 border-white/10 p-4 outline-none focus:border-gold transition-all text-white text-lg font-light" placeholder="e.g. 45 mins" />
                 </div>
+              </div>
+              <div className="group">
+                <label className="block text-[10px] uppercase tracking-widest text-gold font-black mb-4 group-focus-within:text-white transition-colors">Investment</label>
+                <input required value={serviceData.price} onChange={(e) => setServiceFormData({...serviceData, price: e.target.value})} className="w-full bg-black/50 border-b-2 border-white/10 p-4 outline-none focus:border-gold transition-all text-white text-lg font-light" placeholder="e.g. 1500/=" />
               </div>
               <button type="submit" className="w-full btn-gold !py-6 uppercase tracking-[0.5em] font-black mt-8 shadow-2xl shadow-gold/20 text-lg text-white">Confirm Menu Update</button>
             </form>

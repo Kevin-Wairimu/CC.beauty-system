@@ -99,21 +99,35 @@ const Navbar = () => {
             {user ? (
               <div className="flex items-center gap-6">
                 <Link
-                  to={user.isAdmin ? "/admin" : "/dashboard"}
+                  to={
+                    user.role === "admin" || user.role === "manager" || user.isAdmin
+                      ? "/admin"
+                      : user.role === "staff"
+                      ? "/staff"
+                      : "/dashboard"
+                  }
                   className={`flex items-center gap-3 px-6 py-2.5 border-2 transition-all ${
-                    user.isAdmin
+                    user.role === "admin" || user.role === "manager" || user.isAdmin
                       ? "bg-gold text-white border-gold"
                       : "text-gold border-gold hover:bg-gold hover:text-white"
                   }`}
                 >
-                  {user.isAdmin ? (
+                  {user.role === "admin" || user.role === "manager" || user.isAdmin ? (
                     <Shield className="h-4 w-4" />
+                  ) : user.role === "staff" ? (
+                    <Sparkles className="h-4 w-4" />
                   ) : (
                     <Layout className="h-4 w-4" />
                   )}
 
                   <span className="text-[10px] uppercase tracking-[0.2em]">
-                    {user.isAdmin ? "Admin Panel" : "My Portal"}
+                    {user.role === "admin" || user.isAdmin
+                      ? "Admin Panel"
+                      : user.role === "manager"
+                      ? "Manager Hub"
+                      : user.role === "staff"
+                      ? "Staff Portal"
+                      : "My Portal"}
                   </span>
                 </Link>
 
@@ -232,13 +246,33 @@ const Navbar = () => {
                     {user ? (
                       <div className="space-y-4">
                         <Link
-                          to={user.isAdmin ? "/admin" : "/dashboard"}
+                          to={
+                            user.role === "admin" || user.role === "manager" || user.isAdmin
+                              ? "/admin"
+                              : user.role === "staff"
+                              ? "/staff"
+                              : "/dashboard"
+                          }
                           onClick={closeMenu}
                           className="flex items-center justify-between p-5 bg-gold/5 border border-gold/10 rounded-sm group hover:border-gold/30 transition-all"
                         >
                           <div className="flex items-center gap-4">
-                             {user.isAdmin ? <Shield className="h-5 w-5 text-gold" /> : <Layout className="h-5 w-5 text-gold" />}
-                             <span className="text-white text-[10px] font-black uppercase tracking-widest">{user.isAdmin ? "Management" : "My Sanctuary"}</span>
+                             {user.role === "admin" || user.role === "manager" || user.isAdmin ? (
+                               <Shield className="h-5 w-5 text-gold" />
+                             ) : user.role === "staff" ? (
+                               <Sparkles className="h-5 w-5 text-gold" />
+                             ) : (
+                               <Layout className="h-5 w-5 text-gold" />
+                             )}
+                             <span className="text-white text-[10px] font-black uppercase tracking-widest">
+                               {user.role === "admin" || user.isAdmin
+                                 ? "Management"
+                                 : user.role === "manager"
+                                 ? "Manager Hub"
+                                 : user.role === "staff"
+                                 ? "Provider Portal"
+                                 : "My Sanctuary"}
+                             </span>
                           </div>
                           <ChevronRight className="h-4 w-4 text-gold group-hover:translate-x-1 transition-transform" />
                         </Link>

@@ -6,7 +6,16 @@ const userSchema = mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   password: { type: String, required: true },
-  isAdmin: { type: Boolean, required: true, default: false },
+  role: { 
+    type: String, 
+    enum: ['admin', 'manager', 'staff', 'client'], 
+    default: 'client' 
+  },
+  permissions: {
+    approveBookings: { type: Boolean, default: false },
+    manageStaff: { type: Boolean, default: false },
+    manageServices: { type: Boolean, default: false },
+  },
   resetPasswordToken: String,
   resetPasswordExpire: Date
 }, {

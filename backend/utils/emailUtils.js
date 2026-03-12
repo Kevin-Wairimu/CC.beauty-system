@@ -94,19 +94,21 @@ export const sendApprovalEmail = async (booking) => {
 
 export const sendResetPasswordEmail = async (user, resetToken) => {
   const transporter = createTransporter();
-  const resetUrl = `http://localhost:5173/reset-password?token=${resetToken}`;
+  const resetUrl = `https://cc-beauty-system.pages.dev/reset-password?token=${resetToken}`;
   
   const mailOptions = {
-    from: `"CC Beauty" <${process.env.EMAIL_USER}>`,
+    from: `"CC.BEAUTY.CLINIC" <${process.env.EMAIL_USER}>`,
     to: user.email,
-    subject: `🔐 Password Reset Request - CC Beauty`,
+    subject: `🔐 Private Access Reset - CC.BEAUTY.CLINIC`,
     html: `
-      <div style="font-family: sans-serif; padding: 20px; border: 1px solid #eee; max-width: 500px; margin: auto;">
-        <h2 style="color: #333;">Password Reset</h2>
-        <p>You requested a password reset for your CC Beauty account.</p>
-        <p>Please click the button below to set a new password. This link is valid for 10 minutes.</p>
-        <a href="${resetUrl}" style="display: inline-block; padding: 12px 24px; background-color: #D4AF37; color: white; text-decoration: none; border-radius: 4px; margin-top: 10px;">Reset Password</a>
-        <p style="margin-top: 20px; font-size: 12px; color: #777;">If you didn't request this, please ignore this email.</p>
+      <div style="font-family: serif; background: #000; color: #fff; padding: 40px; border: 2px solid #FFD700; max-width: 500px; margin: auto;">
+        <h2 style="color: #FFD700; text-align: center; text-transform: uppercase; letter-spacing: 4px;">Private Access</h2>
+        <p style="text-align: center; color: #ccc; font-style: italic;">A request was made to reset your CC.BEAUTY.CLINIC account credentials.</p>
+        <div style="text-align: center; margin: 40px 0;">
+          <a href="${resetUrl}" style="background: #FFD700; color: #000; padding: 18px 36px; text-decoration: none; font-weight: bold; text-transform: uppercase; letter-spacing: 2px;">Reset Your Password</a>
+        </div>
+        <p style="font-size: 10px; color: #666; text-align: center;">This link will expire in 10 minutes. If you did not request this, please disregard this transmission.</p>
+        <p style="text-align: center; margin-top: 30px; font-weight: bold; color: #FFD700; letter-spacing: 2px;">CC.BEAUTY.CLINIC</p>
       </div>
     `,
   };
