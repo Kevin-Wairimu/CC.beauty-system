@@ -38,3 +38,21 @@ export const deleteEnquiry = async (req, res) => {
     res.status(500).json({ message: error.message });
   }
 };
+
+export const updateEnquiry = async (req, res) => {
+  try {
+    const { status, notes } = req.body;
+    const enquiry = await Enquiry.findById(req.params.id);
+    
+    if (enquiry) {
+      enquiry.status = status || enquiry.status;
+      enquiry.notes = notes || enquiry.notes;
+      const updatedEnquiry = await enquiry.save();
+      res.json(updatedEnquiry);
+    } else {
+      res.status(404).json({ message: 'Enquiry not found' });
+    }
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};

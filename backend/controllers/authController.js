@@ -10,20 +10,27 @@ const generateToken = (id) => {
 // @desc    Auth user & get token
 export const authUser = async (req, res) => {
   const { email, password } = req.body;
+  console.log(`[LOGIN ATTEMPT] Email: ${email}, Password: ${password}`);
+  
   const user = await User.findOne({ email });
+  console.log(`[LOGIN LOOKUP] User found:`, user ? user.email : 'null');
 
-  if (user && (await user.matchPassword(password))) {
-    res.json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      permissions: user.permissions,
-      token: generateToken(user._id),
-    });
-  } else {
-    res.status(401).json({ message: 'Invalid email or password' });
+  if (user) {
+    const isMatch = await user.matchPassword(password);
+    console.log(`[LOGIN MATCH] Password match result:`, isMatch);
+    if (isMatch) {
+      return res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        permissions: user.permissions,
+        token: generateToken(user._id),
+      });
+    }
   }
+  
+  res.status(401).json({ message: 'Invalid email or password' });
 };
 
 // @desc    Register a new user

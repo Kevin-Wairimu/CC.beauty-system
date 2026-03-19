@@ -11,12 +11,11 @@ const Footer = () => {
             <div className="flex items-center gap-2 mb-6">
               <Sparkles className="text-gold h-6 w-6" />
               <h3 className="text-2xl font-serif font-bold uppercase tracking-widest text-gold">
-                CC Beauty
+                CC Beauty Clinic
               </h3>
             </div>
             <p className="text-gray-400 font-light leading-relaxed mb-6 italic">
-              Premium Spa & Salon Experience. Where luxury meets beauty in every
-              detail.
+              Premium Beauty Clinic & Studio Experience. Where luxury meets expertise in every detail.
             </p>
             <div className="flex space-x-4">
               <a
@@ -94,16 +93,12 @@ const Footer = () => {
             <ul className="space-y-3 text-gray-400 font-light">
               <li className="flex justify-between">
                 <span>Mon - Fri</span>{" "}
-                <span className="text-gray-200">9:00 AM - 7:00 PM</span>
-              </li>
-              <li className="flex justify-between">
-                <span>Saturday</span>{" "}
-                <span className="text-gray-200">9:00 AM - 6:00 PM</span>
+                <span className="text-gray-200">8:00 AM - 9:00 PM</span>
               </li>
               <li className="flex justify-between">
                 <span>Sunday</span>{" "}
                 <span className="text-gray-200 text-gold/60">
-                  9:00 AM - 6:00 PM
+                  10:00 AM - 9:00 PM
                 </span>
               </li>
             </ul>
@@ -124,12 +119,12 @@ const Footer = () => {
                 >
                   CC Beauty Clinic,
                   <br />
-                  Kilimanjaro City Arcade, Nairobi
+                  Kilimanjaro City Arcade, Thome Road, Nairobi
                 </a>
               </li>
-              <li className="text-gray-200">+254 759 934 198</li>
+              <li className="text-gray-200">+254 757 724 175</li>
               <li className="text-gray-200 italic">
-                ccbeautyclinic21@gmail.com
+                Ccbeautyclinic21@gmail.com
               </li>
             </ul>
           </div>
@@ -137,7 +132,7 @@ const Footer = () => {
 
         <div className="mt-16 border-t border-gold/10 pt-8 text-center text-gray-500 text-sm font-light uppercase tracking-[0.2em]">
           <p>
-            &copy; {new Date().getFullYear()} CC Beauty & Spa @ Handcrafted
+            &copy; {new Date().getFullYear()} CC Beauty Clinic @ Handcrafted
             Luxury by Kevin Wairimu.
           </p>
         </div>

@@ -9,7 +9,13 @@ import appointmentRoutes from './routes/appointments.js';
 import enquiryRoutes from './routes/enquiry.js';
 import authRoutes from './routes/auth.js';
 
-dotenv.config();
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+dotenv.config({ path: path.join(__dirname, '.env') });
 
 connectDB();
 

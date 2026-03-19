@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import Booking from './pages/Booking';
 import Contact from './pages/Contact';
@@ -39,9 +40,37 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/booking" element={<Booking />} />
               <Route path="/contact" element={<Contact />} />
-              <Route path="/admin" element={<Admin />} />
-              <Route path="/staff" element={<StaffDashboard />} />
-              <Route path="/dashboard" element={<ClientDashboard />} />
+              
+              {/* Admin & Manager Dashboard */}
+              <Route 
+                path="/admin" 
+                element={
+                  <ProtectedRoute allowedRoles={['admin', 'manager']}>
+                    <Admin />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Staff Dashboard */}
+              <Route 
+                path="/staff" 
+                element={
+                  <ProtectedRoute allowedRoles={['staff', 'admin', 'manager']}>
+                    <StaffDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              
+              {/* Client Dashboard */}
+              <Route 
+                path="/dashboard" 
+                element={
+                  <ProtectedRoute allowedRoles={['client', 'admin', 'manager', 'staff']}>
+                    <ClientDashboard />
+                  </ProtectedRoute>
+                } 
+              />
+              
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
               <Route path="/forgot-password" element={<ForgotPassword />} />

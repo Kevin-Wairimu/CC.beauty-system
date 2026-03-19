@@ -65,7 +65,7 @@ const Navbar = () => {
 
             <div className="flex flex-col">
               <span className="text-lg md:text-2xl font-serif font-black uppercase tracking-[0.2em] text-white group-hover:text-gold transition-colors leading-none">
-                CC Beauty
+                CC Beauty Clinic
               </span>
 
               <span className="text-[6px] md:text-[8px] uppercase tracking-[0.5em] text-gold font-bold">

@@ -12,8 +12,8 @@ router.post('/register', registerUser);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
 
-// Admin only routes
-router.get('/users', protect, authorize('admin'), getUsers);
+// Admin/Manager routes
+router.get('/users', protect, authorize('admin', 'manager'), getUsers);
 router.put('/users/:id/role', protect, authorize('admin'), updateUserRole);
 router.delete('/users/:id', protect, authorize('admin'), deleteUser);
 

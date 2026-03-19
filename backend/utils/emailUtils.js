@@ -1,5 +1,5 @@
-import nodemailer from 'nodemailer';
-import dotenv from 'dotenv';
+import nodemailer from "nodemailer";
+import dotenv from "dotenv";
 
 dotenv.config();
 
@@ -9,11 +9,11 @@ const createTransporter = () => {
   const pass = process.env.EMAIL_PASS?.trim();
 
   if (!email || !pass) {
-    console.error('❌ Email config missing in .env!');
+    console.error("Email config missing in .env!");
   }
 
   return nodemailer.createTransport({
-    host: 'smtp.gmail.com',
+    host: "smtp.gmail.com",
     port: 465,
     secure: true, // true for 465, false for other ports
     auth: {
@@ -22,15 +22,15 @@ const createTransporter = () => {
     },
     tls: {
       // Do not fail on invalid certificates
-      rejectUnauthorized: false
-    }
+      rejectUnauthorized: false,
+    },
   });
 };
 
 export const sendBookingEmail = async (booking) => {
-  console.log(`📧 Attempting email for: ${booking.service}`);
+  console.log(`Attempting email for: ${booking.service}`);
   const transporter = createTransporter();
-  
+
   const mailOptions = {
     from: `"CC Beauty" <${process.env.EMAIL_USER}>`,
     to: process.env.TO_EMAIL,
@@ -43,26 +43,28 @@ export const sendBookingEmail = async (booking) => {
         <p><strong>Phone:</strong> ${booking.phone}</p>
         <p><strong>Service:</strong> ${booking.service}</p>
         <p><strong>Date/Time:</strong> ${booking.date} at ${booking.time}</p>
-        <p><strong>Notes:</strong> ${booking.notes || 'None'}</p>
+        <p><strong>Notes:</strong> ${booking.notes || "None"}</p>
       </div>
     `,
   };
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('✅ Booking email sent');
+    console.log(" Booking email sent");
   } catch (error) {
-    console.error('❌ Email error detail:', error.message);
-    if (error.message.includes('BadCredentials')) {
-      console.log('💡 HINT: Please check if "2-Step Verification" is ON and use a FRESH "App Password".');
+    console.error("❌ Email error detail:", error.message);
+    if (error.message.includes("BadCredentials")) {
+      console.log(
+        ' HINT: Please check if "2-Step Verification" is ON and use a FRESH "App Password".',
+      );
     }
   }
 };
 
 export const sendApprovalEmail = async (booking) => {
-  console.log(`📧 Sending approval email to: ${booking.email}`);
+  console.log(`Sending approval email to: ${booking.email}`);
   const transporter = createTransporter();
-  
+
   const mailOptions = {
     from: `"CC Beauty" <${process.env.EMAIL_USER}>`,
     to: booking.email,
@@ -86,16 +88,16 @@ export const sendApprovalEmail = async (booking) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('✅ Approval email sent');
+    console.log("Approval email sent");
   } catch (error) {
-    console.error('❌ Approval email error:', error.message);
+    console.error("❌ Approval email error:", error.message);
   }
 };
 
 export const sendResetPasswordEmail = async (user, resetToken) => {
   const transporter = createTransporter();
   const resetUrl = `https://cc-beauty-system.pages.dev/reset-password?token=${resetToken}`;
-  
+
   const mailOptions = {
     from: `"CC.BEAUTY.CLINIC" <${process.env.EMAIL_USER}>`,
     to: user.email,
@@ -116,19 +118,19 @@ export const sendResetPasswordEmail = async (user, resetToken) => {
   try {
     await transporter.sendMail(mailOptions);
   } catch (error) {
-    console.error('❌ Reset email error:', error.message);
+    console.error("❌ Reset email error:", error.message);
   }
 };
 
 export const sendEnquiryEmail = async (enquiry) => {
-  console.log(`📧 Attempting email for enquiry from: ${enquiry.name}`);
+  console.log(`Attempting email for enquiry from: ${enquiry.name}`);
   const transporter = createTransporter();
-  
+
   const mailOptions = {
     from: `"CC Beauty" <${process.env.EMAIL_USER}>`,
     to: process.env.TO_EMAIL,
     replyTo: enquiry.email,
-    subject: `💌 New Enquiry: ${enquiry.name}`,
+    subject: `New Enquiry: ${enquiry.name}`,
     html: `
       <div style="font-family: serif; color: #1a1a1a; padding: 20px; border: 2px solid #D4AF37; max-width: 600px; margin: auto;">
         <h2 style="color: #D4AF37; text-align: center; text-transform: uppercase;">New General Enquiry</h2>
@@ -142,8 +144,8 @@ export const sendEnquiryEmail = async (enquiry) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log('✅ Enquiry email sent');
+    console.log("Enquiry email sent");
   } catch (error) {
-    console.error('❌ Enquiry email error detail:', error.message);
+    console.error("❌ Enquiry email error detail:", error.message);
   }
 };

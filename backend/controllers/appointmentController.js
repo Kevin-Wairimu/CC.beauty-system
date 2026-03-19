@@ -1,22 +1,29 @@
 import Appointment from '../models/Appointment.js';
 import { sendBookingEmail, sendApprovalEmail } from '../utils/emailUtils.js';
+import { sendBookingSMS } from '../utils/smsUtils.js';
 
 export const createAppointment = async (req, res) => {
   try {
-    const { name, phone, email, service, date, time, notes, serviceId, staffId } = req.body;
+    const { name, phone, email, service, date, time, notes, serviceId, staffId, price } = req.body;
     
     // If logged in, attach clientId
     const clientId = req.user ? req.user._id : null;
 
     const appointment = new Appointment({ 
       name, phone, email, service, date, time, notes,
-      clientId, serviceId, staffId 
+      clientId, serviceId, staffId,
+      price: price || 0
     });
     
     const createdAppointment = await appointment.save();
     
-    // Send email notification to owner
-    await sendBookingEmail(createdAppointment);
+    // --- NOTIFICATIONS ---
+    try {
+      await sendBookingEmail(createdAppointment);
+      await sendBookingSMS(createdAppointment); // Trigger SMS Alert to Business Number
+    } catch (notifError) {
+      console.error('Notification logic failed:', notifError.message);
+    }
 
     res.status(201).json(createdAppointment);
   } catch (error) {

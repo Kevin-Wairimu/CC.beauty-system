@@ -19,6 +19,15 @@ const appointmentSchema = mongoose.Schema({
     default: 'pending' 
   },
   
+  price: { type: Number, default: 0 },
+  paymentStatus: { 
+    type: String, 
+    enum: ['unpaid', 'paid', 'partial'],
+    default: 'unpaid' 
+  },
+  paymentMethod: { type: String },
+  receiptNo: { type: String, unique: true, sparse: true },
+  
   handledBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
   notes: { type: String }
 }, {

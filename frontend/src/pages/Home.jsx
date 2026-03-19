@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import api from '../api/axios';
-import { Sparkles, Star, Scissors, ChevronRight, X, ShieldCheck, Clock } from 'lucide-react';
+import { Sparkles, Star, Scissors, ChevronRight, X, ShieldCheck, Clock, Users, Heart, Smile } from 'lucide-react';
 
 const Home = () => {
   const [services, setServices] = useState([]);
@@ -68,7 +68,7 @@ const Home = () => {
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1 }}>
             <span className="text-gold font-black uppercase tracking-[0.8em] text-xs mb-6 block">The Private Collection</span>
             <h1 className="text-5xl md:text-8xl lg:text-9xl font-serif font-bold uppercase tracking-tighter leading-none mb-8 text-white drop-shadow-2xl">
-              CC <span className="text-gold italic">BEAUTY</span>
+              CC <span className="text-gold italic">BEAUTY CLINIC</span>
             </h1>
             <p className="text-sm md:text-2xl font-light tracking-[0.2em] md:tracking-[0.4em] text-gray-200 uppercase mb-12">Unrivaled Mastery • Absolute Luxury</p>
             <div className="flex justify-center">
@@ -129,7 +129,7 @@ const Home = () => {
                                 onClick={() => setSelectedService(service)}
                                 className="group relative bg-[#121212] border border-gold/5 p-6 md:p-10 text-left hover:border-gold/30 transition-all duration-500 flex flex-col justify-between min-h-[160px] md:min-h-[200px]"
                             >
-                                <div className="space-y-2">
+                                <div className="space-y-2 relative z-10">
                                     <div className="flex justify-between items-start gap-4">
                                       <h3 className="text-lg md:text-3xl font-serif font-bold text-white group-hover:text-gold transition-colors leading-tight">{service.name}</h3>
                                       <span className="text-xl md:text-3xl font-serif font-black text-gold shrink-0">{service.price}</span>
@@ -139,13 +139,23 @@ const Home = () => {
                                     </p>
                                 </div>
                                 
-                                <div className="mt-6 flex items-center justify-between">
+                                <div className="mt-6 flex items-center justify-between relative z-10">
                                   <div className="flex items-center gap-2">
                                     <div className="h-px w-8 bg-gold/30 group-hover:w-12 transition-all duration-500" />
-                                    <span className="text-[8px] md:text-[10px] uppercase tracking-[0.3em] text-gold font-black opacity-0 group-hover:opacity-100 transition-all">View Ritual</span>
                                   </div>
                                   <ChevronRight className="h-4 w-4 text-gold group-hover:translate-x-2 transition-transform" />
                                 </div>
+
+                                {/* Service Image Background */}
+                                {service.image && (
+                                  <div className="absolute top-0 right-0 w-32 h-32 md:w-48 md:h-48 opacity-10 group-hover:opacity-30 transition-all duration-700 pointer-events-none overflow-hidden">
+                                    <img 
+                                      src={service.image} 
+                                      alt="" 
+                                      className="w-full h-full object-cover grayscale scale-110 group-hover:scale-100 group-hover:grayscale-0 transition-all duration-1000"
+                                    />
+                                  </div>
+                                )}
 
                                 {/* Subtle background texture or glow on hover */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-gold/0 via-transparent to-gold/0 group-hover:from-gold/[0.03] transition-all pointer-events-none" />
@@ -155,6 +165,44 @@ const Home = () => {
                 </motion.div>
             </AnimatePresence>
         </div>
+      </section>
+
+      {/* NEW: GROUP DISCOUNTS SECTION */}
+      <section className="py-24 bg-[#0A0A0A] relative overflow-hidden border-y border-gold/10">
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          <div className="text-center mb-16">
+            <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
+              <span className="text-gold font-black uppercase tracking-[0.5em] text-[10px]">Shared Experiences</span>
+              <h2 className="text-4xl md:text-6xl font-serif font-bold uppercase tracking-widest text-white mt-4">Group <span className="text-gold italic">Privileges</span></h2>
+              <div className="h-0.5 w-20 bg-gold mx-auto mt-6" />
+            </motion.div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            {[
+              { title: "Girlies", guests: "5 People", discount: "15% OFF", icon: <Users className="h-8 w-8 text-gold" />, desc: "The ultimate squad retreat." },
+              { title: "The Trio", guests: "3 People", discount: "10% OFF", icon: <Smile className="h-8 w-8 text-gold" />, desc: "Perfect for best friends." },
+              { title: "Couples", guests: "2 People", discount: "5% OFF", icon: <Heart className="h-8 w-8 text-gold" />, desc: "Intimate shared luxury." },
+              { title: "Family", guests: "2 Couples + Kids", discount: "10% OFF", icon: <Star className="h-8 w-8 text-gold" />, desc: "A legacy of beauty." }
+            ].map((offer, idx) => (
+              <motion.div 
+                key={idx}
+                whileHover={{ y: -10 }}
+                className="bg-[#121212] border border-gold/10 p-8 text-center space-y-4 hover:border-gold/40 transition-all duration-500"
+              >
+                <div className="flex justify-center mb-4">{offer.icon}</div>
+                <h3 className="text-2xl font-serif font-bold text-white uppercase tracking-tighter">{offer.title}</h3>
+                <div className="space-y-1">
+                  <p className="text-[10px] text-gray-500 uppercase font-black tracking-widest">{offer.guests}</p>
+                  <p className="text-3xl font-serif font-black text-gold">{offer.discount}</p>
+                </div>
+                <p className="text-[10px] text-gray-400 italic uppercase tracking-widest leading-relaxed pt-4 border-t border-white/5">{offer.desc}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+        {/* Artistic background element */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gold/[0.02] rounded-full blur-[120px] pointer-events-none" />
       </section>
 
       {/* 3. LUXURY QUICK-VIEW MODAL */}
@@ -179,8 +227,8 @@ const Home = () => {
                     {/* Artistic Side Panel */}
                     <div className="hidden md:block md:w-2/5 relative overflow-hidden group">
                         <img 
-                          src="https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=1000&q=80" 
-                          alt="Luxury Detail" 
+                          src={selectedService.image || "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=1000&q=80"} 
+                          alt={selectedService.name} 
                           className="absolute inset-0 w-full h-full object-cover grayscale opacity-40 group-hover:scale-110 group-hover:grayscale-0 transition-all duration-1000"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-[#0A0A0A] via-transparent to-transparent" />
@@ -222,18 +270,11 @@ const Home = () => {
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                               transition={{ delay: 0.2 }}
-                              className="grid grid-cols-2 gap-8 py-8 border-y border-gold/10"
+                              className="py-8 border-y border-gold/10"
                             >
                                 <div className="space-y-1">
-                                    <p className="text-[9px] uppercase text-gray-500 tracking-[0.3em] font-black">Investment</p>
-                                    <p className="text-3xl md:text-4xl font-serif font-black text-gold">{selectedService.price}</p>
-                                </div>
-                                <div className="space-y-1">
-                                    <p className="text-[9px] uppercase text-gray-500 tracking-[0.3em] font-black">Experience</p>
-                                    <p className="text-xl md:text-2xl font-black text-white uppercase tracking-widest flex items-center gap-2">
-                                      <Clock className="h-4 w-4 text-gold" />
-                                      60 MINS
-                                    </p>
+                                    <p className="text-[9px] uppercase text-gray-500 tracking-[0.3em] font-black">Charge</p>
+                                    <p className="text-3xl md:text-4xl font-serif font-black text-gold">KSh {selectedService.price}</p>
                                 </div>
                             </motion.div>
 

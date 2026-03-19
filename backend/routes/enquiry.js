@@ -1,10 +1,12 @@
 import express from 'express';
-import { createEnquiry, getEnquiries, deleteEnquiry } from '../controllers/enquiryController.js';
+import { createEnquiry, getEnquiries, deleteEnquiry, updateEnquiry } from '../controllers/enquiryController.js';
+import { protect, authorize } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 router.post('/', createEnquiry);
-router.get('/', getEnquiries);
-router.delete('/:id', deleteEnquiry);
+router.get('/', protect, authorize('admin', 'manager'), getEnquiries);
+router.put('/:id', protect, authorize('admin', 'manager'), updateEnquiry);
+router.delete('/:id', protect, authorize('admin', 'manager'), deleteEnquiry);
 
 export default router;
