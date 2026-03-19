@@ -43,6 +43,7 @@ export const sendBookingEmail = async (booking) => {
         <p><strong>Phone:</strong> ${booking.phone}</p>
         <p><strong>Service:</strong> ${booking.service}</p>
         <p><strong>Date/Time:</strong> ${booking.date} at ${booking.time}</p>
+        <p><strong>Specialist:</strong> ${booking.staffId?.name || "Any Available Master"}</p>
         <p><strong>Notes:</strong> ${booking.notes || "None"}</p>
       </div>
     `,
@@ -53,11 +54,38 @@ export const sendBookingEmail = async (booking) => {
     console.log(" Booking email sent");
   } catch (error) {
     console.error("❌ Email error detail:", error.message);
-    if (error.message.includes("BadCredentials")) {
-      console.log(
-        ' HINT: Please check if "2-Step Verification" is ON and use a FRESH "App Password".',
-      );
-    }
+  }
+};
+
+export const sendClientBookingEmail = async (booking) => {
+  console.log(`Sending confirmation email to guest: ${booking.email}`);
+  const transporter = createTransporter();
+
+  const mailOptions = {
+    from: `"CC Beauty" <${process.env.EMAIL_USER}>`,
+    to: booking.email,
+    subject: `✨ Reservation Requested: ${booking.service}`,
+    html: `
+      <div style="font-family: serif; color: #1a1a1a; padding: 20px; border: 2px solid #D4AF37; max-width: 600px; margin: auto;">
+        <h2 style="color: #D4AF37; text-align: center; text-transform: uppercase;">Reservation Received</h2>
+        <p>Hello ${booking.name},</p>
+        <p>Thank you for choosing CC Beauty Clinic. We have received your request for the following ritual:</p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p><strong>Ritual:</strong> ${booking.service}</p>
+        <p><strong>Specialist:</strong> ${booking.staffId?.name || "Any Available Master"}</p>
+        <p><strong>Schedule:</strong> ${booking.date} at ${booking.time}</p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="font-style: italic; color: #666;">Our Studio Director is reviewing your request. You will receive a final confirmation via SMS/Email within 15 minutes.</p>
+        <p style="text-align: center; margin-top: 30px; font-weight: bold; color: #D4AF37;">CC BEAUTY CLINIC</p>
+      </div>
+    `,
+  };
+
+  try {
+    await transporter.sendMail(mailOptions);
+    console.log("Client confirmation email sent");
+  } catch (error) {
+    console.error("❌ Client confirmation email error:", error.message);
   }
 };
 
@@ -75,6 +103,7 @@ export const sendApprovalEmail = async (booking) => {
         <p style="text-align: center; font-style: italic; color: #666;">We are pleased to welcome you to the CC Beauty experience.</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
         <p><strong>Service:</strong> ${booking.service}</p>
+        <p><strong>Specialist:</strong> ${booking.staffId?.name || "Assigned Master"}</p>
         <p><strong>Date:</strong> ${booking.date}</p>
         <p><strong>Time:</strong> ${booking.time}</p>
         <p><strong>Location:</strong> Kilimanjaro City Arcade, Nairobi, Kenya</p>

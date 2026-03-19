@@ -5,7 +5,7 @@ import { protect, authorize } from '../middleware/authMiddleware.js';
 const router = express.Router();
 
 // Allow anyone to create, but protect for authenticated info
-router.post('/', createAppointment);
+router.post('/', protect, createAppointment);
 
 // Protect get: only authorized users can see lists
 router.get('/', protect, getAppointments);

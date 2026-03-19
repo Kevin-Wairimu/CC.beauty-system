@@ -35,14 +35,20 @@ export const authUser = async (req, res) => {
 
 // @desc    Register a new user
 export const registerUser = async (req, res) => {
-  const { name, email, password } = req.body;
+  const { name, email, password, role, specialization } = req.body;
   const userExists = await User.findOne({ email });
 
   if (userExists) {
     return res.status(400).json({ message: 'User already exists' });
   }
 
-  const user = await User.create({ name, email, password });
+  const user = await User.create({ 
+    name, 
+    email, 
+    password,
+    role: role || 'client',
+    specialization: specialization || []
+  });
 
   if (user) {
     res.status(201).json({
@@ -50,6 +56,7 @@ export const registerUser = async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      specialization: user.specialization,
       permissions: user.permissions,
       token: generateToken(user._id),
     });
@@ -107,6 +114,16 @@ export const resetPassword = async (req, res) => {
 };
 
 // @desc    Get all users (Admin only)
+// @desc    Get all staff members (Public)
+export const getStaff = async (req, res) => {
+  try {
+    const staff = await User.find({ role: 'staff' }).select('name specialization');
+    res.json(staff);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
 export const getUsers = async (req, res) => {
   try {
     const users = await User.find({}).select('-password');
@@ -122,6 +139,11 @@ export const updateUserRole = async (req, res) => {
     const user = await User.findById(req.params.id);
     if (user) {
       user.role = req.body.role || user.role;
+      
+      if (req.body.specialization) {
+        user.specialization = req.body.specialization;
+      }
+
       if (req.body.permissions) {
         user.permissions = { ...user.permissions, ...req.body.permissions };
       }
@@ -131,6 +153,7 @@ export const updateUserRole = async (req, res) => {
         name: updatedUser.name,
         email: updatedUser.email,
         role: updatedUser.role,
+        specialization: updatedUser.specialization,
         permissions: updatedUser.permissions,
       });
     } else {

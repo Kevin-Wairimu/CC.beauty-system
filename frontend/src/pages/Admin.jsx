@@ -85,6 +85,37 @@ const Admin = () => {
   }, [appointments, enquiries]);
 
   // --- HANDLERS ---
+  const getRelevantStaff = (serviceName) => {
+    const selectedService = services.find(s => s.name === serviceName);
+    if (!selectedService) return staff;
+    
+    const category = selectedService.category.toUpperCase();
+    return staff.filter(s => 
+      s.specialization?.some(spec => spec.toUpperCase() === category)
+    );
+  };
+
+  const handleUpdateRole = async (userId, role) => {
+    try {
+      await api.put(`/auth/users/${userId}/role`, { role });
+      toast.success('Role Updated');
+      fetchData();
+    } catch {
+      toast.error('Role update failed');
+    }
+  };
+
+  const handleUpdateSpecialization = async (userId, specializationString) => {
+    const specialization = specializationString.split(',').map(s => s.trim().toUpperCase()).filter(s => s !== '');
+    try {
+      await api.put(`/auth/users/${userId}/role`, { specialization });
+      toast.success('Specializations Updated');
+      fetchData();
+    } catch {
+      toast.error('Update failed');
+    }
+  };
+
   const handleAssignStaff = async (appointmentId, staffId) => {
     try {
       await api.put(`/appointments/${appointmentId}/status`, { staffId });
@@ -130,6 +161,7 @@ const Admin = () => {
       toast.success('Record Erased');
     } catch { toast.error('Delete failed'); }
   };
+
 
   // Enquiry Handlers
   const handleUpdateEnquiry = async (e) => {
@@ -271,10 +303,14 @@ const Admin = () => {
                             <select 
                               value={app.staffId?._id || ''} 
                               onChange={(e) => handleAssignStaff(app._id, e.target.value)}
-                              className="bg-black border border-white/10 text-gold text-[10px] uppercase font-black px-4 py-2 outline-none focus:border-gold transition-all"
+                              className="bg-black border border-white/10 text-gold text-[10px] uppercase font-black px-4 py-2 outline-none focus:border-gold transition-all w-full"
                             >
                               <option value="">Unassigned</option>
-                              {staff.map(s => <option key={s._id} value={s._id}>{s.name} ({s.role})</option>)}
+                              {getRelevantStaff(app.service).map(s => (
+                                <option key={s._id} value={s._id}>
+                                  {s.name} ({s.specialization?.join(', ')})
+                                </option>
+                              ))}
                             </select>
                           </div>
                         </div>
@@ -467,35 +503,72 @@ const Admin = () => {
 
             {/* TEAM TAB (CRUD) */}
             {activeTab === 'team' && userRole === 'admin' && (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {users.map((u) => (
-                  <div key={u._id} className="glass-panel p-10 bg-[#121212] border-white/5 hover:border-gold/30 transition-all group">
-                    <div className="flex items-center gap-6 mb-10">
-                      <div className="h-16 w-16 bg-gold/10 border border-gold/20 flex items-center justify-center text-gold group-hover:bg-gold group-hover:text-black transition-all duration-500">
-                        <User className="h-8 w-8" />
-                      </div>
-                      <div>
-                        <h3 className="text-2xl font-bold text-white tracking-tighter">{u.name}</h3>
-                        <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest">{u.email}</p>
-                      </div>
-                    </div>
-                    <div className="space-y-4">
-                      <span className="text-[9px] uppercase tracking-widest text-gold font-black block">Privilege Level</span>
-                      <div className="flex flex-wrap gap-2">
-                        {['client', 'staff', 'manager', 'admin'].map((role) => (
-                          <button
-                            key={role}
-                            onClick={() => handleUpdateRole(u._id, role)}
-                            disabled={role === 'admin' && user._id !== u._id}
-                            className={`flex-1 min-w-[80px] py-2.5 text-[8px] font-black uppercase tracking-widest border transition-all ${u.role === role ? 'bg-gold text-black border-gold' : 'border-white/10 text-gray-500 hover:border-gold/50'}`}
-                          >
-                            {role}
-                          </button>
-                        ))}
-                      </div>
+              <div className="space-y-8">
+                <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-8">
+                  <div>
+                    <h2 className="text-3xl font-serif font-bold uppercase tracking-widest text-gold">Talent Hub</h2>
+                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] mt-2">Manage permissions and specializations</p>
+                  </div>
+                  <div className="flex gap-4">
+                    <div className="relative">
+                      <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-500" />
+                      <input 
+                        type="text" 
+                        placeholder="Search by name or email..." 
+                        className="bg-black/40 border border-white/10 pl-12 pr-6 py-3 text-[10px] uppercase tracking-widest text-white outline-none focus:border-gold w-[300px]"
+                      />
                     </div>
                   </div>
-                ))}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {users.map((u) => (
+                    <div key={u._id} className="glass-panel p-10 bg-[#121212] border-white/5 hover:border-gold/30 transition-all group">
+                      <div className="flex items-center gap-6 mb-10">
+                        <div className={`h-16 w-16 border flex items-center justify-center transition-all duration-500 ${u.role !== 'client' ? 'bg-gold text-black border-gold' : 'bg-gold/10 text-gold border-gold/20'}`}>
+                          <User className="h-8 w-8" />
+                        </div>
+                        <div>
+                          <h3 className="text-2xl font-bold text-white tracking-tighter">{u.name}</h3>
+                          <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest">{u.email}</p>
+                          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gold mt-1 block">{u.role}</span>
+                        </div>
+                      </div>
+
+                      <div className="space-y-6">
+                        <div className="space-y-3">
+                          <span className="text-[9px] uppercase tracking-widest text-gold font-black block">Access Authorization</span>
+                          <div className="grid grid-cols-2 gap-2">
+                            {['client', 'staff', 'manager', 'admin'].map((role) => (
+                              <button
+                                key={role}
+                                onClick={() => handleUpdateRole(u._id, role)}
+                                disabled={role === 'admin' && user._id !== u._id}
+                                className={`py-2.5 text-[8px] font-black uppercase tracking-widest border transition-all ${u.role === role ? 'bg-gold text-black border-gold' : 'border-white/10 text-gray-500 hover:border-gold/50'}`}
+                              >
+                                {role}
+                              </button>
+                            ))}
+                          </div>
+                        </div>
+
+                        {u.role !== 'client' && (
+                          <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pt-6 border-t border-white/5 space-y-4">
+                            <span className="text-[9px] uppercase tracking-widest text-gold font-black block">Specialist Portfolio</span>
+                            <input 
+                              type="text"
+                              defaultValue={u.specialization?.join(', ')}
+                              onBlur={(e) => handleUpdateSpecialization(u._id, e.target.value)}
+                              placeholder="e.g. NAILS, WIGS, MAKEUP"
+                              className="w-full bg-black/60 border border-white/10 p-4 text-[11px] text-white outline-none focus:border-gold transition-all uppercase tracking-widest"
+                            />
+                            <p className="text-[8px] text-gray-600 uppercase font-black tracking-tighter">Enter categories matching the Menu (comma separated)</p>
+                          </motion.div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 

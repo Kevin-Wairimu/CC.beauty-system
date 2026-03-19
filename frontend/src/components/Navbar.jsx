@@ -298,7 +298,7 @@ const Navbar = () => {
                         <Link
                           to="/login"
                           onClick={closeMenu}
-                          className="text-center text-gray-500 hover:text-gold text-[9px] font-black uppercase tracking-[0.4em] transition-colors"
+                          className="text-center text-gold/60 hover:text-gold text-[9px] font-black uppercase tracking-[0.4em] transition-colors"
                         >
                           Member Access
                         </Link>
@@ -307,10 +307,10 @@ const Navbar = () => {
                   </div>
 
                   {/* Social Footer */}
-                  <div className="flex justify-between items-center pt-8 border-t border-gold/5">
+                  <div className="flex justify-between items-center pt-8 border-t border-gold/10">
                       <div className="flex gap-6 text-[8px] font-black uppercase tracking-widest">
-                         <a href="https://instagram.com/cc_beauty_clinic" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-gold transition-colors">IG</a>
-                         <a href="https://www.tiktok.com/@cc_beauty_clinic" target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-gold transition-colors">TK</a>
+                         <a href="https://instagram.com/cc_beauty_clinic" target="_blank" rel="noopener noreferrer" className="text-gold/40 hover:text-gold transition-colors">IG</a>
+                         <a href="https://www.tiktok.com/@cc_beauty_clinic" target="_blank" rel="noopener noreferrer" className="text-gold/40 hover:text-gold transition-colors">TK</a>
                       </div>
                       <Sparkles className="text-gold h-4 w-4 animate-pulse" />
                   </div>

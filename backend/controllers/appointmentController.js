@@ -1,26 +1,48 @@
 import Appointment from '../models/Appointment.js';
-import { sendBookingEmail, sendApprovalEmail } from '../utils/emailUtils.js';
-import { sendBookingSMS } from '../utils/smsUtils.js';
+import { sendBookingEmail, sendApprovalEmail, sendClientBookingEmail } from '../utils/emailUtils.js';
+import { sendBookingSMS, sendClientBookingSMS, sendClientApprovalSMS } from '../utils/smsUtils.js';
 
 export const createAppointment = async (req, res) => {
   try {
     const { name, phone, email, service, date, time, notes, serviceId, staffId, price } = req.body;
     
-    // If logged in, attach clientId
-    const clientId = req.user ? req.user._id : null;
+    // User must be logged in
+    if (!req.user) {
+      return res.status(401).json({ message: 'Authentication required to book a session.' });
+    }
+
+    const clientId = req.user._id;
 
     const appointment = new Appointment({ 
-      name, phone, email, service, date, time, notes,
-      clientId, serviceId, staffId,
+      name: name || req.user.name, 
+      phone, 
+      email: email || req.user.email, 
+      service, 
+      date, 
+      time, 
+      notes,
+      clientId, 
+      serviceId, 
+      staffId,
       price: price || 0
     });
     
     const createdAppointment = await appointment.save();
     
+    // Populate fields for notifications (name instead of ID)
+    const populatedAppointment = await Appointment.findById(createdAppointment._id)
+      .populate('staffId', 'name')
+      .populate('serviceId', 'name');
+
     // --- NOTIFICATIONS ---
     try {
-      await sendBookingEmail(createdAppointment);
-      await sendBookingSMS(createdAppointment); // Trigger SMS Alert to Business Number
+      // 1. Notify Business (Email + SMS)
+      await sendBookingEmail(populatedAppointment);
+      await sendBookingSMS(populatedAppointment);
+      
+      // 2. Notify Guest (Email + SMS)
+      await sendClientBookingEmail(populatedAppointment);
+      await sendClientBookingSMS(populatedAppointment);
     } catch (notifError) {
       console.error('Notification logic failed:', notifError.message);
     }
@@ -92,9 +114,13 @@ export const updateAppointmentStatus = async (req, res) => {
       
       const updatedAppointment = await appointment.save();
 
-      // Trigger approval email
+      // Trigger approval notifications
       if (oldStatus !== 'approved' && updatedAppointment.status === 'approved' && updatedAppointment.email) {
-        await sendApprovalEmail(updatedAppointment);
+        const populatedForNotif = await Appointment.findById(updatedAppointment._id).populate('staffId', 'name');
+        
+        // Notify Guest (Email + SMS)
+        await sendApprovalEmail(populatedForNotif);
+        await sendClientApprovalSMS(populatedForNotif);
       }
 
       res.json(updatedAppointment);

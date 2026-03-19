@@ -14,8 +14,9 @@ const Footer = () => {
                 CC Beauty Clinic
               </h3>
             </div>
-            <p className="text-gray-400 font-light leading-relaxed mb-6 italic">
-              Premium Beauty Clinic & Studio Experience. Where luxury meets expertise in every detail.
+            <p className="text-white/60 font-light leading-relaxed mb-6 italic">
+              Premium Beauty Clinic & Studio Experience. Where luxury meets
+              expertise in every detail.
             </p>
             <div className="flex space-x-4">
               <a
@@ -52,7 +53,7 @@ const Footer = () => {
             <h3 className="text-lg font-bold uppercase tracking-widest text-gold mb-6 border-b border-gold/20 pb-2">
               Experience
             </h3>
-            <ul className="space-y-3 text-gray-400 font-light">
+            <ul className="space-y-3 text-white/60 font-light">
               <li>
                 <a href="/" className="hover:text-gold transition-colors">
                   Services Menu
@@ -90,14 +91,14 @@ const Footer = () => {
             <h3 className="text-lg font-bold uppercase tracking-widest text-gold mb-6 border-b border-gold/20 pb-2">
               Studio Hours
             </h3>
-            <ul className="space-y-3 text-gray-400 font-light">
+            <ul className="space-y-3 text-white/60 font-light">
               <li className="flex justify-between">
                 <span>Mon - Fri</span>{" "}
-                <span className="text-gray-200">8:00 AM - 9:00 PM</span>
+                <span className="text-white">8:00 AM - 9:00 PM</span>
               </li>
               <li className="flex justify-between">
                 <span>Sunday</span>{" "}
-                <span className="text-gray-200 text-gold/60">
+                <span className="text-gold/60">
                   10:00 AM - 9:00 PM
                 </span>
               </li>
@@ -109,28 +110,28 @@ const Footer = () => {
             <h3 className="text-lg font-bold uppercase tracking-widest text-gold mb-6 border-b border-gold/20 pb-2">
               Location
             </h3>
-            <ul className="space-y-4 text-gray-400 font-light">
+            <ul className="space-y-4 text-white/60 font-light">
               <li className="flex items-start gap-3">
-                <a 
-                  href="https://www.google.com/maps/place/CC+Beauty+Clinic/@-1.228597,36.8677963,17z/data=!4m6!3m5!1s0x182f3f0032d473b1:0xd4353544f547715e!8m2!3d-1.2286024!4d36.8703712" 
-                  target="_blank" 
+                <a
+                  href="https://www.google.com/maps/place/CC+Beauty+Clinic/@-1.228597,36.8677963,17z/data=!4m6!3m5!1s0x182f3f0032d473b1:0xd4353544f547715e!8m2!3d-1.2286024!4d36.8703712"
+                  target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gray-200 hover:text-gold transition-colors"
+                  className="text-white hover:text-gold transition-colors"
                 >
                   CC Beauty Clinic,
                   <br />
                   Kilimanjaro City Arcade, Thome Road, Nairobi
                 </a>
               </li>
-              <li className="text-gray-200">+254 757 724 175</li>
-              <li className="text-gray-200 italic">
+              <li className="text-white">+254 759 934 198</li>
+              <li className="text-white italic">
                 Ccbeautyclinic21@gmail.com
               </li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-16 border-t border-gold/10 pt-8 text-center text-gray-500 text-sm font-light uppercase tracking-[0.2em]">
+        <div className="mt-16 border-t border-gold/10 pt-8 text-center text-white/40 text-sm font-light uppercase tracking-[0.2em]">
           <p>
             &copy; {new Date().getFullYear()} CC Beauty Clinic @ Handcrafted
             Luxury by Kevin Wairimu.

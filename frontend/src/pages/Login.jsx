@@ -43,11 +43,11 @@ const Login = () => {
   };
 
   return (
-    <div className="bg-[#0F0F0F] min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden">
+    <div className="bg-black min-h-screen flex items-center justify-center px-4 py-20 relative overflow-hidden">
       {/* Background Section Decor */}
-      <div className="absolute top-0 left-0 w-full h-full opacity-20 pointer-events-none">
-        <div className="absolute top-[-10%] right-[-10%] w-150 h-150 bg-gold/10 blur-[150px] rounded-full" />
-        <div className="absolute bottom-[-10%] left-[-10%] w-150 h-150 bg-gold/10 blur-[150px] rounded-full" />
+      <div className="absolute top-0 left-0 w-full h-full opacity-30 pointer-events-none">
+        <div className="absolute top-[-10%] right-[-10%] w-150 h-150 bg-gold/5 blur-[150px] rounded-full" />
+        <div className="absolute bottom-[-10%] left-[-10%] w-150 h-150 bg-gold/5 blur-[150px] rounded-full" />
       </div>
 
       <motion.section
@@ -63,27 +63,27 @@ const Login = () => {
           <h1 className="text-4xl md:text-7xl font-serif font-bold uppercase tracking-tighter text-white mb-4 leading-tight">
             Private <span className="text-gold italic">Login</span>
           </h1>
-          <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-gray-400 font-black">
+          <p className="text-[10px] md:text-xs uppercase tracking-[0.4em] text-gold/60 font-black">
             CC Beauty Portal
           </p>
         </div>
 
         {/* Form Section */}
-        <div className="glass-panel p-6 md:p-16 shadow-[0_0_100px_rgba(0,0,0,0.8)] border-gold/30 bg-[#18181B]">
+        <div className="glass-panel p-6 md:p-16 shadow-[0_0_100px_rgba(0,0,0,0.8)] border-gold/30 bg-[#050505]">
           <form onSubmit={handleSubmit} className="space-y-10">
             <div className="space-y-8">
               <div className="group">
                 <label className="block text-xs font-black uppercase tracking-[0.3em] text-gold mb-4 group-focus-within:text-white transition-colors">
                   Registered Email
                 </label>
-                <div className="flex items-center border-b-2 border-white/10 group-focus-within:border-gold transition-all pb-3">
-                  <Mail className="h-5 w-5 text-gray-500 mr-4" />
+                <div className="flex items-center border-b-2 border-gold/10 group-focus-within:border-gold transition-all pb-3">
+                  <Mail className="h-5 w-5 text-gold/40 mr-4" />
                   <input
                     type="email"
                     required
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-transparent outline-none text-white text-xl font-light placeholder:text-gray-700"
+                    className="w-full bg-transparent outline-none text-white text-xl font-light placeholder:text-white/10"
                     placeholder="name@exclusive.com"
                   />
                 </div>
@@ -93,14 +93,14 @@ const Login = () => {
                 <label className="block text-xs font-black uppercase tracking-[0.3em] text-gold mb-4 group-focus-within:text-white transition-colors">
                   Password
                 </label>
-                <div className="flex items-center border-b-2 border-white/10 group-focus-within:border-gold transition-all pb-3">
-                  <Lock className="h-5 w-5 text-gray-500 mr-4" />
+                <div className="flex items-center border-b-2 border-gold/10 group-focus-within:border-gold transition-all pb-3">
+                  <Lock className="h-5 w-5 text-gold/40 mr-4" />
                   <input
                     type="password"
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-transparent outline-none text-white text-xl font-light placeholder:text-gray-700"
+                    className="w-full bg-transparent outline-none text-white text-xl font-light placeholder:text-white/10"
                     placeholder="••••••••"
                   />
                 </div>
@@ -111,7 +111,7 @@ const Login = () => {
               <Link
                 to="/forgot-password"
                 size="sm"
-                className="text-xs text-gray-400 hover:text-gold transition-colors font-black uppercase tracking-widest border-b border-transparent hover:border-gold pb-1"
+                className="text-xs text-gold/60 hover:text-gold transition-colors font-black uppercase tracking-widest border-b border-transparent hover:border-gold pb-1"
               >
                 Forgot Credentials?
               </Link>
@@ -121,7 +121,7 @@ const Login = () => {
             <button
               type="submit"
               disabled={loading}
-              className="py-6! w-full btn-gold text-lg uppercase tracking-[0.5em] font-black flex items-center justify-center gap-4 disabled:opacity-50 shadow-[0_20px_50px_rgba(255,215,0,0.2)]"
+              className="py-6 w-full btn-gold text-lg uppercase tracking-[0.5em] font-black flex items-center justify-center gap-4 disabled:opacity-50 shadow-[0_20px_50px_rgba(212,175,55,0.2)]"
             >
               {loading ? (
                 "Verifying..."
@@ -130,19 +130,18 @@ const Login = () => {
                   Confirm Access <ArrowRight className="h-5 w-5" />
                 </>
               )}
-              {/*  */}
             </button>
           </form>
 
           {/* Form Footer */}
-          <div className="mt-12 pt-10 border-t border-white/5 text-center space-y-6">
+          <div className="mt-12 pt-10 border-t border-gold/10 text-center space-y-6">
             <div className="flex items-center justify-center gap-3 text-gold/40">
               <ShieldCheck className="h-4 w-4" />
               <span className="text-[10px] uppercase font-black tracking-widest">
                 Secure Luxury Server
               </span>
             </div>
-            <p className="text-gray-500 text-xs uppercase font-bold tracking-widest">
+            <p className="text-gold/40 text-xs uppercase font-bold tracking-widest">
               Not a member of our studio?
             </p>
             <Link
