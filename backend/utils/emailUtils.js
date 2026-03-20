@@ -14,8 +14,8 @@ const createTransporter = () => {
 
   return nodemailer.createTransport({
     host: "smtp.gmail.com",
-    port: 587,
-    secure: false, // Use STARTTLS
+    port: 465,
+    secure: true, // Use SSL/TLS
     auth: {
       user: email,
       pass: pass,
@@ -23,7 +23,6 @@ const createTransporter = () => {
     tls: {
       // Do not fail on invalid certificates
       rejectUnauthorized: false,
-      minVersion: 'TLSv1.2'
     },
     family: 4, // Force IPv4 to avoid ENETUNREACH on IPv6
     connectionTimeout: 15000, // 15 seconds
