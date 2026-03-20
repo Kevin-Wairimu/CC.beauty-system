@@ -7,8 +7,14 @@ export const createEnquiry = async (req, res) => {
     const enquiry = new Enquiry({ name, email, phone, message });
     await enquiry.save();
     
-    // Send email notification to owner
-    await sendEnquiryEmail(enquiry);
+    // Send email notification to owner (Background - Non-blocking)
+    (async () => {
+      try {
+        await sendEnquiryEmail(enquiry);
+      } catch (err) {
+        console.error('Background Enquiry Notification Error:', err.message);
+      }
+    })();
 
     res.status(201).json({ message: 'Enquiry sent successfully' });
   } catch (error) {

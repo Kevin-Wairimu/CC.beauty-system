@@ -158,6 +158,11 @@ export const sendResetPasswordEmail = async (user, resetToken) => {
 };
 
 export const sendEnquiryEmail = async (enquiry) => {
+  if (!process.env.TO_EMAIL) {
+    console.error("❌ Cannot send enquiry email: TO_EMAIL is not defined in environment variables.");
+    return;
+  }
+
   console.log(`Attempting email for enquiry from: ${enquiry.name}`);
   const transporter = createTransporter();
 
@@ -179,7 +184,7 @@ export const sendEnquiryEmail = async (enquiry) => {
 
   try {
     await transporter.sendMail(mailOptions);
-    console.log("Enquiry email sent");
+    console.log("✅ Enquiry email sent to owner");
   } catch (error) {
     console.error("❌ Enquiry email error detail:", error.message);
   }
