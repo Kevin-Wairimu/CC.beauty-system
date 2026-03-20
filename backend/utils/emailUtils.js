@@ -24,6 +24,9 @@ const createTransporter = () => {
       // Do not fail on invalid certificates
       rejectUnauthorized: false,
     },
+    connectionTimeout: 5000, // 5 seconds
+    greetingTimeout: 5000,
+    socketTimeout: 5000,
   });
 };
 
