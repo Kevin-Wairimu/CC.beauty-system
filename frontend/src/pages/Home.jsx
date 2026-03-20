@@ -10,6 +10,18 @@ const Home = () => {
   const [activeCategory, setActiveCategory] = useState('');
   const [selectedService, setSelectedService] = useState(null);
   const reviewContainerRef = React.useRef(null);
+
+  const CATEGORY_FALLBACKS = {
+    NAILS: "https://images.unsplash.com/photo-1604654894610-df490c9a77ca?auto=format&fit=crop&w=800&q=80",
+    LASHES: "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80",
+    WIGS: "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+    MAKEUP: "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80",
+    EYEBROWS: "https://images.unsplash.com/photo-1522337628061-92f35a78274d?auto=format&fit=crop&w=800&q=80",
+    FACIAL: "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=800&q=80",
+    DEFAULT: "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80"
+  };
+
+  const getFallbackImage = (category) => CATEGORY_FALLBACKS[category] || CATEGORY_FALLBACKS.DEFAULT;
   
   useEffect(() => {
     // 1. Fetch Services
@@ -146,15 +158,14 @@ const Home = () => {
                                 </div>
 
                                 {/* Service Image Background */}
-                                {service.image && (
-                                  <div className="absolute top-0 right-0 w-32 h-32 md:w-56 md:h-56 opacity-5 group-hover:opacity-20 transition-all duration-1000 pointer-events-none overflow-hidden">
-                                    <img 
-                                      src={service.image} 
-                                      alt="" 
-                                      className="w-full h-full object-cover grayscale scale-110 group-hover:scale-100 transition-all duration-1000"
-                                    />
-                                  </div>
-                                )}
+                                <div className="absolute top-0 right-0 w-32 h-32 md:w-56 md:h-56 opacity-10 group-hover:opacity-30 transition-all duration-1000 pointer-events-none overflow-hidden">
+                                  <img 
+                                    src={service.image || getFallbackImage(service.category)} 
+                                    alt="" 
+                                    className="w-full h-full object-cover grayscale scale-110 group-hover:scale-100 transition-all duration-1000"
+                                    onError={(e) => { e.target.src = getFallbackImage(service.category); }}
+                                  />
+                                </div>
                             </motion.button>
                         ))
                     )}
@@ -215,19 +226,20 @@ const Home = () => {
                     initial={{ scale: 0.95, opacity: 0, y: 40 }}
                     animate={{ scale: 1, opacity: 1, y: 0 }}
                     exit={{ scale: 0.95, opacity: 0, y: 40 }}
-                    className="relative w-full max-w-6xl h-fit max-h-[90vh] bg-black border border-gold/30 shadow-[0_0_150px_rgba(0,0,0,1)] overflow-hidden flex flex-col md:flex-row"
+                    className="relative w-full max-w-6xl h-fit max-h-[90vh] bg-black border border-gold/30 shadow-[0_0_150px_rgba(0,0,0,1)] overflow-hidden flex flex-col md:flex-row z-[110]"
                 >
-                    {/* Artistic Side Panel */}
-                    <div className="hidden md:block md:w-2/5 relative overflow-hidden group">
+                    {/* Artistic Side Panel / Mobile Top Banner */}
+                    <div className="w-full md:w-2/5 h-48 md:h-auto relative overflow-hidden group shrink-0">
                         <img 
-                          src={selectedService.image || "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=1000&q=80"} 
+                          src={selectedService.image || getFallbackImage(selectedService.category)} 
                           alt={selectedService.name} 
-                          className="absolute inset-0 w-full h-full object-cover grayscale opacity-30 group-hover:scale-105 group-hover:grayscale-0 transition-all duration-1000"
+                          className="absolute inset-0 w-full h-full object-cover grayscale-50 opacity-60 group-hover:opacity-100 group-hover:grayscale-0 transition-all duration-1000"
+                          onError={(e) => { e.target.src = getFallbackImage(selectedService.category); }}
                         />
-                        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-transparent" />
-                        <div className="absolute bottom-12 left-10 space-y-4">
-                           <Sparkles className="text-gold h-12 w-12 animate-pulse" />
-                           <h4 className="text-white font-serif text-3xl italic">The Art of <br/>Personal Perfection</h4>
+                        <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black via-transparent to-transparent opacity-60" />
+                        <div className="absolute bottom-6 left-6 md:bottom-12 md:left-10 space-y-2 md:space-y-4">
+                           <Sparkles className="text-gold h-8 w-8 md:h-12 md:w-12 animate-pulse" />
+                           <h4 className="text-white font-serif text-xl md:text-3xl italic leading-tight">The Art of <br/>Personal Perfection</h4>
                         </div>
                     </div>
 
@@ -314,7 +326,7 @@ const Home = () => {
         )}
       </AnimatePresence>
 
-      {/* 4. REAL-TIME REVIEWS SECTION */}
+      {/* 4. REAL-TIME REVIEWS SECTION - Commented Out
       <section id="reviews" className="py-32 bg-black relative overflow-hidden">
         <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-gold/40 to-transparent" />
         
@@ -356,6 +368,7 @@ const Home = () => {
           </div>
         </div>
       </section>
+      */}
 
       {/* FOOTER STATS */}
       <section className="py-32 border-t border-gold/20 bg-black">

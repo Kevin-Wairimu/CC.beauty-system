@@ -43,7 +43,7 @@ export const sendBookingEmail = async (booking) => {
         <p><strong>Phone:</strong> ${booking.phone}</p>
         <p><strong>Service:</strong> ${booking.service}</p>
         <p><strong>Date/Time:</strong> ${booking.date} at ${booking.time}</p>
-        <p><strong>Specialist:</strong> ${booking.staffId?.name || "Any Available Master"}</p>
+        <p><strong>Therapist:</strong> ${booking.staffId?.name || "Any Available Master"}</p>
         <p><strong>Notes:</strong> ${booking.notes || "None"}</p>
       </div>
     `,
@@ -72,7 +72,7 @@ export const sendClientBookingEmail = async (booking) => {
         <p>Thank you for choosing CC Beauty Clinic. We have received your request for the following ritual:</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
         <p><strong>Ritual:</strong> ${booking.service}</p>
-        <p><strong>Specialist:</strong> ${booking.staffId?.name || "Any Available Master"}</p>
+        <p><strong>Therapist:</strong> ${booking.staffId?.name || "Any Available Master"}</p>
         <p><strong>Schedule:</strong> ${booking.date} at ${booking.time}</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
         <p style="font-style: italic; color: #666;">Our Studio Director is reviewing your request. You will receive a final confirmation via SMS/Email within 15 minutes.</p>
@@ -103,7 +103,7 @@ export const sendApprovalEmail = async (booking) => {
         <p style="text-align: center; font-style: italic; color: #666;">We are pleased to welcome you to the CC Beauty experience.</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
         <p><strong>Service:</strong> ${booking.service}</p>
-        <p><strong>Specialist:</strong> ${booking.staffId?.name || "Assigned Master"}</p>
+        <p><strong>Therapist:</strong> ${booking.staffId?.name || "Assigned Master"}</p>
         <p><strong>Date:</strong> ${booking.date}</p>
         <p><strong>Time:</strong> ${booking.time}</p>
         <p><strong>Location:</strong> Kilimanjaro City Arcade, Nairobi, Kenya</p>

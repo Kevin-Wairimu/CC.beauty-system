@@ -13,8 +13,8 @@ export const getServices = async (req, res) => {
 // @desc    Create a service
 export const createService = async (req, res) => {
   try {
-    const { name, category, price, description } = req.body;
-    const service = new Service({ name, category, price, description });
+    const { name, category, price, description, image, duration } = req.body;
+    const service = new Service({ name, category, price, description, image, duration });
     const createdService = await service.save();
     res.status(201).json(createdService);
   } catch (error) {
@@ -25,7 +25,7 @@ export const createService = async (req, res) => {
 // @desc    Update a service
 export const updateService = async (req, res) => {
   try {
-    const { name, category, price, description } = req.body;
+    const { name, category, price, description, image, duration } = req.body;
     const service = await Service.findById(req.params.id);
 
     if (service) {
@@ -33,6 +33,8 @@ export const updateService = async (req, res) => {
       service.category = category || service.category;
       service.price = price || service.price;
       service.description = description || service.description;
+      service.image = image || service.image;
+      service.duration = duration || service.duration;
 
       const updatedService = await service.save();
       res.json(updatedService);

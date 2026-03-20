@@ -34,18 +34,21 @@ export const createAppointment = async (req, res) => {
       .populate('staffId', 'name')
       .populate('serviceId', 'name');
 
-    // --- NOTIFICATIONS ---
-    try {
-      // 1. Notify Business (Email + SMS)
-      await sendBookingEmail(populatedAppointment);
-      await sendBookingSMS(populatedAppointment);
-      
-      // 2. Notify Guest (Email + SMS)
-      await sendClientBookingEmail(populatedAppointment);
-      await sendClientBookingSMS(populatedAppointment);
-    } catch (notifError) {
-      console.error('Notification logic failed:', notifError.message);
-    }
+    // --- NOTIFICATIONS (Asynchronous - Non-blocking for speed) ---
+    // We don't 'await' these so the user gets an immediate success response
+    (async () => {
+      try {
+        // 1. Notify Business
+        sendBookingEmail(populatedAppointment);
+        
+        // 2. Notify Guest
+        sendClientBookingEmail(populatedAppointment);
+        
+        console.log(`Background notifications initiated for appointment: ${createdAppointment._id}`);
+      } catch (notifError) {
+        console.error('Background Notification Error:', notifError.message);
+      }
+    })();
 
     res.status(201).json(createdAppointment);
   } catch (error) {
@@ -114,13 +117,17 @@ export const updateAppointmentStatus = async (req, res) => {
       
       const updatedAppointment = await appointment.save();
 
-      // Trigger approval notifications
+      // Trigger approval notifications (Asynchronous for performance)
       if (oldStatus !== 'approved' && updatedAppointment.status === 'approved' && updatedAppointment.email) {
-        const populatedForNotif = await Appointment.findById(updatedAppointment._id).populate('staffId', 'name');
-        
-        // Notify Guest (Email + SMS)
-        await sendApprovalEmail(populatedForNotif);
-        await sendClientApprovalSMS(populatedForNotif);
+        (async () => {
+          try {
+            const populatedForNotif = await Appointment.findById(updatedAppointment._id).populate('staffId', 'name');
+            sendApprovalEmail(populatedForNotif);
+            console.log(`Approval email triggered for appointment: ${updatedAppointment._id}`);
+          } catch (err) {
+            console.error('Background Status Notif Error:', err.message);
+          }
+        })();
       }
 
       res.json(updatedAppointment);

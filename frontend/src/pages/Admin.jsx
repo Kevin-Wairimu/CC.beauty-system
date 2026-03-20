@@ -554,7 +554,7 @@ const Admin = () => {
 
                         {u.role !== 'client' && (
                           <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} className="pt-6 border-t border-white/5 space-y-4">
-                            <span className="text-[9px] uppercase tracking-widest text-gold font-black block">Specialist Portfolio</span>
+                            <span className="text-[9px] uppercase tracking-widest text-gold font-black block">Therapist Portfolio</span>
                             <input 
                               type="text"
                               defaultValue={u.specialization?.join(', ')}

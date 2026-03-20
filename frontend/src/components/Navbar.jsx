@@ -13,7 +13,6 @@ const Navbar = () => {
   const navLinks = [
     { name: "Studio", path: "/" },
     { name: "Reservations", path: "/booking" },
-    { name: "Reviews", path: "/#reviews" },
     { name: "Contact", path: "/contact" },
   ];
 
@@ -37,13 +36,10 @@ const Navbar = () => {
   const handleAnchor = (path) => {
     if (path.includes("#")) {
       const id = path.split("#")[1];
-
-      setTimeout(() => {
-        const el = document.getElementById(id);
-        if (el) {
-          el.scrollIntoView({ behavior: "smooth" });
-        }
-      }, 100);
+      const el = document.getElementById(id);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+      }
     }
   };
 
@@ -192,32 +188,32 @@ const Navbar = () => {
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
-              transition={{ type: "tween", duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed top-0 right-0 h-screen w-[300px] bg-[#000000] z-[110] lg:hidden flex flex-col shadow-[-20px_0_50px_rgba(0,0,0,0.8)] border-l border-gold/10"
+              transition={{ type: "spring", damping: 25, stiffness: 200 }}
+              className="fixed top-0 right-0 h-screen w-[280px] bg-[#000000] z-[110] lg:hidden flex flex-col shadow-[-20px_0_50px_rgba(0,0,0,0.9)] border-l border-gold/10"
             >
               {/* Sidebar Header */}
-              <div className="h-24 shrink-0 flex items-center justify-between px-8 border-b border-gold/5 bg-black">
+              <div className="h-20 shrink-0 flex items-center justify-between px-8 border-b border-gold/5 bg-black">
                  <div className="flex flex-col">
-                    <span className="text-white font-serif font-bold text-xl uppercase tracking-widest leading-none mb-1">CC Beauty</span>
-                    <span className="text-[8px] text-gold font-black uppercase tracking-[0.4em]">Private Collection</span>
+                    <span className="text-white font-serif font-bold text-lg uppercase tracking-widest leading-none mb-1">CC Beauty</span>
+                    <span className="text-[7px] text-gold font-black uppercase tracking-[0.4em]">Private Collection</span>
                  </div>
                 <button 
                   onClick={closeMenu} 
                   className="text-gold p-2 hover:bg-gold/5 rounded-full transition-colors"
                 >
-                   <X className="h-6 w-6" />
+                   <X className="h-5 w-5" />
                 </button>
               </div>
 
               {/* Scrollable Content */}
-              <div className="flex-1 overflow-y-auto px-8 py-10 no-scrollbar">
-                <nav className="flex flex-col space-y-8">
+              <div className="flex-1 overflow-y-auto px-8 py-12 no-scrollbar">
+                <nav className="flex flex-col space-y-6">
                   {navLinks.map((link, idx) => (
                     <motion.div
                       key={link.name}
-                      initial={{ opacity: 0, x: 20 }}
+                      initial={{ opacity: 0, x: 10 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 + idx * 0.1 }}
+                      transition={{ delay: 0.1 + idx * 0.05 }}
                     >
                       <Link
                         to={link.path}
@@ -227,8 +223,8 @@ const Navbar = () => {
                         }}
                         className="group flex flex-col"
                       >
-                        <span className="text-gold/40 text-[9px] font-black uppercase tracking-[0.5em] mb-1 group-hover:text-gold transition-colors font-sans">0{idx + 1}</span>
-                        <span className={`text-white text-4xl font-serif font-bold uppercase tracking-tighter transition-all duration-500 ${
+                        <span className="text-gold/30 text-[8px] font-black uppercase tracking-[0.4em] mb-1 group-hover:text-gold transition-colors font-sans">Series 0{idx + 1}</span>
+                        <span className={`text-white text-2xl font-serif font-bold uppercase tracking-widest transition-all duration-500 ${
                           location.pathname === link.path ? 'text-gold italic translate-x-2' : 'group-hover:text-gold group-hover:italic group-hover:translate-x-2'
                         }`}>
                           {link.name}

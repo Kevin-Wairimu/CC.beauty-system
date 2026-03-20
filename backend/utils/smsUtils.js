@@ -46,18 +46,22 @@ const sendSMS = async (to, message) => {
 
   try {
     const response = await sms.send(options);
-    const status = response.SMSMessageData.Recipients[0].status;
+    
+    // Safely check for status
+    const status = response?.SMSMessageData?.Recipients?.[0]?.status;
 
     if (status === 'Success' || status === 'PendingConfirmation') {
       console.log(`✅ [SMS DELIVERED TO ${formattedTo}]`);
     } else {
-      console.log(`⚠️ [GATEWAY REJECTED: ${status}] for ${formattedTo}`);
-      console.log(`Reason: ${response.SMSMessageData.Recipients[0].message}`);
+      console.log(`⚠️ [GATEWAY REJECTED: ${status || 'Unknown Status'}] for ${formattedTo}`);
+      if (response?.SMSMessageData?.Recipients?.[0]?.message) {
+        console.log(`Reason: ${response.SMSMessageData.Recipients[0].message}`);
+      }
     }
     return response;
   } catch (error) {
     // 401 Specific Advice
-    if (error.message.includes('401') || (error.response && error.response.status === 401)) {
+    if (error.message?.includes('401') || (error.response && error.response.status === 401)) {
       console.error('❌ AUTHENTICATION FAILED (401)');
       console.log('HINT: 1. Disable IP Whitelisting in AT Dashboard. 2. Ensure account has balance. 3. Regenerate API Key.');
     } else {
@@ -71,11 +75,11 @@ const sendSMS = async (to, message) => {
       delete retryOptions.from;
       try {
         const retryResponse = await sms.send(retryOptions);
-        const retryStatus = retryResponse.SMSMessageData.Recipients[0].status;
+        const retryStatus = retryResponse?.SMSMessageData?.Recipients?.[0]?.status;
         if (retryStatus === 'Success' || retryStatus === 'PendingConfirmation') {
           console.log(`✅ [SMS SENT ON RETRY TO ${formattedTo}]`);
         } else {
-          console.log(`⚠️ [RETRY REJECTED: ${retryStatus}]`);
+          console.log(`⚠️ [RETRY REJECTED: ${retryStatus || 'Unknown Status'}]`);
         }
         return retryResponse;
       } catch (retryError) {
@@ -104,7 +108,7 @@ export const sendBookingSMS = async (appointment) => {
     `------------------------------\n` +
     `Guest: ${appointment.name}\n` +
     `Ritual: ${appointment.service}\n` +
-    `Specialist: ${appointment.staffId?.name || "Any Master"}\n` +
+    `Therapist: ${appointment.staffId?.name || "Any Master"}\n` +
     `Schedule: ${appointment.date} at ${appointment.time}\n` +
     `Phone: ${appointment.phone}\n` +
     `------------------------------\n` +
@@ -122,7 +126,7 @@ export const sendClientBookingSMS = async (appointment) => {
     `------------------------------\n` +
     `Hello ${appointment.name},\n` +
     `Your request for ${appointment.service} is received!\n` +
-    `Specialist: ${appointment.staffId?.name || "Any Master"}\n` +
+    `Therapist: ${appointment.staffId?.name || "Any Master"}\n` +
     `Schedule: ${appointment.date} at ${appointment.time}\n` +
     `------------------------------\n` +
     `We will SMS you once confirmed.`;
@@ -138,7 +142,7 @@ export const sendClientApprovalSMS = async (appointment) => {
                   `------------------------------\n` +
                   `GREAT NEWS ${appointment.name.toUpperCase()}!\n` +
                   `Your reservation for ${appointment.service} is CONFIRMED.\n` +
-                  `Specialist: ${appointment.staffId?.name || 'Assigned Master'}\n` +
+                  `Therapist: ${appointment.staffId?.name || 'Assigned Master'}\n` +
                   `Schedule: ${appointment.date} at ${appointment.time}\n` +
                   `------------------------------\n` +
                   `See you at Kilimanjaro City Arcade!`;

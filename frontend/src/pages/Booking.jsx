@@ -53,25 +53,32 @@ const Booking = () => {
     }
   }, [user]);
 
+  const [showAllStaff, setShowAllStaff] = useState(false);
+
   // Filter staff when service changes
   useEffect(() => {
     if (formData.service) {
       const selectedService = services.find(s => s.name === formData.service);
       if (selectedService) {
         const category = selectedService.category.toUpperCase();
-        const appropriateStaff = staff.filter(s => 
-          s.specialization?.some(spec => spec.toUpperCase() === category)
-        );
+        
+        // Filter based on specialization or if showAllStaff is true
+        const appropriateStaff = staff.filter(s => {
+          if (showAllStaff) return true;
+          return s.specialization?.some(spec => spec.toUpperCase() === category);
+        });
+
         setFilteredStaff(appropriateStaff);
-        // Clear staffId if the currently selected staff is not in the new filtered list
-        if (!appropriateStaff.find(s => s._id === formData.staffId)) {
+        
+        // Only clear staffId if the currently selected staff is NO LONGER in the new list
+        if (formData.staffId && !appropriateStaff.find(s => s._id === formData.staffId)) {
           setFormData(prev => ({ ...prev, staffId: '' }));
         }
       }
     } else {
-      setFilteredStaff([]);
+      setFilteredStaff(showAllStaff ? staff : []);
     }
-  }, [formData.service, services, staff]);
+  }, [formData.service, services, staff, showAllStaff]);
 
   const handleChange = (e) => setFormData({ ...formData, [e.target.name]: e.target.value });
 
@@ -214,7 +221,7 @@ const Booking = () => {
 
             <div className="group">
               <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
-                <Star className="h-3 w-3" /> Preferred Specialist
+                <Star className="h-3 w-3" /> Preferred Therapist
               </label>
               <select 
                 name="staffId" 
@@ -223,7 +230,7 @@ const Booking = () => {
                 disabled={!formData.service}
                 className={`w-full bg-transparent border-b border-white/10 group-focus-within:border-gold py-4 outline-none transition-all text-white text-lg font-light appearance-none cursor-pointer ${!formData.service ? 'opacity-30 cursor-not-allowed' : ''}`}
               >
-                <option value="" className="bg-[#1a1a1a] text-gray-600 italic">-- Choose specialist --</option>
+                <option value="" className="bg-[#1a1a1a] text-gray-600 italic">-- Choose therapist --</option>
                 {filteredStaff.map((s) => (
                   <option key={s._id} value={s._id} className="bg-[#1a1a1a] text-white uppercase">
                     {s.name}
