@@ -130,7 +130,8 @@ export const sendApprovalEmail = async (booking) => {
 
 export const sendResetPasswordEmail = async (user, resetToken) => {
   const transporter = createTransporter();
-  const resetUrl = `https://cc-beauty-system.pages.dev/reset-password?token=${resetToken}`;
+  const frontendUrl = process.env.FRONTEND_URL || "https://cc-beauty-system.pages.dev";
+  const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
   const mailOptions = {
     from: `"CC.BEAUTY.CLINIC" <${process.env.EMAIL_USER}>`,

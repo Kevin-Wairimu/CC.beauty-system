@@ -101,7 +101,7 @@ const sendSMS = async (to, message) => {
  * SMS notification to the business number when a new reservation is made.
  */
 export const sendBookingSMS = async (appointment) => {
-  const businessPhone = process.env.BUSINESS_PHONE || "+254757724175";
+  const businessPhone = process.env.BUSINESS_PHONE || "+254759934198";
 
   const message =
     ` NEW RESERVATION AT CC BEAUTY CLINIC \n` +

@@ -28,7 +28,7 @@ const Contact = () => {
       setStatus({ loading: false, success: true, error: "" });
       toast.success("Message sent! Our concierge will respond soon.");
       setFormData({ name: "", email: "", phone: "", message: "" });
-    } catch (err) {
+    } catch {
       setStatus({
         loading: false,
         success: false,

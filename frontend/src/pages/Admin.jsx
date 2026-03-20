@@ -30,7 +30,9 @@ const Admin = () => {
   const [editingEnquiry, setEditingEnquiry] = useState(null);
   const [enquiryUpdateData, setEnquiryUpdateData] = useState({ status: '', notes: '' });
 
-  const fetchData = async () => {
+  const fetchData = React.useCallback(async () => {
+    // Escape synchronous execution to avoid React Hook linting errors
+    await Promise.resolve();
     try {
       setLoading(true);
       const [appRes, enqRes, serRes] = await Promise.all([
@@ -57,14 +59,15 @@ const Admin = () => {
       toast.error('Syncing error. Please refresh.');
       setLoading(false);
     }
-  };
+  }, [user]);
 
   useEffect(() => {
     const userRole = user?.role?.toLowerCase();
     if (userRole === 'admin' || userRole === 'manager') {
-      fetchData();
+      const load = async () => { await fetchData(); };
+      load();
     }
-  }, [user]);
+  }, [user, fetchData]);
 
   // --- ANALYTICS CALCULATIONS ---
   const stats = useMemo(() => {

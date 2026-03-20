@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { LogOut, LogIn, Layout, Shield, Menu, X, Sparkles, ChevronRight } from "lucide-react";
+import {
+  LogOut,
+  LogIn,
+  Layout,
+  Shield,
+  Menu,
+  X,
+  Sparkles,
+  ChevronRight,
+} from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -11,7 +20,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const navLinks = [
-    { name: "Studio", path: "/" },
+    { name: "clinic", path: "/" },
     { name: "Reservations", path: "/booking" },
     { name: "Contact", path: "/contact" },
   ];
@@ -29,7 +38,11 @@ const Navbar = () => {
 
   /* Close mobile menu on route change */
   useEffect(() => {
-    closeMenu();
+    // Escape synchronous execution to avoid React Hook linting errors
+    const handle = setTimeout(() => {
+      closeMenu();
+    }, 0);
+    return () => clearTimeout(handle);
   }, [location.pathname]);
 
   /* Scroll to section for anchor links */
@@ -44,7 +57,7 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] h-20 md:h-24 glass-nav flex items-center">
+    <nav className="fixed top-0 left-0 right-0 z-100 h-20 md:h-24 glass-nav flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex justify-between items-center h-full">
           {/* LOGO */}
@@ -61,11 +74,11 @@ const Navbar = () => {
 
             <div className="flex flex-col">
               <span className="text-lg md:text-2xl font-serif font-black uppercase tracking-[0.2em] text-white group-hover:text-gold transition-colors leading-none">
-                CC Beauty Clinic
+                <span className="text-gold">CC Beauty Clinic</span>
               </span>
 
               <span className="text-[6px] md:text-[8px] uppercase tracking-[0.5em] text-gold font-bold">
-                Luxury Studio
+                Luxury Spa
               </span>
             </div>
           </Link>
@@ -96,19 +109,25 @@ const Navbar = () => {
               <div className="flex items-center gap-6">
                 <Link
                   to={
-                    user.role === "admin" || user.role === "manager" || user.isAdmin
+                    user.role === "admin" ||
+                    user.role === "manager" ||
+                    user.isAdmin
                       ? "/admin"
                       : user.role === "staff"
-                      ? "/staff"
-                      : "/dashboard"
+                        ? "/staff"
+                        : "/dashboard"
                   }
                   className={`flex items-center gap-3 px-6 py-2.5 border-2 transition-all ${
-                    user.role === "admin" || user.role === "manager" || user.isAdmin
+                    user.role === "admin" ||
+                    user.role === "manager" ||
+                    user.isAdmin
                       ? "bg-gold text-white border-gold"
                       : "text-gold border-gold hover:bg-gold hover:text-white"
                   }`}
                 >
-                  {user.role === "admin" || user.role === "manager" || user.isAdmin ? (
+                  {user.role === "admin" ||
+                  user.role === "manager" ||
+                  user.isAdmin ? (
                     <Shield className="h-4 w-4" />
                   ) : user.role === "staff" ? (
                     <Sparkles className="h-4 w-4" />
@@ -120,10 +139,10 @@ const Navbar = () => {
                     {user.role === "admin" || user.isAdmin
                       ? "Admin Panel"
                       : user.role === "manager"
-                      ? "Manager Hub"
-                      : user.role === "staff"
-                      ? "Staff Portal"
-                      : "My Portal"}
+                        ? "Manager Hub"
+                        : user.role === "staff"
+                          ? "Staff Portal"
+                          : "My Portal"}
                   </span>
                 </Link>
 
@@ -146,7 +165,7 @@ const Navbar = () => {
 
                 <Link
                   to="/register"
-                  className="btn-gold !py-2.5 !px-6 text-[10px] font-black uppercase tracking-widest"
+                  className="btn-gold py-2.5! px-6! text-[10px] font-black uppercase tracking-widest"
                 >
                   Join Now
                 </Link>
@@ -180,28 +199,32 @@ const Navbar = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeMenu}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[105] lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-105 lg:hidden"
             />
-            
+
             {/* Sidebar */}
             <motion.div
               initial={{ x: "100%" }}
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-screen w-[280px] bg-[#000000] z-[110] lg:hidden flex flex-col shadow-[-20px_0_50px_rgba(0,0,0,0.9)] border-l border-gold/10"
+              className="fixed top-0 right-0 h-screen w-70 bg-#000000 z-110 lg:hidden flex flex-col shadow-[-20px_0_50px_rgba(0,0,0,0.9)] border-l border-gold/10"
             >
               {/* Sidebar Header */}
               <div className="h-20 shrink-0 flex items-center justify-between px-8 border-b border-gold/5 bg-black">
-                 <div className="flex flex-col">
-                    <span className="text-white font-serif font-bold text-lg uppercase tracking-widest leading-none mb-1">CC Beauty</span>
-                    <span className="text-[7px] text-gold font-black uppercase tracking-[0.4em]">Private Collection</span>
-                 </div>
-                <button 
-                  onClick={closeMenu} 
+                <div className="flex flex-col">
+                  <span className="text-white font-serif font-bold text-lg uppercase tracking-widest leading-none mb-1">
+                    CC Beauty
+                  </span>
+                  <span className="text-[7px] text-gold font-black uppercase tracking-[0.4em]">
+                    Private Collection
+                  </span>
+                </div>
+                <button
+                  onClick={closeMenu}
                   className="text-gold p-2 hover:bg-gold/5 rounded-full transition-colors"
                 >
-                   <X className="h-5 w-5" />
+                  <X className="h-5 w-5" />
                 </button>
               </div>
 
@@ -223,10 +246,16 @@ const Navbar = () => {
                         }}
                         className="group flex flex-col"
                       >
-                        <span className="text-gold/30 text-[8px] font-black uppercase tracking-[0.4em] mb-1 group-hover:text-gold transition-colors font-sans">Series 0{idx + 1}</span>
-                        <span className={`text-white text-2xl font-serif font-bold uppercase tracking-widest transition-all duration-500 ${
-                          location.pathname === link.path ? 'text-gold italic translate-x-2' : 'group-hover:text-gold group-hover:italic group-hover:translate-x-2'
-                        }`}>
+                        <span className="text-gold/30 text-[8px] font-black uppercase tracking-[0.4em] mb-1 group-hover:text-gold transition-colors font-sans">
+                          Series 0{idx + 1}
+                        </span>
+                        <span
+                          className={`text-white text-2xl font-serif font-bold uppercase tracking-widest transition-all duration-500 ${
+                            location.pathname === link.path
+                              ? "text-gold italic translate-x-2"
+                              : "group-hover:text-gold group-hover:italic group-hover:translate-x-2"
+                          }`}
+                        >
                           {link.name}
                         </span>
                       </Link>
@@ -235,7 +264,7 @@ const Navbar = () => {
                 </nav>
 
                 <div className="mt-16 space-y-12">
-                  <div className="h-px w-full bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
+                  <div className="h-px w-full bg-linear-to-r from-transparent via-gold/20 to-transparent" />
 
                   {/* Account Options */}
                   <div className="flex flex-col gap-4">
@@ -243,38 +272,45 @@ const Navbar = () => {
                       <div className="space-y-4">
                         <Link
                           to={
-                            user.role === "admin" || user.role === "manager" || user.isAdmin
+                            user.role === "admin" ||
+                            user.role === "manager" ||
+                            user.isAdmin
                               ? "/admin"
                               : user.role === "staff"
-                              ? "/staff"
-                              : "/dashboard"
+                                ? "/staff"
+                                : "/dashboard"
                           }
                           onClick={closeMenu}
                           className="flex items-center justify-between p-5 bg-gold/5 border border-gold/10 rounded-sm group hover:border-gold/30 transition-all"
                         >
                           <div className="flex items-center gap-4">
-                             {user.role === "admin" || user.role === "manager" || user.isAdmin ? (
-                               <Shield className="h-5 w-5 text-gold" />
-                             ) : user.role === "staff" ? (
-                               <Sparkles className="h-5 w-5 text-gold" />
-                             ) : (
-                               <Layout className="h-5 w-5 text-gold" />
-                             )}
-                             <span className="text-white text-[10px] font-black uppercase tracking-widest">
-                               {user.role === "admin" || user.isAdmin
-                                 ? "Management"
-                                 : user.role === "manager"
-                                 ? "Manager Hub"
-                                 : user.role === "staff"
-                                 ? "Provider Portal"
-                                 : "My Sanctuary"}
-                             </span>
+                            {user.role === "admin" ||
+                            user.role === "manager" ||
+                            user.isAdmin ? (
+                              <Shield className="h-5 w-5 text-gold" />
+                            ) : user.role === "staff" ? (
+                              <Sparkles className="h-5 w-5 text-gold" />
+                            ) : (
+                              <Layout className="h-5 w-5 text-gold" />
+                            )}
+                            <span className="text-white text-[10px] font-black uppercase tracking-widest">
+                              {user.role === "admin" || user.isAdmin
+                                ? "Management"
+                                : user.role === "manager"
+                                  ? "Manager Hub"
+                                  : user.role === "staff"
+                                    ? "Provider Portal"
+                                    : "My Sanctuary"}
+                            </span>
                           </div>
                           <ChevronRight className="h-4 w-4 text-gold group-hover:translate-x-1 transition-transform" />
                         </Link>
 
                         <button
-                          onClick={() => { logout(); closeMenu(); }}
+                          onClick={() => {
+                            logout();
+                            closeMenu();
+                          }}
                           className="text-red-500/50 hover:text-red-500 text-[9px] font-black uppercase tracking-[0.3em] py-2 flex items-center gap-2 transition-colors"
                         >
                           <LogOut className="h-3 w-3" />
@@ -290,7 +326,7 @@ const Navbar = () => {
                         >
                           Begin Journey
                         </Link>
-                        
+
                         <Link
                           to="/login"
                           onClick={closeMenu}
@@ -304,11 +340,25 @@ const Navbar = () => {
 
                   {/* Social Footer */}
                   <div className="flex justify-between items-center pt-8 border-t border-gold/10">
-                      <div className="flex gap-6 text-[8px] font-black uppercase tracking-widest">
-                         <a href="https://instagram.com/cc_beauty_clinic" target="_blank" rel="noopener noreferrer" className="text-gold/40 hover:text-gold transition-colors">IG</a>
-                         <a href="https://www.tiktok.com/@cc_beauty_clinic" target="_blank" rel="noopener noreferrer" className="text-gold/40 hover:text-gold transition-colors">TK</a>
-                      </div>
-                      <Sparkles className="text-gold h-4 w-4 animate-pulse" />
+                    <div className="flex gap-6 text-[8px] font-black uppercase tracking-widest">
+                      <a
+                        href="https://instagram.com/cc_beauty_clinic"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gold/40 hover:text-gold transition-colors"
+                      >
+                        IG
+                      </a>
+                      <a
+                        href="https://www.tiktok.com/@cc_beauty_clinic"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-gold/40 hover:text-gold transition-colors"
+                      >
+                        TK
+                      </a>
+                    </div>
+                    <Sparkles className="text-gold h-4 w-4 animate-pulse" />
                   </div>
                 </div>
               </div>

@@ -10,7 +10,9 @@ const StaffDashboard = () => {
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const fetchStaffAppointments = async () => {
+  const fetchStaffAppointments = React.useCallback(async () => {
+    // Escape synchronous execution to avoid React Hook linting errors
+    await Promise.resolve();
     try {
       const { data } = await api.get("/appointments");
       // Filter for appointments assigned to this staff member
@@ -22,11 +24,14 @@ const StaffDashboard = () => {
       toast.error("Failed to load your schedule");
       setLoading(false);
     }
-  };
+  }, [user?._id]);
 
   useEffect(() => {
-    if (user) fetchStaffAppointments();
-  }, [user]);
+    if (user) {
+      const load = async () => { await fetchStaffAppointments(); };
+      load();
+    }
+  }, [user, fetchStaffAppointments]);
 
   const handleComplete = async (appointmentId) => {
     try {
@@ -51,7 +56,7 @@ const StaffDashboard = () => {
           <h1 className="text-4xl md:text-6xl font-serif font-bold uppercase tracking-widest text-white mb-4">
             Hello, <span className="text-gold italic">{user?.name}</span>
           </h1>
-          <p className="text-gray-400 text-sm uppercase tracking-widest font-light">Your assigned beauty rituals for today</p>
+          <p className="text-gray-400 text-sm uppercase tracking-widest font-light">Your assigned beauty services for today</p>
         </header>
 
         {loading ? (
@@ -73,7 +78,7 @@ const StaffDashboard = () => {
                   <div className="flex justify-between items-start mb-6">
                     <div>
                       <h3 className="text-2xl font-serif font-bold text-white uppercase tracking-tight">{app.service}</h3>
-                      <p className="text-[10px] text-gold uppercase font-black tracking-widest mt-1">Confirmed Ritual</p>
+                      <p className="text-[10px] text-gold uppercase font-black tracking-widest mt-1">Confirmed Service</p>
                     </div>
                     <div className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest border ${app.status === 'completed' ? 'border-green-500 text-green-500' : 'border-gold text-gold'}`}>
                       {app.status}

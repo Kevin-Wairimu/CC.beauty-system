@@ -35,14 +35,14 @@ const seedStaff = async () => {
         email: 'wangari@ccbeauty.com',
         password: 'password123',
         role: 'staff',
-        specialization: ['WIGS']
+        specialization: ['HAIR', 'RECEPTIONIST']
       },
       {
         name: 'Milka',
         email: 'milka@ccbeauty.com',
         password: 'password123',
         role: 'staff',
-        specialization: ['WIGS']
+        specialization: ['HAIR']
       },
       {
         name: 'Ceisey',

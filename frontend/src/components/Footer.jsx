@@ -9,6 +9,7 @@ import {
   MapPin,
   Phone,
 } from "lucide-react";
+import { Icon } from "@iconify/react";
 
 const Footer = () => {
   return (
@@ -23,7 +24,7 @@ const Footer = () => {
                   <Sparkles className="text-gold h-5 w-5 animate-pulse" />
                 </div>
                 <h3 className="text-3xl font-serif font-bold uppercase tracking-[0.2em] text-white">
-                  CC <span className="text-gold italic">Beauty</span>
+                  <span className="text-gold">CC Beauty</span>
                 </h3>
               </div>
               <p className="max-w-md text-white/50 font-light leading-relaxed italic text-sm tracking-wide">
@@ -40,7 +41,7 @@ const Footer = () => {
                   url: "https://www.instagram.com/cc_beauty_clinic/",
                 },
                 {
-                  icon: <Music className="h-4 w-4" />,
+                  icon: <Icon icon="simple-icons:tiktok" className="h-4 w-4" />,
                   url: "https://www.tiktok.com/@cc_beauty_clinic",
                 },
                 // { icon: <Facebook className="h-4 w-4" />, url: "#" },
@@ -109,7 +110,7 @@ const Footer = () => {
               </div>
               <div className="space-y-1">
                 <p className="text-gold/60 font-black italic text-[9px]">
-                  Sundays
+                  Sunday
                 </p>
                 <p>10:00 — 21:00</p>
               </div>
@@ -125,7 +126,7 @@ const Footer = () => {
               <li className="flex gap-4 group">
                 <MapPin className="h-4 w-4 text-gold/40 shrink-0 group-hover:text-gold transition-colors" />
                 <a
-                  href="https://www.google.com/maps/place/CC+Beauty+Clinic/@-1.228597,36.8677963,17z"
+                  href="https://www.google.com/maps/place/CC+Beauty+Clinic/data=!4m2!3m1!1s0x0:0xd4353544f547715e?sa=X&ved=1t:2428&ictx=111"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:text-white transition-colors leading-relaxed"
@@ -159,7 +160,7 @@ const Footer = () => {
               <span>Architected By</span>
               <div className="h-px w-8 bg-gold/20" />
               <a
-                href="#"
+                href="https://port-folio-git-main-kevin-wairimus-projects.vercel.app/"
                 className="text-gold/60 hover:text-gold transition-all duration-500 hover:tracking-[0.6em]"
               >
                 Kevin Wairimu

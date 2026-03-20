@@ -362,13 +362,334 @@ const services = [
     image:
       "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80",
   },
+  // HAIR
   {
-    name: "Steaming",
-    category: "FACIAL",
+    name: "Blow Dry",
+    category: "HAIR",
     price: "1000",
+    duration: "45 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Wash & Set",
+    category: "HAIR",
+    price: "1200",
+    duration: "60 mins",
+    image:
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Hair Wash",
+    category: "HAIR",
+    price: "500",
     duration: "30 mins",
     image:
-      "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=800&q=80",
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Wash and Straightening",
+    category: "HAIR",
+    price: "500",
+    duration: "45 mins",
+    image:
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Wash and Full Blowdry",
+    category: "HAIR",
+    price: "1000",
+    duration: "60 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Undoing Twists",
+    category: "HAIR",
+    price: "500",
+    duration: "45 mins",
+    image:
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Undoing Cornrows",
+    category: "HAIR",
+    price: "500",
+    duration: "45 mins",
+    image:
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Undoing Braids",
+    category: "HAIR",
+    price: "500",
+    duration: "60 mins",
+    image:
+      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Kids Lines",
+    category: "HAIR",
+    price: "300",
+    duration: "60 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Kito Lines",
+    category: "HAIR",
+    price: "500",
+    duration: "90 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Lip Cornrows",
+    category: "HAIR",
+    price: "500",
+    duration: "90 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Fulani Cornrows",
+    category: "HAIR",
+    price: "1500",
+    duration: "150 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Back Ghanaians",
+    category: "HAIR",
+    price: "1000",
+    duration: "120 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Up Ghanaians",
+    category: "HAIR",
+    price: "1500",
+    duration: "150 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Knotless Braids",
+    category: "HAIR",
+    price: "3000",
+    duration: "240 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Knotless Twist Braids",
+    category: "HAIR",
+    price: "2000",
+    duration: "210 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Jumbo Knotless Braids",
+    category: "HAIR",
+    price: "1500",
+    duration: "150 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Crotchets",
+    category: "HAIR",
+    price: "1500",
+    duration: "120 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Stitchlines",
+    category: "HAIR",
+    price: "3500",
+    duration: "180 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Box Braids",
+    category: "HAIR",
+    price: "1500",
+    duration: "210 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Boho Knotless Braids",
+    category: "HAIR",
+    price: "2000",
+    duration: "240 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Boho Bob Braids",
+    category: "HAIR",
+    price: "2000",
+    duration: "180 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Twist Braids",
+    category: "HAIR",
+    price: "2000",
+    duration: "180 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Marley Twists",
+    category: "HAIR",
+    price: "2000",
+    duration: "180 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Spring Twists",
+    category: "HAIR",
+    price: "2000",
+    duration: "180 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Twist Outs",
+    category: "HAIR",
+    price: "1500",
+    duration: "90 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Mini Twists",
+    category: "HAIR",
+    price: "3000",
+    duration: "240 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Coily Twists",
+    category: "HAIR",
+    price: "1500",
+    duration: "150 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Havana Curls",
+    category: "HAIR",
+    price: "2000",
+    duration: "180 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Invisible Locs",
+    category: "HAIR",
+    price: "1700",
+    duration: "150 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Gel Styling",
+    category: "HAIR",
+    price: "1500",
+    duration: "60 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Butterfly Locs",
+    category: "HAIR",
+    price: "2500",
+    duration: "240 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Gypsy Locs",
+    category: "HAIR",
+    price: "2000",
+    duration: "210 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Mermaid Braids",
+    category: "HAIR",
+    price: "2000",
+    duration: "210 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Italian Curls",
+    category: "HAIR",
+    price: "2000",
+    duration: "180 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Natural Twists",
+    category: "HAIR",
+    price: "2500",
+    duration: "180 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Lemonade Braids",
+    category: "HAIR",
+    price: "1700",
+    duration: "150 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Boho/Bohemian Braids/Curls",
+    category: "HAIR",
+    price: "2000",
+    duration: "210 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Sisterlocks Retouch",
+    category: "HAIR",
+    price: "2000",
+    duration: "150 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Loc Retwist",
+    category: "HAIR",
+    price: "1500",
+    duration: "120 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+  },
+  {
+    name: "Boho Locs",
+    category: "HAIR",
+    price: "2000",
+    duration: "210 mins",
+    image:
+      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
   },
 ];
 
