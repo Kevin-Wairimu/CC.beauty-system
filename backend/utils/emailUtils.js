@@ -21,13 +21,14 @@ const createTransporter = () => {
       pass: pass,
     },
     tls: {
-      // Force IPv4 and do not fail on invalid certificates
+      // Do not fail on invalid certificates
       rejectUnauthorized: false,
       minVersion: 'TLSv1.2'
     },
-    connectionTimeout: 10000, // 10 seconds
-    greetingTimeout: 10000,
-    socketTimeout: 10000,
+    family: 4, // Force IPv4 to avoid ENETUNREACH on IPv6
+    connectionTimeout: 15000, // 15 seconds
+    greetingTimeout: 15000,
+    socketTimeout: 15000,
   });
 };
 
