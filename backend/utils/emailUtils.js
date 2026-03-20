@@ -3,37 +3,45 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const createTransporter = () => {
-  // Extract and clean variables
+// Create a single transporter instance to be reused
+let transporter;
+
+const getTransporter = () => {
+  if (transporter) return transporter;
+
   const email = process.env.EMAIL_USER?.trim();
   const pass = process.env.EMAIL_PASS?.trim();
 
   if (!email || !pass) {
-    console.error("Email config missing in .env!");
+    console.error("❌ Email config missing in .env!");
+    return null;
   }
 
-  return nodemailer.createTransport({
-    host: "smtp.gmail.com",
-    port: 465,
-    secure: true, // Use SSL/TLS
+  transporter = nodemailer.createTransport({
+    service: 'gmail',
     auth: {
       user: email,
       pass: pass,
     },
-    tls: {
-      // Do not fail on invalid certificates
-      rejectUnauthorized: false,
-    },
-    family: 4, // Force IPv4 to avoid ENETUNREACH on IPv6
-    connectionTimeout: 15000, // 15 seconds
-    greetingTimeout: 15000,
-    socketTimeout: 15000,
+    family: 4 // Force IPv4
   });
+
+  // Verify connection configuration
+  transporter.verify((error, success) => {
+    if (error) {
+      console.error("❌ SMTP Verification Error:", error.message);
+    } else {
+      console.log("✅ SMTP Server is ready to take our messages");
+    }
+  });
+
+  return transporter;
 };
 
 export const sendBookingEmail = async (booking) => {
   console.log(`Attempting email for: ${booking.service}`);
-  const transporter = createTransporter();
+  const mailTransporter = getTransporter();
+  if (!mailTransporter) return;
 
   const mailOptions = {
     from: `"CC Beauty" <${process.env.EMAIL_USER}>`,
@@ -54,16 +62,17 @@ export const sendBookingEmail = async (booking) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log(" Booking email sent");
+    await mailTransporter.sendMail(mailOptions);
+    console.log("✅ Booking email sent to owner");
   } catch (error) {
-    console.error("❌ Email error detail:", error.message);
+    console.error("❌ Booking email error detail:", error.message);
   }
 };
 
 export const sendClientBookingEmail = async (booking) => {
   console.log(`Sending confirmation email to guest: ${booking.email}`);
-  const transporter = createTransporter();
+  const mailTransporter = getTransporter();
+  if (!mailTransporter) return;
 
   const mailOptions = {
     from: `"CC Beauty" <${process.env.EMAIL_USER}>`,
@@ -86,8 +95,8 @@ export const sendClientBookingEmail = async (booking) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log("Client confirmation email sent");
+    await mailTransporter.sendMail(mailOptions);
+    console.log("✅ Client confirmation email sent");
   } catch (error) {
     console.error("❌ Client confirmation email error:", error.message);
   }
@@ -95,7 +104,8 @@ export const sendClientBookingEmail = async (booking) => {
 
 export const sendApprovalEmail = async (booking) => {
   console.log(`Sending approval email to: ${booking.email}`);
-  const transporter = createTransporter();
+  const mailTransporter = getTransporter();
+  if (!mailTransporter) return;
 
   const mailOptions = {
     from: `"CC Beauty" <${process.env.EMAIL_USER}>`,
@@ -120,15 +130,17 @@ export const sendApprovalEmail = async (booking) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
-    console.log("Approval email sent");
+    await mailTransporter.sendMail(mailOptions);
+    console.log("✅ Approval email sent");
   } catch (error) {
     console.error("❌ Approval email error:", error.message);
   }
 };
 
 export const sendResetPasswordEmail = async (user, resetToken) => {
-  const transporter = createTransporter();
+  const mailTransporter = getTransporter();
+  if (!mailTransporter) return;
+
   const frontendUrl = process.env.FRONTEND_URL || "https://cc-beauty-system.pages.dev";
   const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
 
@@ -150,7 +162,8 @@ export const sendResetPasswordEmail = async (user, resetToken) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await mailTransporter.sendMail(mailOptions);
+    console.log("✅ Reset email sent");
   } catch (error) {
     console.error("❌ Reset email error:", error.message);
   }
@@ -162,8 +175,10 @@ export const sendEnquiryEmail = async (enquiry) => {
     return;
   }
 
+  const mailTransporter = getTransporter();
+  if (!mailTransporter) return;
+
   console.log(`Attempting email for enquiry from: ${enquiry.name}`);
-  const transporter = createTransporter();
 
   const mailOptions = {
     from: `"CC Beauty" <${process.env.EMAIL_USER}>`,
@@ -182,7 +197,7 @@ export const sendEnquiryEmail = async (enquiry) => {
   };
 
   try {
-    await transporter.sendMail(mailOptions);
+    await mailTransporter.sendMail(mailOptions);
     console.log("✅ Enquiry email sent to owner");
   } catch (error) {
     console.error("❌ Enquiry email error detail:", error.message);
