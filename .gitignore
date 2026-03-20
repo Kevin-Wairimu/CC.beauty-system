@@ -33,6 +33,3 @@ Thumbs.db
 *.log
 *.mongodb.js
 playground-*.js
-(
-{
-setIsMenuOpen*

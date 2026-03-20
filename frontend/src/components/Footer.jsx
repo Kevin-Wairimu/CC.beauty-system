@@ -18,19 +18,19 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-16 md:gap-8">
           {/* Brand section - spans 4 columns */}
           <div className="md:col-span-5 space-y-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="h-10 w-10 border border-gold/40 flex items-center justify-center group-hover:border-gold transition-colors">
-                  <Sparkles className="text-gold h-5 w-5 animate-pulse" />
-                </div>
-                <h3 className="text-3xl font-serif font-bold uppercase tracking-[0.2em] text-white">
-                  <span className="text-gold">CC Beauty</span>
-                </h3>
-              </div>
+            <div className="space-y-6">
+              <img
+                src="/cc.logo.png"
+                alt="CC Beauty"
+                className="h-16 md:h-24 object-contain"
+              />
+              <span className="text-lg md:text-2xl font-serif font-black uppercase tracking-[0.2em] text-white group-hover:text-gold transition-colors leading-none">
+                <span className="text-gold">CC Beauty Clinic</span>
+              </span>
               <p className="max-w-md text-white/50 font-light leading-relaxed italic text-sm tracking-wide">
-                "Where bespoke mastery meets the pinnacle of luxury. We don't
-                just provide services; we curate timeless beauty rituals for the
-                discerning individual."
+                "Where cc beauty clinic meets the pinnacle of luxury.we don’t
+                just provide services,we create timeless beauty for the
+                deserving individuals."
               </p>
             </div>
 

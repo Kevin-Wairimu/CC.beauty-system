@@ -54,8 +54,8 @@ const ClientDashboard = () => {
           statusType === 'pending' ? 'border-white/10 text-gray-500' :
           'border-green-500/30 text-green-500 bg-green-500/5'
         }`}>
-          {statusType === 'approved' ? 'Confirmed Ritual' : 
-           statusType === 'pending' ? 'Processing Ritual' : 'Masterpiece Finished'}
+          {statusType === 'approved' ? 'Confirmed Service' : 
+           statusType === 'pending' ? 'Processing Service' : 'Masterpiece Finished'}
         </div>
       </div>
     </motion.div>
@@ -72,24 +72,24 @@ const ClientDashboard = () => {
           <h1 className="text-4xl md:text-6xl font-serif font-bold uppercase tracking-widest text-white mb-4 leading-none">
             Welcome, <span className="text-gold italic">{user?.name?.split(" ")[0]}</span>
           </h1>
-          <p className="text-gray-500 text-[10px] uppercase tracking-[0.3em] font-black italic">Refining Your Beauty Ritual History</p>
+          <p className="text-gray-500 text-[10px] uppercase tracking-[0.3em] font-black italic">Refining Your Beauty Service History</p>
         </header>
 
         {loading ? (
-          <div className="py-20 text-center text-gold animate-pulse uppercase tracking-[0.4em] text-[10px] font-black">Synchronizing Personal Rituals...</div>
+          <div className="py-20 text-center text-gold animate-pulse uppercase tracking-[0.4em] text-[10px] font-black">Synchronizing Personal Services...</div>
         ) : (
           <div className="space-y-16">
             
             <section>
               <div className="flex items-center gap-4 mb-8">
                 <CheckCircle className="text-gold h-5 w-5" />
-                <h2 className="text-xl font-serif font-bold uppercase tracking-widest text-gold">Confirmed Rituals</h2>
+                <h2 className="text-xl font-serif font-bold uppercase tracking-widest text-gold">Confirmed Services</h2>
               </div>
               {approvedBookings.length > 0 ? (
                 approvedBookings.map(app => <BookingCard key={app._id} app={app} statusType="approved" />)
               ) : (
                 <div className="glass-panel p-10 text-center border-white/5 bg-white/[0.02] italic text-gray-600 text-[10px] uppercase tracking-widest">
-                  No confirmed rituals scheduled.
+                  No confirmed services scheduled.
                 </div>
               )}
             </section>
@@ -97,7 +97,7 @@ const ClientDashboard = () => {
             <section>
               <div className="flex items-center gap-4 mb-8">
                 <Hourglass className="text-gray-500 h-5 w-5" />
-                <h2 className="text-xl font-serif font-bold uppercase tracking-widest text-white">Pending Rituals</h2>
+                <h2 className="text-xl font-serif font-bold uppercase tracking-widest text-white">Pending Services</h2>
               </div>
               {pendingBookings.length > 0 ? (
                 pendingBookings.map(app => <BookingCard key={app._id} app={app} statusType="pending" />)
@@ -117,7 +117,7 @@ const ClientDashboard = () => {
                 completedBookings.map(app => <BookingCard key={app._id} app={app} statusType="completed" />)
               ) : (
                 <div className="glass-panel p-10 text-center border-white/5 bg-white/[0.02] italic text-gray-600 text-[10px] uppercase tracking-widest">
-                  Your ritual journey begins today.
+                  Your service journey begins today.
                 </div>
               )}
             </section>

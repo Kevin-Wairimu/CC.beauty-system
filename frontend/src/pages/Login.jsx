@@ -18,11 +18,11 @@ const Login = () => {
       // Handle Admin & Manager
       if (role === "admin" || role === "manager" || user.isAdmin) {
         navigate("/admin");
-      } 
+      }
       // Handle Staff
       else if (role === "staff") {
         navigate("/staff");
-      } 
+      }
       // Default to Client
       else {
         navigate("/dashboard");
@@ -142,7 +142,7 @@ const Login = () => {
               </span>
             </div>
             <p className="text-gold/40 text-xs uppercase font-bold tracking-widest">
-              Not a member of our studio?
+              Not a member of our salon?
             </p>
             <Link
               to="/register"

@@ -17,7 +17,7 @@ router.get('/staff', getStaff);
 
 // Admin/Manager routes
 router.get('/users', protect, authorize('admin', 'manager'), getUsers);
-router.put('/users/:id/role', protect, authorize('admin'), updateUserRole);
+router.put('/users/:id/role', protect, authorize('admin', 'manager'), updateUserRole);
 router.delete('/users/:id', protect, authorize('admin'), deleteUser);
 
 export default router;

@@ -107,7 +107,7 @@ export const sendBookingSMS = async (appointment) => {
     ` NEW RESERVATION AT CC BEAUTY CLINIC \n` +
     `------------------------------\n` +
     `Guest: ${appointment.name}\n` +
-    `Ritual: ${appointment.service}\n` +
+    `Service: ${appointment.service}\n` +
     `Therapist: ${appointment.staffId?.name || "Any Master"}\n` +
     `Schedule: ${appointment.date} at ${appointment.time}\n` +
     `Phone: ${appointment.phone}\n` +

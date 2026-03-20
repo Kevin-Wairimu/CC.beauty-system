@@ -133,13 +133,19 @@ export const getUsers = async (req, res) => {
   }
 };
 
-// @desc    Update user role & permissions (Admin only)
+// @desc    Update user details (Admin only)
 export const updateUserRole = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
       user.role = req.body.role || user.role;
       
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+
       if (req.body.specialization) {
         user.specialization = req.body.specialization;
       }
@@ -147,6 +153,7 @@ export const updateUserRole = async (req, res) => {
       if (req.body.permissions) {
         user.permissions = { ...user.permissions, ...req.body.permissions };
       }
+      
       const updatedUser = await user.save();
       res.json({
         _id: updatedUser._id,

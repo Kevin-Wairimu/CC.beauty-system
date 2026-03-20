@@ -82,9 +82,9 @@ export const sendClientBookingEmail = async (booking) => {
       <div style="font-family: serif; color: #1a1a1a; padding: 20px; border: 2px solid #D4AF37; max-width: 600px; margin: auto;">
         <h2 style="color: #D4AF37; text-align: center; text-transform: uppercase;">Reservation Received</h2>
         <p>Hello ${booking.name},</p>
-        <p>Thank you for choosing CC Beauty Clinic. We have received your request for the following ritual:</p>
+        <p>Thank you for choosing CC Beauty Clinic. We have received your request for the following service:</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
-        <p><strong>Ritual:</strong> ${booking.service}</p>
+        <p><strong>Service:</strong> ${booking.service}</p>
         <p><strong>Therapist:</strong> ${booking.staffId?.name || "Any Available Master"}</p>
         <p><strong>Schedule:</strong> ${booking.date} at ${booking.time}</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />

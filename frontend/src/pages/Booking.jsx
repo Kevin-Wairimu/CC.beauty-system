@@ -28,7 +28,10 @@ const Booking = () => {
 
   const [services, setServices] = useState([]);
   const [staff, setStaff] = useState([]);
-  const [filteredStaff, setFilteredStaff] = useState({ appropriate: [], others: [] });
+  const [filteredStaff, setFilteredStaff] = useState({
+    appropriate: [],
+    others: [],
+  });
   const [formData, setFormData] = useState({
     name: "",
     phone: "",
@@ -100,7 +103,7 @@ const Booking = () => {
 
         setTimeout(() => setFilteredStaff({ appropriate, others }), 0);
 
-        // We no longer clear staffId if they pick someone else, 
+        // We no longer clear staffId if they pick someone else,
         // but we can check if the current staffId is in appropriate
       }
     } else {
@@ -145,25 +148,28 @@ const Booking = () => {
   };
 
   const getStaffTitle = (name, specializations) => {
-    const specs = (specializations || []).map(s => s.toUpperCase());
-    if (name === 'Steve') return 'Nail Technician';
-    if (name === 'Martha') return 'Makeup Artist';
-    if (name === 'Sam') return 'Makeup Artist, Lash Technician, Nail Technician';
-    if (name === 'Wangari') return 'Hairdresser, Receptionist';
-    if (name === 'Milka') return 'Hairdresser';
-    if (name === 'Ceisey') return 'Wig Stylist, Nail Technician';
-    
+    const specs = (specializations || []).map((s) => s.toUpperCase());
+    if (name === "Steve") return "Nail Technician";
+    if (name === "Martha") return "Makeup Artist";
+    if (name === "Sam")
+      return "Makeup Artist, Lash Technician, Nail Technician";
+    if (name === "Wangari") return "Hairdresser, Receptionist";
+    if (name === "Milka") return "Hairdresser";
+    if (name === "Ceisey") return "Wig Stylist, Nail Technician";
+
     // Fallback based on specialization array if name not matched
-    if (specs.length === 0) return 'Master Technician';
-    return specs.map(s => {
-      if (s === 'NAILS') return 'Nail Technician';
-      if (s === 'MAKEUP') return 'Makeup Artist';
-      if (s === 'LASHES') return 'Lash Technician';
-      if (s === 'WIGS') return 'Wig Stylist';
-      if (s === 'HAIR') return 'Hairdresser';
-      if (s === 'RECEPTIONIST') return 'Receptionist';
-      return s;
-    }).join(', ');
+    if (specs.length === 0) return "Master Technician";
+    return specs
+      .map((s) => {
+        if (s === "NAILS") return "Nail Technician";
+        if (s === "MAKEUP") return "Makeup Artist";
+        if (s === "LASHES") return "Lash Technician";
+        if (s === "WIGS") return "Wig Stylist";
+        if (s === "HAIR") return "Hairdresser";
+        if (s === "RECEPTIONIST") return "Receptionist";
+        return s;
+      })
+      .join(", ");
   };
 
   return (
@@ -179,7 +185,7 @@ const Booking = () => {
             Secure Your Session
           </h1>
           <p className="text-gray-400 text-sm md:text-lg italic tracking-[0.3em] font-light">
-            Bespoke excellence tailored to you
+            excellence tailored to you
           </p>
         </motion.div>
 
@@ -304,11 +310,14 @@ const Booking = () => {
                 <option value="" className="bg-[#1a1a1a] text-gray-600 italic">
                   -- Choose therapist --
                 </option>
-                
+
                 {formData.service ? (
                   <>
                     {filteredStaff.appropriate.length > 0 ? (
-                      <optgroup label="Available Specialists" className="bg-[#1a1a1a] text-gold text-xs uppercase font-black">
+                      <optgroup
+                        label="Available Specialists"
+                        className="bg-[#1a1a1a] text-gold text-xs uppercase font-black"
+                      >
                         {filteredStaff.appropriate.map((s) => (
                           <option
                             key={s._id}
@@ -320,7 +329,10 @@ const Booking = () => {
                         ))}
                       </optgroup>
                     ) : (
-                      <optgroup label="Master Technicians" className="bg-[#1a1a1a] text-gray-500 text-xs uppercase font-black">
+                      <optgroup
+                        label="Master Technicians"
+                        className="bg-[#1a1a1a] text-gray-500 text-xs uppercase font-black"
+                      >
                         {staff.map((s) => (
                           <option
                             key={s._id}
@@ -334,7 +346,10 @@ const Booking = () => {
                     )}
                   </>
                 ) : (
-                  <optgroup label="Our Master Technicians" className="bg-[#1a1a1a] text-gray-500 text-xs uppercase font-black">
+                  <optgroup
+                    label="Our Master Technicians"
+                    className="bg-[#1a1a1a] text-gray-500 text-xs uppercase font-black"
+                  >
                     {staff.map((s) => (
                       <option
                         key={s._id}
@@ -349,7 +364,8 @@ const Booking = () => {
               </select>
               {formData.service && filteredStaff.appropriate.length === 0 && (
                 <p className="text-[8px] text-gray-500 uppercase font-black mt-2 tracking-widest">
-                  Any available master technician will be assigned for this service.
+                  Any available master technician will be assigned for this
+                  service.
                 </p>
               )}
             </div>
@@ -387,7 +403,7 @@ const Booking = () => {
 
           <div className="mb-12 group">
             <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
-              <MessageSquare className="h-3 w-3" /> Special Bespoke Requests
+              <MessageSquare className="h-3 w-3" /> Special Requests
             </label>
             <textarea
               name="notes"
