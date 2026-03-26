@@ -46,26 +46,26 @@ const StaffDashboard = () => {
   };
 
   return (
-    <div className="bg-[#0F0F0F] min-h-screen text-white py-20 px-4">
+    <div className="bg-[#0F0F0F] min-h-screen text-white py-12 px-4">
       <div className="max-w-6xl mx-auto">
-        <header className="mb-16 text-center">
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center gap-3 mb-6">
-            <Sparkles className="text-gold h-5 w-5 animate-pulse" />
-            <span className="text-xs uppercase tracking-[0.5em] text-gold font-black">Staff Portal</span>
+        <header className="mb-10 text-center">
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="flex items-center justify-center gap-3 mb-4">
+            <Sparkles className="text-gold h-4 w-4 animate-pulse" />
+            <span className="text-[10px] uppercase tracking-[0.5em] text-gold font-black">Staff Portal</span>
           </motion.div>
-          <h1 className="text-4xl md:text-6xl font-serif font-bold uppercase tracking-widest text-white mb-4">
+          <h1 className="text-3xl md:text-5xl font-serif font-bold uppercase tracking-widest text-white mb-2">
             Hello, <span className="text-gold italic">{user?.name}</span>
           </h1>
-          <p className="text-gray-400 text-sm uppercase tracking-widest font-light">Your assigned beauty services for today</p>
+          <p className="text-gray-400 text-xs uppercase tracking-widest font-light">Your assigned beauty services for today</p>
         </header>
 
         {loading ? (
-          <div className="py-20 text-center text-gold animate-pulse uppercase tracking-[0.5em] font-black">Synchronizing Schedule...</div>
+          <div className="py-20 text-center text-gold animate-pulse uppercase tracking-[0.5em] font-black text-[10px]">Synchronizing Schedule...</div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {appointments.length === 0 ? (
-              <div className="col-span-full glass-panel p-20 text-center border-white/5 bg-white/[0.02]">
-                <p className="text-gray-500 italic uppercase tracking-widest text-xs">No assigned appointments found.</p>
+              <div className="col-span-full glass-panel p-16 text-center border-white/5 bg-white/[0.02]">
+                <p className="text-gray-500 italic uppercase tracking-widest text-[10px]">No assigned appointments found.</p>
               </div>
             ) : (
               appointments.map((app) => (
@@ -73,35 +73,35 @@ const StaffDashboard = () => {
                   key={app._id}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className={`glass-panel p-8 border-gold/20 bg-[#18181B] relative overflow-hidden ${app.status === 'completed' ? 'opacity-50' : ''}`}
+                  className={`glass-panel p-6 md:p-8 border-gold/20 bg-[#18181B] relative overflow-hidden ${app.status === 'completed' ? 'opacity-50' : ''}`}
                 >
                   <div className="flex justify-between items-start mb-6">
                     <div>
-                      <h3 className="text-2xl font-serif font-bold text-white uppercase tracking-tight">{app.service}</h3>
-                      <p className="text-[10px] text-gold uppercase font-black tracking-widest mt-1">Confirmed Service</p>
+                      <h3 className="text-xl md:text-2xl font-serif font-bold text-white uppercase tracking-tight">{app.service}</h3>
+                      <p className="text-[9px] text-gold uppercase font-black tracking-widest mt-1">Confirmed Service</p>
                     </div>
-                    <div className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest border ${app.status === 'completed' ? 'border-green-500 text-green-500' : 'border-gold text-gold'}`}>
+                    <div className={`px-2.5 py-1 text-[7px] font-black uppercase tracking-widest border ${app.status === 'completed' ? 'border-green-500 text-green-500' : 'border-gold text-gold'}`}>
                       {app.status}
                     </div>
                   </div>
 
-                  <div className="space-y-4 mb-8">
+                  <div className="space-y-4 mb-6">
                     <div className="flex items-center gap-4 text-gray-300">
-                      <User className="h-4 w-4 text-gold" />
+                      <User className="h-3.5 w-3.5 text-gold" />
                       <span className="text-sm font-bold uppercase">{app.name}</span>
                     </div>
                     <div className="flex items-center gap-4 text-gray-400">
-                      <Phone className="h-4 w-4 text-gold" />
-                      <span className="text-xs">{app.phone}</span>
+                      <Phone className="h-3.5 w-3.5 text-gold" />
+                      <span className="text-[11px]">{app.phone}</span>
                     </div>
                     <div className="flex items-center gap-6 pt-4 border-t border-white/5">
                       <div className="flex items-center gap-2">
-                        <Calendar className="h-4 w-4 text-gold" />
-                        <span className="text-xs uppercase font-bold">{app.date}</span>
+                        <Calendar className="h-3.5 w-3.5 text-gold" />
+                        <span className="text-[11px] uppercase font-bold">{app.date}</span>
                       </div>
                       <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-gold" />
-                        <span className="text-xs uppercase font-bold">{app.time}</span>
+                        <Clock className="h-3.5 w-3.5 text-gold" />
+                        <span className="text-[11px] uppercase font-bold">{app.time}</span>
                       </div>
                     </div>
                   </div>
@@ -109,7 +109,7 @@ const StaffDashboard = () => {
                   {app.status !== 'completed' && (
                     <button 
                       onClick={() => handleComplete(app._id)}
-                      className="w-full bg-gold text-black py-4 uppercase text-[10px] font-black tracking-[0.3em] hover:bg-white transition-all duration-500"
+                      className="w-full bg-gold text-black py-3.5 uppercase text-[9px] font-black tracking-[0.3em] hover:bg-white transition-all duration-500"
                     >
                       Mark As Completed
                     </button>

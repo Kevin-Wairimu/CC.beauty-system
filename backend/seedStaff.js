@@ -4,10 +4,10 @@ import connectDB from './config/db.js';
 import User from './models/User.js';
 
 dotenv.config();
-connectDB();
 
 const seedStaff = async () => {
   try {
+    await connectDB();
     const staffData = [
       {
         name: 'Steve',
@@ -35,14 +35,14 @@ const seedStaff = async () => {
         email: 'wangari@ccbeauty.com',
         password: 'password123',
         role: 'staff',
-        specialization: ['HAIR', 'RECEPTIONIST']
+        specialization: ['HAIR', 'EYEBROWS']
       },
       {
         name: 'Milka',
         email: 'milka@ccbeauty.com',
         password: 'password123',
         role: 'staff',
-        specialization: ['HAIR']
+        specialization: ['HAIR', 'FACIAL']
       },
       {
         name: 'Ceisey',
@@ -54,15 +54,20 @@ const seedStaff = async () => {
     ];
 
     for (const s of staffData) {
-      const exists = await User.findOne({ email: s.email });
-      if (!exists) {
+      // Find by name OR email to be safer during updates
+      let user = await User.findOne({ 
+        $or: [{ email: s.email }, { name: s.name, role: 'staff' }] 
+      });
+
+      if (!user) {
         await User.create(s);
         console.log(`Created staff: ${s.name}`);
       } else {
-        exists.specialization = s.specialization;
-        exists.role = 'staff';
-        await exists.save();
-        console.log(`Updated staff: ${s.name}`);
+        user.specialization = s.specialization;
+        user.role = 'staff';
+        // Keep existing email if they matched by name
+        await user.save();
+        console.log(`Updated staff: ${user.name} (${user.email})`);
       }
     }
 

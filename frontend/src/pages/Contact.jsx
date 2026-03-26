@@ -39,45 +39,42 @@ const Contact = () => {
   };
 
   return (
-    <div className="bg-[#1a1a1a] min-h-screen text-white py-20 px-4">
+    <div className="bg-[#1a1a1a] min-h-screen text-white py-12 px-4">
       <div className="max-w-7xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-20"
+          className="text-center mb-12"
         >
-          <Sparkles className="text-gold h-12 w-12 mx-auto mb-4 animate-pulse" />
-          <h1 className="text-4xl md:text-6xl font-serif font-bold uppercase tracking-widest text-gold mb-4">
+          <Sparkles className="text-gold h-10 w-10 mx-auto mb-4 animate-pulse" />
+          <h1 className="text-3xl md:text-5xl font-serif font-bold uppercase tracking-widest text-gold mb-4">
             Contact Our Studio
           </h1>
-          <p className="text-gray-300 text-sm md:text-lg italic tracking-[0.2em] font-light uppercase">
+          <p className="text-gray-300 text-xs md:text-base italic tracking-[0.2em] font-light uppercase">
             We are here to assist your beauty journey
           </p>
         </motion.div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Contact Info */}
-          <div className="lg:col-span-1 space-y-8">
+          <div className="lg:col-span-1 space-y-6">
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.2 }}
-              className="glass-panel p-10 hover:border-gold/50 transition-all duration-500"
+              className="glass-panel p-6 md:p-8 hover:border-gold/50 transition-all duration-500"
             >
-              <div className="flex items-start gap-6">
-                <div className="bg-gold/10 p-4 border border-gold/20">
-                  <Phone className="text-gold h-6 w-6" />
+              <div className="flex items-start gap-4">
+                <div className="bg-gold/10 p-3 border border-gold/20">
+                  <Phone className="text-gold h-5 w-5" />
                 </div>
                 <div>
-                  <h3 className="text-gold font-bold uppercase tracking-[0.2em] text-xs mb-3">
+                  <h3 className="text-gold font-bold uppercase tracking-[0.2em] text-[10px] mb-2">
                     Direct Phone
                   </h3>
-                  <p className="text-gray-100 font-light text-lg tracking-wide">
+                  <p className="text-gray-100 font-light text-base md:text-lg tracking-wide">
                     +254 759 934 198
                   </p>
-                  {/* <p className="text-gray-100 font-light text-lg tracking-wide">
-                    +254 711 111 111
-                  </p> */}
                 </div>
               </div>
             </motion.div>
@@ -86,22 +83,19 @@ const Contact = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.3 }}
-              className="glass-panel p-10 hover:border-gold/50 transition-all duration-500"
+              className="glass-panel p-6 md:p-8 hover:border-gold/50 transition-all duration-500"
             >
-              <div className="flex items-start gap-6">
-                <div className="bg-gold/10 p-4 border border-gold/20">
-                  <Mail className="h-6 w-6 text-gold" />
+              <div className="flex items-start gap-4">
+                <div className="bg-gold/10 p-3 border border-gold/20">
+                  <Mail className="h-5 w-5 text-gold" />
                 </div>
                 <div>
-                  <h3 className="text-gold font-bold uppercase tracking-[0.2em] text-xs mb-3">
+                  <h3 className="text-gold font-bold uppercase tracking-[0.2em] text-[10px] mb-2">
                     Email Inquiries
                   </h3>
-                  <p className="text-gray-100 font-light text-lg tracking-wide">
+                  <p className="text-gray-100 font-light text-base md:text-lg tracking-wide">
                     ccbeautyclinic21@gmail.com
                   </p>
-                  {/* <p className="text-gray-100 font-light text-lg tracking-wide">
-                    ccbeautyclinic21@gmail.com
-                  </p> */}
                 </div>
               </div>
             </motion.div>
@@ -110,17 +104,17 @@ const Contact = () => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 }}
-              className="glass-panel p-10 hover:border-gold/50 transition-all duration-500"
+              className="glass-panel p-6 md:p-8 hover:border-gold/50 transition-all duration-500"
             >
-              <div className="flex items-start gap-6 mb-6">
-                <div className="bg-gold/10 p-4 border border-gold/20">
-                  <MapPin className="h-6 w-6 text-gold" />
+              <div className="flex items-start gap-4 mb-4">
+                <div className="bg-gold/10 p-3 border border-gold/20">
+                  <MapPin className="h-5 w-5 text-gold" />
                 </div>
                 <div>
-                  <h3 className="text-gold font-bold uppercase tracking-[0.2em] text-xs mb-3">
+                  <h3 className="text-gold font-bold uppercase tracking-[0.2em] text-[10px] mb-2">
                     Studio Location
                   </h3>
-                  <p className="text-gray-100 font-light text-lg tracking-wide leading-relaxed">
+                  <p className="text-gray-100 font-light text-base md:text-lg tracking-wide leading-relaxed">
                     CC Beauty Clinic,
                     <br />
                     Kilimanjaro City Arcade,
@@ -130,7 +124,7 @@ const Contact = () => {
                 </div>
               </div>
               {/* Map Preview */}
-              <div className="w-full h-48 rounded-lg overflow-hidden border border-gold/20 group">
+              <div className="w-full h-40 rounded-lg overflow-hidden border border-gold/20 group">
                 <iframe
                   title="map"
                   width="100%"
@@ -154,13 +148,13 @@ const Contact = () => {
           >
             <form
               onSubmit={handleSubmit}
-              className="glass-panel p-8 md:p-16 shadow-2xl relative h-full"
+              className="glass-panel p-6 md:p-10 shadow-2xl relative h-full"
             >
               <div className="absolute top-0 right-0 w-64 h-64 bg-gold/5 blur-[100px] rounded-full pointer-events-none"></div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-10 mb-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                 <div className="group">
-                  <label className="block text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3">
+                  <label className="block text-[9px] font-bold uppercase tracking-[0.3em] text-gold mb-2">
                     Your Full Name *
                   </label>
                   <input
@@ -169,11 +163,11 @@ const Contact = () => {
                     required
                     value={formData.name}
                     onChange={handleChange}
-                    className="w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-4 py-4 outline-none transition-all text-white text-lg"
+                    className="w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-3 py-3 outline-none transition-all text-white text-base"
                   />
                 </div>
                 <div className="group">
-                  <label className="block text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3">
+                  <label className="block text-[9px] font-bold uppercase tracking-[0.3em] text-gold mb-2">
                     Phone Number
                   </label>
                   <input
@@ -181,13 +175,13 @@ const Contact = () => {
                     name="phone"
                     value={formData.phone}
                     onChange={handleChange}
-                    className="w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-4 py-4 outline-none transition-all text-white text-lg"
+                    className="w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-3 py-3 outline-none transition-all text-white text-base"
                   />
                 </div>
               </div>
 
-              <div className="mb-10 group">
-                <label className="block text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3">
+              <div className="mb-8 group">
+                <label className="block text-[9px] font-bold uppercase tracking-[0.3em] text-gold mb-2">
                   Email Address *
                 </label>
                 <input
@@ -196,36 +190,36 @@ const Contact = () => {
                   required
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-4 py-4 outline-none transition-all text-white text-lg"
+                  className="w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-3 py-3 outline-none transition-all text-white text-base"
                 />
               </div>
 
-              <div className="mb-12 group">
-                <label className="block text-[10px] font-bold uppercase tracking-[0.3em] text-gold mb-3">
+              <div className="mb-10 group">
+                <label className="block text-[9px] font-bold uppercase tracking-[0.3em] text-gold mb-2">
                   How can we assist you? *
                 </label>
                 <textarea
                   name="message"
                   required
-                  rows="4"
+                  rows="3"
                   value={formData.message}
                   onChange={handleChange}
-                  className="w-full bg-black/40 border border-white/10 group-focus-within:border-gold px-4 py-4 outline-none transition-all text-white text-lg"
+                  className="w-full bg-black/40 border border-white/10 group-focus-within:border-gold px-3 py-3 outline-none transition-all text-white text-base"
                 ></textarea>
               </div>
 
               <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+                whileHover={{ scale: 1.01 }}
+                whileTap={{ scale: 0.99 }}
                 type="submit"
                 disabled={status.loading}
-                className="w-full btn-gold text-xl py-6 uppercase tracking-[0.4em] disabled:opacity-50 flex items-center justify-center gap-4 rounded-none"
+                className="w-full btn-gold text-base py-4 uppercase tracking-[0.4em] disabled:opacity-50 flex items-center justify-center gap-3 rounded-none"
               >
                 {status.loading ? (
                   "Sending Request..."
                 ) : (
                   <>
-                    <Send className="h-5 w-5" />
+                    <Send className="h-4 w-4" />
                     Send Message
                   </>
                 )}

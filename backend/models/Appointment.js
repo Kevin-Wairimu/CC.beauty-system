@@ -29,7 +29,8 @@ const appointmentSchema = mongoose.Schema({
   receiptNo: { type: String, unique: true, sparse: true },
   
   handledBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
-  notes: { type: String }
+  notes: { type: String },
+  cancellationReason: { type: String }
 }, {
   timestamps: true
 });

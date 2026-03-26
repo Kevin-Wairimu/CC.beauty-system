@@ -15,6 +15,9 @@ import { toast } from "react-hot-toast";
 import { motion } from "framer-motion";
 import { useAuth } from "../context/AuthContext";
 
+// ✅ Only these specializations qualify someone as a bookable specialist
+const VALID_SPECS = ["NAILS", "MAKEUP", "LASHES", "WIGS", "HAIR", "EYEBROWS", "FACIAL", "SKIN"];
+
 const Booking = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
@@ -56,8 +59,15 @@ const Booking = () => {
           api.get("/auth/staff"),
         ]);
         setServices(servicesRes.data);
-        setStaff(staffRes.data);
-        setFilteredStaff({ appropriate: [], others: staffRes.data });
+
+        const specialists = staffRes.data.filter((s) => {
+          if (s.role?.toLowerCase() !== "staff") return false;
+          const specs = (s.specialization || []).map((sp) => sp.toUpperCase());
+          return specs.some((sp) => VALID_SPECS.includes(sp));
+        });
+
+        setStaff(specialists);
+        setFilteredStaff({ appropriate: [], others: specialists });
       } catch (error) {
         console.error("Booking Data Fetch Error:", error);
         setStatus((prev) => ({ ...prev, error: "Failed to load data" }));
@@ -66,7 +76,6 @@ const Booking = () => {
     fetchData();
   }, []);
 
-  // Pre-fill user data if logged in
   useEffect(() => {
     if (user) {
       const handle = setTimeout(() => {
@@ -80,24 +89,19 @@ const Booking = () => {
     }
   }, [user]);
 
-  // Filter staff when service changes
   useEffect(() => {
     if (formData.service) {
       const selectedService = services.find((s) => s.name === formData.service);
       if (selectedService) {
         const category = selectedService.category.toUpperCase();
 
-        const appropriate = staff.filter((s) => {
-          return s.specialization?.some(
-            (spec) => spec.toUpperCase() === category,
-          );
-        });
+        const appropriate = staff.filter((s) =>
+          s.specialization?.some((spec) => spec.toUpperCase() === category),
+        );
 
-        const others = staff.filter((s) => {
-          return !s.specialization?.some(
-            (spec) => spec.toUpperCase() === category,
-          );
-        });
+        // Others built by exclusion — guaranteed no duplicates
+        const appropriateIds = new Set(appropriate.map((s) => s._id));
+        const others = staff.filter((s) => !appropriateIds.has(s._id));
 
         setTimeout(() => setFilteredStaff({ appropriate, others }), 0);
       }
@@ -114,16 +118,12 @@ const Booking = () => {
     setStatus({ loading: true, success: false, error: "" });
 
     const serviceObj = services.find((s) => s.name === formData.service);
-    const submissionData = {
-      ...formData,
-      serviceId: serviceObj?._id,
-    };
+    const submissionData = { ...formData, serviceId: serviceObj?._id };
 
     try {
       await api.post("/appointments", submissionData);
       setStatus({ loading: false, success: true, error: "" });
       toast.success("Luxury session requested! We will contact you soon.");
-
       setFormData({
         name: user ? user.name : "",
         email: user ? user.email : "",
@@ -141,17 +141,14 @@ const Booking = () => {
     }
   };
 
-  const getStaffTitle = (name, specializations) => {
-    const specs = (specializations || []).map((s) => s.toUpperCase());
-    if (name === "Steve") return "Nail Technician";
-    if (name === "Martha") return "Makeup Artist";
-    if (name === "Sam")
-      return "Makeup Artist, Lash Technician, Nail Technician";
-    if (name === "Wangari") return "Hairdresser, Receptionist";
-    if (name === "Milka") return "Hairdresser";
-    if (name === "Ceisey") return "Wig Stylist, Nail Technician";
+  // Title derived only from VALID_SPECS — RECEPTIONIST and unknowns stripped
+  const getStaffTitle = (specializations) => {
+    const specs = (specializations || [])
+      .map((s) => s.toUpperCase())
+      .filter((s) => VALID_SPECS.includes(s));
 
     if (specs.length === 0) return "Master Technician";
+
     return specs
       .map((s) => {
         if (s === "NAILS") return "Nail Technician";
@@ -159,25 +156,27 @@ const Booking = () => {
         if (s === "LASHES") return "Lash Technician";
         if (s === "WIGS") return "Wig Stylist";
         if (s === "HAIR") return "Hairdresser";
-        if (s === "RECEPTIONIST") return "Receptionist";
+        if (s === "EYEBROWS") return "Brow Specialist";
+        if (s === "FACIAL") return "Esthetician";
+        if (s === "SKIN") return "Skin Specialist";
         return s;
       })
       .join(", ");
   };
 
   return (
-    <div className="bg-[#0F0F0F] min-h-screen text-white py-20 px-4">
+    <div className="bg-[#0F0F0F] min-h-screen text-white py-12 px-4">
       <div className="max-w-4xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          className="text-center mb-10"
         >
-          <Sparkles className="text-gold h-12 w-12 mx-auto mb-4 animate-pulse" />
-          <h1 className="text-4xl md:text-6xl font-serif font-bold uppercase tracking-widest text-gold mb-4">
+          <Sparkles className="text-gold h-10 w-10 mx-auto mb-4 animate-pulse" />
+          <h1 className="text-3xl md:text-5xl font-serif font-bold uppercase tracking-widest text-gold mb-4">
             Secure Your Session
           </h1>
-          <p className="text-gray-400 text-sm md:text-lg italic tracking-[0.3em] font-light">
+          <p className="text-gray-400 text-xs md:text-base italic tracking-[0.3em] font-light">
             excellence tailored to you
           </p>
         </motion.div>
@@ -186,12 +185,12 @@ const Booking = () => {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-gold/10 border border-gold/30 p-8 mb-12 text-center"
+            className="bg-gold/10 border border-gold/30 p-6 mb-10 text-center"
           >
-            <p className="text-gold font-black uppercase tracking-[0.3em] text-xl">
+            <p className="text-gold font-black uppercase tracking-[0.3em] text-lg">
               Reservation Received
             </p>
-            <p className="text-gray-400 text-sm mt-2 font-light">
+            <p className="text-gray-400 text-[10px] mt-2 font-light">
               Our concierge will contact you shortly to finalize your luxury
               experience.
             </p>
@@ -203,13 +202,13 @@ const Booking = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
           onSubmit={handleSubmit}
-          className="glass-panel p-8 md:p-16 shadow-2xl relative overflow-hidden bg-[#121212]"
+          className="glass-panel p-6 md:p-10 shadow-2xl relative overflow-hidden bg-[#121212]"
         >
           <div className="absolute top-0 right-0 w-96 h-96 bg-gold/[0.03] blur-[120px] rounded-full -mr-48 -mt-48 pointer-events-none"></div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="group">
-              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
+              <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-gold mb-2">
                 <User className="h-3 w-3" /> Full Identity
               </label>
               <input
@@ -220,11 +219,13 @@ const Booking = () => {
                 onChange={handleChange}
                 placeholder="The name on your profile"
                 readOnly={!!user}
-                className={`w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-0 py-4 outline-none transition-all placeholder:text-gray-700 text-white text-lg font-light ${user ? "opacity-60" : ""}`}
+                className={`w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-0 py-3 outline-none transition-all placeholder:text-gray-700 text-white text-base font-light ${
+                  user ? "opacity-60" : ""
+                }`}
               />
             </div>
             <div className="group">
-              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
+              <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-gold mb-2">
                 <Phone className="h-3 w-3" /> Contact Number
               </label>
               <input
@@ -234,13 +235,13 @@ const Booking = () => {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="07XX XXX XXX"
-                className="w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-0 py-4 outline-none transition-all placeholder:text-gray-700 text-white text-lg font-light"
+                className="w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-0 py-3 outline-none transition-all placeholder:text-gray-700 text-white text-base font-light"
               />
             </div>
           </div>
 
-          <div className="mb-10 group">
-            <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
+          <div className="mb-8 group">
+            <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-gold mb-2">
               <Mail className="h-3 w-3" /> Digital Address
             </label>
             <input
@@ -250,13 +251,15 @@ const Booking = () => {
               onChange={handleChange}
               placeholder="Your email for confirmation"
               readOnly={!!user}
-              className={`w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-0 py-4 outline-none transition-all placeholder:text-gray-700 text-white text-lg font-light ${user ? "opacity-60" : ""}`}
+              className={`w-full bg-black/40 border-b border-white/10 group-focus-within:border-gold px-0 py-3 outline-none transition-all placeholder:text-gray-700 text-white text-base font-light ${
+                user ? "opacity-60" : ""
+              }`}
             />
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="group">
-              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
+              <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-gold mb-2">
                 <Sparkles className="h-3 w-3" /> Select Service
               </label>
               <select
@@ -264,7 +267,7 @@ const Booking = () => {
                 required
                 value={formData.service}
                 onChange={handleChange}
-                className="w-full bg-transparent border-b border-white/10 group-focus-within:border-gold py-4 outline-none transition-all text-white text-lg font-light appearance-none cursor-pointer"
+                className="w-full bg-transparent border-b border-white/10 group-focus-within:border-gold py-3 outline-none transition-all text-white text-base font-light appearance-none cursor-pointer"
               >
                 <option value="" className="bg-[#1a1a1a] text-gray-600 italic">
                   -- Browse the collection --
@@ -282,14 +285,14 @@ const Booking = () => {
             </div>
 
             <div className="group">
-              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
+              <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-gold mb-2">
                 <Star className="h-3 w-3" /> Preferred Specialist
               </label>
               <select
                 name="staffId"
                 value={formData.staffId}
                 onChange={handleChange}
-                className="w-full bg-transparent border-b border-white/10 group-focus-within:border-gold py-4 outline-none transition-all text-white text-lg font-light appearance-none cursor-pointer"
+                className="w-full bg-transparent border-b border-white/10 group-focus-within:border-gold py-3 outline-none transition-all text-white text-base font-light appearance-none cursor-pointer"
               >
                 <option value="" className="bg-[#1a1a1a] text-gray-600 italic">
                   -- Any Available Specialist --
@@ -299,8 +302,8 @@ const Booking = () => {
                   <>
                     {filteredStaff.appropriate.length > 0 && (
                       <optgroup
-                        label="Specialists for this Service"
-                        className="bg-[#1a1a1a] text-gold text-xs uppercase font-black"
+                        label="✦ Recommended for this Service"
+                        className="bg-[#1a1a1a] text-gold text-[10px] uppercase font-black"
                       >
                         {filteredStaff.appropriate.map((s) => (
                           <option
@@ -308,30 +311,32 @@ const Booking = () => {
                             value={s._id}
                             className="bg-[#1a1a1a] text-white uppercase"
                           >
-                            {s.name} - {getStaffTitle(s.name, s.specialization)}
+                            {s.name} — {getStaffTitle(s.specialization)}
                           </option>
                         ))}
                       </optgroup>
                     )}
-                    <optgroup
-                      label="All Specialists"
-                      className="bg-[#1a1a1a] text-gray-500 text-xs uppercase font-black"
-                    >
-                      {staff.map((s) => (
-                        <option
-                          key={s._id}
-                          value={s._id}
-                          className="bg-[#1a1a1a] text-white uppercase"
-                        >
-                          {s.name} - {getStaffTitle(s.name, s.specialization)}
-                        </option>
-                      ))}
-                    </optgroup>
+                    {filteredStaff.others.length > 0 && (
+                      <optgroup
+                        label="Other Specialists"
+                        className="bg-[#1a1a1a] text-gray-500 text-[10px] uppercase font-black"
+                      >
+                        {filteredStaff.others.map((s) => (
+                          <option
+                            key={s._id}
+                            value={s._id}
+                            className="bg-[#1a1a1a] text-white uppercase"
+                          >
+                            {s.name} — {getStaffTitle(s.specialization)}
+                          </option>
+                        ))}
+                      </optgroup>
+                    )}
                   </>
                 ) : (
                   <optgroup
                     label="Our Specialists"
-                    className="bg-[#1a1a1a] text-gray-500 text-xs uppercase font-black"
+                    className="bg-[#1a1a1a] text-gray-500 text-[10px] uppercase font-black"
                   >
                     {staff.map((s) => (
                       <option
@@ -339,7 +344,7 @@ const Booking = () => {
                         value={s._id}
                         className="bg-[#1a1a1a] text-white uppercase"
                       >
-                        {s.name} - {getStaffTitle(s.name, s.specialization)}
+                        {s.name} — {getStaffTitle(s.specialization)}
                       </option>
                     ))}
                   </optgroup>
@@ -348,9 +353,9 @@ const Booking = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
             <div className="group">
-              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
+              <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-gold mb-2">
                 <Calendar className="h-3 w-3" /> Selected Date
               </label>
               <input
@@ -360,11 +365,11 @@ const Booking = () => {
                 min={new Date().toISOString().split("T")[0]}
                 value={formData.date}
                 onChange={handleChange}
-                className="w-full bg-transparent border-b border-white/10 group-focus-within:border-gold py-4 outline-none transition-all text-white text-lg font-light cursor-pointer"
+                className="w-full bg-transparent border-b border-white/10 group-focus-within:border-gold py-3 outline-none transition-all text-white text-base font-light cursor-pointer"
               />
             </div>
             <div className="group">
-              <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
+              <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-gold mb-2">
                 <Clock className="h-3 w-3" /> Selected Time
               </label>
               <input
@@ -373,13 +378,13 @@ const Booking = () => {
                 required
                 value={formData.time}
                 onChange={handleChange}
-                className="w-full bg-transparent border-b border-white/10 group-focus-within:border-gold py-4 outline-none transition-all text-white text-lg font-light cursor-pointer"
+                className="w-full bg-transparent border-b border-white/10 group-focus-within:border-gold py-3 outline-none transition-all text-white text-base font-light cursor-pointer"
               />
             </div>
           </div>
 
-          <div className="mb-12 group">
-            <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
+          <div className="mb-10 group">
+            <label className="flex items-center gap-2 text-[9px] font-black uppercase tracking-[0.3em] text-gold mb-2">
               <MessageSquare className="h-3 w-3" /> Special Requests
             </label>
             <textarea
@@ -388,19 +393,19 @@ const Booking = () => {
               value={formData.notes}
               onChange={handleChange}
               placeholder="Describe your vision for this session..."
-              className="w-full bg-black/40 border border-white/10 group-focus-within:border-gold p-6 outline-none transition-all placeholder:text-gray-700 text-white text-lg font-light"
+              className="w-full bg-black/40 border border-white/10 group-focus-within:border-gold p-4 outline-none transition-all placeholder:text-gray-700 text-white text-base font-light"
             ></textarea>
           </div>
 
           <motion.button
             whileHover={{
               scale: 1.01,
-              boxShadow: "0 0 40px rgba(212, 175, 55, 0.2)",
+              boxShadow: "0 0 40px rgba(212, 175, 55, 0.1)",
             }}
             whileTap={{ scale: 0.99 }}
             type="submit"
             disabled={status.loading}
-            className="w-full bg-gold text-white font-black text-lg py-6 uppercase tracking-[0.5em] disabled:opacity-50 transition-all duration-500 shadow-2xl"
+            className="w-full bg-gold text-white font-black text-base py-4 md:py-5 uppercase tracking-[0.5em] disabled:opacity-50 transition-all duration-500 shadow-2xl"
           >
             {status.loading
               ? "Synchronizing Request..."
@@ -408,7 +413,7 @@ const Booking = () => {
           </motion.button>
         </motion.form>
 
-        <div className="mt-16 text-center text-gray-600 font-black tracking-[0.4em] uppercase text-[10px]">
+        <div className="mt-12 text-center text-gray-600 font-black tracking-[0.4em] uppercase text-[9px]">
           <p>
             Our Studio Director will finalize your service via SMS within 15
             minutes.

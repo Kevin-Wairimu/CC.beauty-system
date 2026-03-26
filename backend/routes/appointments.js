@@ -10,10 +10,10 @@ router.post('/', protect, createAppointment);
 // Protect get: only authorized users can see lists
 router.get('/', protect, getAppointments);
 
-// Only Admin/Manager can delete
-router.delete('/:id', protect, authorize('admin', 'manager'), deleteAppointment);
+// Admin/Manager/Client can delete appointment (Cancel)
+router.delete('/:id', protect, deleteAppointment);
 
-// Only Admin/Manager/Staff can update status/assign staff
-router.put('/:id/status', protect, authorize('admin', 'manager', 'staff'), updateAppointmentStatus);
+// Admin/Manager/Staff/Client can update status/assign (Logic in controller handles restrictions)
+router.put('/:id/status', protect, updateAppointmentStatus);
 
 export default router;

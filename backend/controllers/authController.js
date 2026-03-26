@@ -1,19 +1,21 @@
-import User from '../models/User.js';
-import jwt from 'jsonwebtoken';
-import crypto from 'crypto';
-import { sendResetPasswordEmail } from '../utils/emailUtils.js';
+import User from "../models/User.js";
+import jwt from "jsonwebtoken";
+import crypto from "crypto";
+import { sendResetPasswordEmail } from "../utils/emailUtils.js";
+
+const VALID_SPECIALIZATIONS = ["NAILS", "MAKEUP", "LASHES", "WIGS", "HAIR", "EYEBROWS", "FACIAL", "SKIN"];
 
 const generateToken = (id) => {
-  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: '30d' });
+  return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
 };
 
 // @desc    Auth user & get token
 export const authUser = async (req, res) => {
   const { email, password } = req.body;
   console.log(`[LOGIN ATTEMPT] Email: ${email}, Password: ${password}`);
-  
+
   const user = await User.findOne({ email });
-  console.log(`[LOGIN LOOKUP] User found:`, user ? user.email : 'null');
+  console.log(`[LOGIN LOOKUP] User found:`, user ? user.email : "null");
 
   if (user) {
     const isMatch = await user.matchPassword(password);
@@ -29,8 +31,8 @@ export const authUser = async (req, res) => {
       });
     }
   }
-  
-  res.status(401).json({ message: 'Invalid email or password' });
+
+  res.status(401).json({ message: "Invalid email or password" });
 };
 
 // @desc    Register a new user
@@ -39,15 +41,15 @@ export const registerUser = async (req, res) => {
   const userExists = await User.findOne({ email });
 
   if (userExists) {
-    return res.status(400).json({ message: 'User already exists' });
+    return res.status(400).json({ message: "User already exists" });
   }
 
-  const user = await User.create({ 
-    name, 
-    email, 
+  const user = await User.create({
+    name,
+    email,
     password,
-    role: role || 'client',
-    specialization: specialization || []
+    role: role || "client",
+    specialization: specialization || [],
   });
 
   if (user) {
@@ -61,7 +63,7 @@ export const registerUser = async (req, res) => {
       token: generateToken(user._id),
     });
   } else {
-    res.status(400).json({ message: 'Invalid user data' });
+    res.status(400).json({ message: "Invalid user data" });
   }
 };
 
@@ -71,7 +73,9 @@ export const forgotPassword = async (req, res) => {
   const user = await User.findOne({ email });
 
   if (!user) {
-    return res.status(404).json({ message: 'User with this email does not exist' });
+    return res
+      .status(404)
+      .json({ message: "User with this email does not exist" });
   }
 
   // Get reset token
@@ -80,21 +84,21 @@ export const forgotPassword = async (req, res) => {
 
   try {
     await sendResetPasswordEmail(user, resetToken);
-    res.json({ message: 'Password reset link sent to your email' });
+    res.json({ message: "Password reset link sent to your email" });
   } catch (error) {
     user.resetPasswordToken = undefined;
     user.resetPasswordExpire = undefined;
     await user.save();
-    res.status(500).json({ message: 'Email could not be sent' });
+    res.status(500).json({ message: "Email could not be sent" });
   }
 };
 
 // @desc    Reset Password
 export const resetPassword = async (req, res) => {
   const resetPasswordToken = crypto
-    .createHash('sha256')
+    .createHash("sha256")
     .update(req.params.token)
-    .digest('hex');
+    .digest("hex");
 
   const user = await User.findOne({
     resetPasswordToken,
@@ -102,7 +106,7 @@ export const resetPassword = async (req, res) => {
   });
 
   if (!user) {
-    return res.status(400).json({ message: 'Invalid or expired reset token' });
+    return res.status(400).json({ message: "Invalid or expired reset token" });
   }
 
   user.password = req.body.password;
@@ -110,17 +114,22 @@ export const resetPassword = async (req, res) => {
   user.resetPasswordExpire = undefined;
   await user.save();
 
-  res.json({ message: 'Password reset successful. You can now login.' });
+  res.json({ message: "Password reset successful. You can now login." });
 };
 
 // @desc    Get all users (Admin only)
 // @desc    Get all staff members (For Booking)
 export const getStaff = async (req, res) => {
   try {
-    const staff = await User.find({ 
-      role: { $in: ['staff', 'manager', 'admin'] } 
-    }).select('name specialization role');
-    res.json(staff);
+    const staff = await User.find({ role: "staff" }).select("-password");
+
+    // Only return staff who have AT LEAST ONE valid beauty specialization
+    const bookableStaff = staff.filter((s) => {
+      const specs = (s.specialization || []).map((sp) => sp.toUpperCase());
+      return specs.some((sp) => VALID_SPECIALIZATIONS.includes(sp));
+    });
+
+    res.json(bookableStaff);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -128,7 +137,7 @@ export const getStaff = async (req, res) => {
 
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select('-password');
+    const users = await User.find({}).select("-password");
     res.json(users);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -143,7 +152,7 @@ export const updateUserRole = async (req, res) => {
       user.name = req.body.name || user.name;
       user.email = req.body.email || user.email;
       user.role = req.body.role || user.role;
-      
+
       if (req.body.password) {
         user.password = req.body.password;
       }
@@ -155,7 +164,7 @@ export const updateUserRole = async (req, res) => {
       if (req.body.permissions) {
         user.permissions = { ...user.permissions, ...req.body.permissions };
       }
-      
+
       const updatedUser = await user.save();
       res.json({
         _id: updatedUser._id,
@@ -166,7 +175,7 @@ export const updateUserRole = async (req, res) => {
         permissions: updatedUser.permissions,
       });
     } else {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -178,13 +187,13 @@ export const deleteUser = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
     if (user) {
-      if (user.role === 'admin') {
-        return res.status(400).json({ message: 'Cannot delete admin user' });
+      if (user.role === "admin") {
+        return res.status(400).json({ message: "Cannot delete admin user" });
       }
       await user.deleteOne();
-      res.json({ message: 'User removed' });
+      res.json({ message: "User removed" });
     } else {
-      res.status(404).json({ message: 'User not found' });
+      res.status(404).json({ message: "User not found" });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });

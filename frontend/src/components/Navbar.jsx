@@ -57,27 +57,27 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-100 h-20 md:h-24 glass-nav flex items-center">
+    <nav className="fixed top-0 left-0 right-0 z-100 h-16 md:h-20 glass-nav flex items-center">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
         <div className="flex justify-between items-center h-full">
           {/* LOGO */}
           <Link
             to="/"
             onClick={closeMenu}
-            className="flex items-center gap-3 md:gap-4 group"
+            className="flex items-center gap-2 md:gap-3 group"
           >
             <img
               src="/cc.logo.png"
               alt="CC Beauty"
-              className="h-10 md:h-16 object-contain transition-transform duration-500 group-hover:scale-110"
+              className="h-8 md:h-12 object-contain transition-transform duration-500 group-hover:scale-110"
             />
 
             <div className="flex flex-col">
-              <span className="text-lg md:text-2xl font-serif font-black uppercase tracking-[0.2em] text-white group-hover:text-gold transition-colors leading-none">
+              <span className="text-base md:text-xl font-serif font-black uppercase tracking-[0.2em] text-white group-hover:text-gold transition-colors leading-none">
                 <span className="text-gold">CC Beauty Clinic</span>
               </span>
 
-              <span className="text-[6px] md:text-[8px] uppercase tracking-[0.5em] text-gold font-bold">
+              <span className="text-[5px] md:text-[7px] uppercase tracking-[0.4em] text-gold font-bold">
                 Luxury Spa
               </span>
             </div>
@@ -199,7 +199,7 @@ const Navbar = () => {
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={closeMenu}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-105 lg:hidden"
+              className="fixed inset-0 bg-black/70 backdrop-blur-sm z-[105] lg:hidden"
             />
 
             {/* Sidebar */}
@@ -208,10 +208,10 @@ const Navbar = () => {
               animate={{ x: 0 }}
               exit={{ x: "100%" }}
               transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-screen w-70 bg-#000000 z-110 lg:hidden flex flex-col shadow-[-20px_0_50px_rgba(0,0,0,0.9)] border-l border-gold/10"
+              className="fixed top-0 right-0 h-screen w-[300px] bg-[#0A0A0A] z-[110] lg:hidden flex flex-col border-l border-gold/20 shadow-[-30px_0_80px_rgba(0,0,0,1)]"
             >
               {/* Sidebar Header */}
-              <div className="h-20 shrink-0 flex items-center justify-between px-8 border-b border-gold/5 bg-black">
+              <div className="h-20 shrink-0 flex items-center justify-between px-8 border-b border-gold/10 bg-black">
                 <div className="flex flex-col">
                   <span className="text-white font-serif font-bold text-lg uppercase tracking-widest leading-none mb-1">
                     CC Beauty
@@ -222,21 +222,22 @@ const Navbar = () => {
                 </div>
                 <button
                   onClick={closeMenu}
-                  className="text-gold p-2 hover:bg-gold/5 rounded-full transition-colors"
+                  className="text-gold/60 p-2 hover:bg-gold/10 hover:text-gold rounded-full transition-all"
                 >
                   <X className="h-5 w-5" />
                 </button>
               </div>
 
               {/* Scrollable Content */}
-              <div className="flex-1 overflow-y-auto px-8 py-12 no-scrollbar">
-                <nav className="flex flex-col space-y-6">
+              <div className="flex-1 overflow-y-auto no-scrollbar bg-[#0A0A0A]">
+                {/* Nav Links */}
+                <nav className="px-8 pt-10 pb-6 flex flex-col space-y-1">
                   {navLinks.map((link, idx) => (
                     <motion.div
                       key={link.name}
-                      initial={{ opacity: 0, x: 10 }}
+                      initial={{ opacity: 0, x: 20 }}
                       animate={{ opacity: 1, x: 0 }}
-                      transition={{ delay: 0.1 + idx * 0.05 }}
+                      transition={{ delay: 0.05 + idx * 0.06 }}
                     >
                       <Link
                         to={link.path}
@@ -244,16 +245,22 @@ const Navbar = () => {
                           handleAnchor(link.path);
                           closeMenu();
                         }}
-                        className="group flex flex-col"
+                        className={`group flex flex-col py-4 border-b transition-all duration-300 ${
+                          location.pathname === link.path
+                            ? "border-gold/20"
+                            : "border-white/5 hover:border-gold/10"
+                        }`}
                       >
-                        <span className="text-gold/30 text-[8px] font-black uppercase tracking-[0.4em] mb-1 group-hover:text-gold transition-colors font-sans">
-                          Series 0{idx + 1}
-                        </span>
+                        {/* Series label */}
+                        {/* <span className="text-gold/40 text-[8px] font-black uppercase tracking-[0.5em] mb-1.5 group-hover:text-gold/70 transition-colors">
+                          Series {String(idx + 1).padStart(2, "0")}
+                        </span> */}
+                        {/* Nav name */}
                         <span
-                          className={`text-white text-2xl font-serif font-bold uppercase tracking-widest transition-all duration-500 ${
+                          className={`text-2xl font-serif font-bold uppercase tracking-widest transition-all duration-300 ${
                             location.pathname === link.path
-                              ? "text-gold italic translate-x-2"
-                              : "group-hover:text-gold group-hover:italic group-hover:translate-x-2"
+                              ? "text-gold italic pl-2"
+                              : "text-white group-hover:text-gold group-hover:italic group-hover:pl-2"
                           }`}
                         >
                           {link.name}
@@ -263,36 +270,41 @@ const Navbar = () => {
                   ))}
                 </nav>
 
-                <div className="mt-16 space-y-12">
-                  <div className="h-px w-full bg-linear-to-r from-transparent via-gold/20 to-transparent" />
+                {/* Divider */}
+                <div className="mx-8 h-px bg-gradient-to-r from-transparent via-gold/20 to-transparent" />
 
-                  {/* Account Options */}
-                  <div className="flex flex-col gap-4">
-                    {user ? (
-                      <div className="space-y-4">
-                        <Link
-                          to={
-                            user.role === "admin" ||
-                            user.role === "manager" ||
-                            user.isAdmin
-                              ? "/admin"
-                              : user.role === "staff"
-                                ? "/staff"
-                                : "/dashboard"
-                          }
-                          onClick={closeMenu}
-                          className="flex items-center justify-between p-5 bg-gold/5 border border-gold/10 rounded-sm group hover:border-gold/30 transition-all"
-                        >
-                          <div className="flex items-center gap-4">
-                            {user.role === "admin" ||
-                            user.role === "manager" ||
-                            user.isAdmin ? (
-                              <Shield className="h-5 w-5 text-gold" />
-                            ) : user.role === "staff" ? (
-                              <Sparkles className="h-5 w-5 text-gold" />
-                            ) : (
-                              <Layout className="h-5 w-5 text-gold" />
-                            )}
+                {/* Account Section */}
+                <div className="px-8 pt-8 pb-10 space-y-4">
+                  <p className="text-[8px] font-black uppercase tracking-[0.5em] text-gold/30 mb-5">
+                    Account
+                  </p>
+
+                  {user ? (
+                    <div className="space-y-3">
+                      <Link
+                        to={
+                          user.role === "admin" ||
+                          user.role === "manager" ||
+                          user.isAdmin
+                            ? "/admin"
+                            : user.role === "staff"
+                              ? "/staff"
+                              : "/dashboard"
+                        }
+                        onClick={closeMenu}
+                        className="flex items-center justify-between p-5 bg-gold/5 border border-gold/10 group hover:border-gold/40 hover:bg-gold/10 transition-all duration-300"
+                      >
+                        <div className="flex items-center gap-4">
+                          {user.role === "admin" ||
+                          user.role === "manager" ||
+                          user.isAdmin ? (
+                            <Shield className="h-4 w-4 text-gold" />
+                          ) : user.role === "staff" ? (
+                            <Sparkles className="h-4 w-4 text-gold" />
+                          ) : (
+                            <Layout className="h-4 w-4 text-gold" />
+                          )}
+                          <div className="flex flex-col">
                             <span className="text-white text-[10px] font-black uppercase tracking-widest">
                               {user.role === "admin" || user.isAdmin
                                 ? "Management"
@@ -302,64 +314,67 @@ const Navbar = () => {
                                     ? "Provider Portal"
                                     : "My Sanctuary"}
                             </span>
+                            <span className="text-gold/40 text-[8px] uppercase tracking-widest mt-0.5">
+                              {user.name}
+                            </span>
                           </div>
-                          <ChevronRight className="h-4 w-4 text-gold group-hover:translate-x-1 transition-transform" />
-                        </Link>
+                        </div>
+                        <ChevronRight className="h-4 w-4 text-gold/40 group-hover:text-gold group-hover:translate-x-1 transition-all" />
+                      </Link>
 
-                        <button
-                          onClick={() => {
-                            logout();
-                            closeMenu();
-                          }}
-                          className="text-red-500/50 hover:text-red-500 text-[9px] font-black uppercase tracking-[0.3em] py-2 flex items-center gap-2 transition-colors"
-                        >
-                          <LogOut className="h-3 w-3" />
-                          Terminate Session
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col gap-4">
-                        <Link
-                          to="/register"
-                          onClick={closeMenu}
-                          className="bg-gold text-black py-5 text-center text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white transition-colors"
-                        >
-                          Begin Journey
-                        </Link>
-
-                        <Link
-                          to="/login"
-                          onClick={closeMenu}
-                          className="text-center text-gold/60 hover:text-gold text-[9px] font-black uppercase tracking-[0.4em] transition-colors"
-                        >
-                          Member Access
-                        </Link>
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Social Footer */}
-                  <div className="flex justify-between items-center pt-8 border-t border-gold/10">
-                    <div className="flex gap-6 text-[8px] font-black uppercase tracking-widest">
-                      <a
-                        href="https://instagram.com/cc_beauty_clinic"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gold/40 hover:text-gold transition-colors"
+                      <button
+                        onClick={() => {
+                          logout();
+                          closeMenu();
+                        }}
+                        className="w-full flex items-center gap-2 text-red-500/40 hover:text-red-500 text-[9px] font-black uppercase tracking-[0.3em] py-3 px-2 transition-colors"
                       >
-                        IG
-                      </a>
-                      <a
-                        href="https://www.tiktok.com/@cc_beauty_clinic"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-gold/40 hover:text-gold transition-colors"
-                      >
-                        TK
-                      </a>
+                        <LogOut className="h-3 w-3" />
+                        Terminate Session
+                      </button>
                     </div>
-                    <Sparkles className="text-gold h-4 w-4 animate-pulse" />
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <Link
+                        to="/register"
+                        onClick={closeMenu}
+                        className="bg-gold text-black py-5 text-center text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white transition-colors"
+                      >
+                        Begin Journey
+                      </Link>
+                      <Link
+                        to="/login"
+                        onClick={closeMenu}
+                        className="text-center text-gold/60 hover:text-gold text-[9px] font-black uppercase tracking-[0.4em] py-3 border border-white/5 hover:border-gold/20 transition-all"
+                      >
+                        Member Access
+                      </Link>
+                    </div>
+                  )}
+                </div>
+
+                {/* Social Footer */}
+                <div className="mx-8 h-px bg-gradient-to-r from-transparent via-gold/10 to-transparent" />
+                <div className="px-8 py-8 flex justify-between items-center">
+                  <div className="flex gap-6">
+                    <a
+                      href="https://instagram.com/cc_beauty_clinic"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[8px] font-black uppercase tracking-widest text-gold/30 hover:text-gold transition-colors"
+                    >
+                      IG
+                    </a>
+                    <a
+                      href="https://www.tiktok.com/@cc_beauty_clinic"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-[8px] font-black uppercase tracking-widest text-gold/30 hover:text-gold transition-colors"
+                    >
+                      TK
+                    </a>
                   </div>
+                  <Sparkles className="text-gold/30 h-3.5 w-3.5 animate-pulse" />
                 </div>
               </div>
             </motion.div>

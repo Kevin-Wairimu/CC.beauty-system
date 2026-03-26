@@ -133,10 +133,9 @@ const Admin = () => {
           .catch(() => ({ data: [] }));
         const allUsers = Array.isArray(userRes.data) ? userRes.data : [];
         setUsers(allUsers);
+        // Only actual 'staff' role members are considered for the performance ledger and assignments
         setStaff(
-          allUsers.filter((u) =>
-            ["staff", "manager", "admin"].includes(u.role?.toLowerCase()),
-          ),
+          allUsers.filter((u) => u.role?.toLowerCase() === "staff"),
         );
       }
 
@@ -169,7 +168,14 @@ const Admin = () => {
     // ── Staff stats — TODAY ONLY (resets every 24hrs) ──────────────────────
     const staffStats = {};
     staff.forEach((s) => {
-      staffStats[s._id] = { name: s.name, revenue: 0, services: 0 };
+      // Initialize ALL staff members with zero, so they always appear in the ledger
+      staffStats[s._id] = {
+        _id: s._id,
+        name: s.name,
+        revenue: 0,
+        services: 0,
+        specialization: s.specialization || [],
+      };
     });
 
     completed
@@ -215,9 +221,9 @@ const Admin = () => {
       activeEnquiries: enquiries.filter(
         (e) => e.status !== "closed" && e.status !== "resolved",
       ).length,
-      staffPerformance: Object.values(staffStats).sort(
-        (a, b) => b.revenue - a.revenue,
-      ),
+      staffPerformance: staff
+        .filter((s) => s.role?.toLowerCase() === "staff")
+        .map((s) => staffStats[s._id]),
       categoryRevenue: categoryStats,
       monthlyData,
       todayCompleted: completed.filter((a) => isToday(a.date)).length,
@@ -461,58 +467,58 @@ const Admin = () => {
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
-    <div className="bg-[#0A0A0A] min-h-screen text-white pt-10 pb-20 px-4 md:px-10">
-      <div className="max-w-[1600px] mx-auto">
+    <div className="bg-[#0A0A0A] min-h-screen text-white pt-6 pb-12 px-4 md:px-8">
+      <div className="max-w-[1440px] mx-auto">
         {/* TOP HUD */}
-        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-12 gap-8 border-b border-gold/10 pb-12">
-          <div className="flex items-center gap-4">
-            <div className="h-12 w-12 bg-gold/10 border border-gold/30 flex items-center justify-center">
-              <Layout className="text-gold h-6 w-6" />
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-8 gap-6 border-b border-gold/10 pb-8">
+          <div className="flex items-center gap-3">
+            <div className="h-10 w-10 bg-gold/10 border border-gold/30 flex items-center justify-center">
+              <Layout className="text-gold h-5 w-5" />
             </div>
             <div>
-              <h1 className="text-4xl font-serif font-bold uppercase tracking-tighter">
+              <h1 className="text-2xl md:text-3xl font-serif font-bold uppercase tracking-tighter">
                 Studio <span className="text-gold italic">Director</span>
               </h1>
-              <p className="text-[10px] text-gray-500 uppercase font-black tracking-[0.4em]">
+              <p className="text-[9px] text-gray-500 uppercase font-black tracking-[0.4em]">
                 Operational Intelligence Suite
               </p>
             </div>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 w-full lg:w-auto">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 w-full lg:w-auto">
             {[
               {
                 label: "Total Revenue",
                 val: `KSh ${stats.totalRevenue.toLocaleString()}`,
-                icon: <DollarSign className="h-4 w-4" />,
+                icon: <DollarSign className="h-3.5 w-3.5" />,
               },
               {
                 label: "Pipeline",
                 val: `KSh ${stats.pendingRevenue.toLocaleString()}`,
-                icon: <Activity className="h-4 w-4" />,
+                icon: <Activity className="h-3.5 w-3.5" />,
               },
               {
                 label: "Messages",
                 val: stats.activeEnquiries,
-                icon: <MessageSquare className="h-4 w-4" />,
+                icon: <MessageSquare className="h-3.5 w-3.5" />,
               },
               {
                 label: "Success",
                 val: `${stats.completionRate}%`,
-                icon: <TrendingUp className="h-4 w-4" />,
+                icon: <TrendingUp className="h-3.5 w-3.5" />,
               },
             ].map((s, i) => (
               <div
                 key={i}
-                className="bg-white/[0.03] border border-white/5 p-4 min-w-[140px] group hover:border-gold/30 transition-all"
+                className="bg-white/[0.03] border border-white/5 p-3 min-w-[130px] group hover:border-gold/30 transition-all"
               >
                 <div className="flex items-center gap-2 text-gray-500 mb-1 group-hover:text-gold transition-colors">
                   {s.icon}
-                  <span className="text-[9px] uppercase font-black tracking-widest">
+                  <span className="text-[8px] uppercase font-black tracking-widest">
                     {s.label}
                   </span>
                 </div>
-                <p className="text-xl font-bold font-serif text-white">
+                <p className="text-lg font-bold font-serif text-white">
                   {s.val}
                 </p>
               </div>
@@ -521,13 +527,13 @@ const Admin = () => {
         </div>
 
         {/* NAVIGATION */}
-        <div className="flex gap-2 bg-black/40 p-1 mb-12 border border-white/5 w-fit overflow-x-auto no-scrollbar max-w-full">
+        <div className="flex gap-1.5 bg-black/40 p-1 mb-8 border border-white/5 w-fit overflow-x-auto no-scrollbar max-w-full">
           {["appointments", "reports", "enquiries", "services", "team"].map(
             (tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-10 py-4 uppercase tracking-[0.2em] text-[10px] font-black transition-all whitespace-nowrap ${
+                className={`px-6 md:px-8 py-3 uppercase tracking-[0.2em] text-[9px] font-black transition-all whitespace-nowrap ${
                   activeTab === tab
                     ? "bg-gold text-white shadow-2xl"
                     : "text-gray-500 hover:text-gold"
@@ -540,12 +546,11 @@ const Admin = () => {
         </div>
 
         {loading ? (
-          <div className="py-40 text-center">
-            <div className="w-20 h-20 border-t-2 border-gold rounded-full animate-spin mx-auto mb-8" />
-            <p className="text-gold uppercase tracking-[0.5em] text-xs font-black">
-              Syncing Database Integrity...
-            </p>
-          </div>
+          <div className="py-32 text-center">
+            <div className="w-16 h-16 border-t-2 border-gold rounded-full animate-spin mx-auto mb-6" />
+            <p className="text-gold uppercase tracking-[0.5em] text-[10px] font-black">
+              cc beauty
+            </p>          </div>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -554,19 +559,19 @@ const Admin = () => {
           >
             {/* ── APPOINTMENTS TAB ─────────────────────────────────────────── */}
             {activeTab === "appointments" && (
-              <div className="space-y-6">
+              <div className="space-y-4">
                 {/* Active count badge */}
-                <div className="flex items-center gap-3 mb-2">
-                  <span className="text-[10px] uppercase font-black tracking-widest text-gray-500">
+                <div className="flex items-center gap-3 mb-1">
+                  <span className="text-[9px] uppercase font-black tracking-widest text-gray-500">
                     Active Queue
                   </span>
-                  <span className="bg-gold/10 border border-gold/30 text-gold text-[9px] font-black px-3 py-1 uppercase tracking-widest">
+                  <span className="bg-gold/10 border border-gold/30 text-gold text-[8px] font-black px-2 py-0.5 uppercase tracking-widest">
                     {activeAppointments.length} pending
                   </span>
                 </div>
 
                 {activeAppointments.length === 0 ? (
-                  <div className="glass-panel p-32 text-center text-gray-600 italic uppercase text-[10px] tracking-[0.5em]">
+                  <div className="glass-panel p-20 text-center text-gray-600 italic uppercase text-[9px] tracking-[0.5em]">
                     No services currently queued.
                   </div>
                 ) : (
@@ -575,37 +580,58 @@ const Admin = () => {
                     return (
                       <div
                         key={app._id}
-                        className="glass-panel p-8 flex flex-col xl:flex-row justify-between gap-8 group hover:border-gold/40 transition-all duration-700 bg-[#121212] border-white/10"
+                        className="glass-panel p-6 flex flex-col xl:flex-row justify-between gap-6 group hover:border-gold/40 transition-all duration-700 bg-[#121212] border-white/10"
                       >
-                        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 flex-grow">
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 flex-grow">
                           {/* Guest */}
-                          <div className="space-y-2">
-                            <span className="text-[9px] uppercase tracking-widest text-gold font-black flex items-center gap-2">
-                              <User className="h-3 w-3" /> The Guest
+                          <div className="space-y-1">
+                            <span className="text-[8px] uppercase tracking-widest text-gold font-black flex items-center gap-1.5">
+                              <User className="h-2.5 w-2.5" /> The Guest
                             </span>
-                            <h3 className="text-2xl font-bold text-white tracking-tight">
+                            <h3 className="text-xl font-bold text-white tracking-tight">
                               {app.name}
                             </h3>
-                            <p className="text-xs text-gray-400 font-medium">
+                            <p className="text-[11px] text-gray-400 font-medium">
                               {app.phone}{" "}
-                              <span className="mx-2 text-white/10">|</span>{" "}
+                              <span className="mx-1 text-white/10">|</span>{" "}
                               {app.email}
                             </p>
+                            {app.notes && (
+                              <div className="mt-3 p-2.5 bg-gold/[0.03] border-l-2 border-gold/30">
+                                <p className="text-[8px] uppercase font-black text-gold/60 mb-1">
+                                  {app.name}'s Message
+                                </p>
+                                <p className="text-[10px] text-gray-400 italic font-light leading-relaxed">
+                                  "{app.notes}"
+                                </p>
+                              </div>
+                            )}
+                            {app.status === "cancelled" &&
+                              app.cancellationReason && (
+                                <div className="mt-3 p-2.5 bg-red-500/[0.03] border-l-2 border-red-500/30">
+                                  <p className="text-[8px] uppercase font-black text-red-500/60 mb-1">
+                                    Cancellation Reason
+                                  </p>
+                                  <p className="text-[10px] text-red-400/70 italic font-light leading-relaxed">
+                                    "{app.cancellationReason}"
+                                  </p>
+                                </div>
+                              )}
                           </div>
 
                           {/* Service + Staff */}
-                          <div className="space-y-2">
-                            <span className="text-[9px] uppercase tracking-widest text-gold font-black flex items-center gap-2">
-                              <PieChart className="h-3 w-3" /> Service &
+                          <div className="space-y-1">
+                            <span className="text-[8px] uppercase tracking-widest text-gold font-black flex items-center gap-1.5">
+                              <PieChart className="h-2.5 w-2.5" /> Service &
                               Provider
                             </span>
-                            <h3 className="text-2xl font-serif text-gray-200">
+                            <h3 className="text-xl font-serif text-gray-200">
                               {app.service}
                             </h3>
-                            <p className="text-xs text-gold/60 font-black uppercase tracking-widest">
+                            <p className="text-[10px] text-gold/60 font-black uppercase tracking-widest">
                               KSh {displayPrice.toLocaleString()}
                             </p>
-                            <div className="pt-2">
+                            <div className="pt-1.5">
                               <select
                                 value={(() => {
                                   if (!app.staffId) return "";
@@ -621,7 +647,7 @@ const Admin = () => {
                                 onChange={(e) =>
                                   handleAssignStaff(app._id, e.target.value)
                                 }
-                                className="bg-black border border-white/10 text-gold text-[10px] uppercase font-black px-4 py-2 outline-none focus:border-gold transition-all w-full"
+                                className="bg-black border border-white/10 text-gold text-[9px] uppercase font-black px-3 py-1.5 outline-none focus:border-gold transition-all w-full"
                               >
                                 <option value="">Unassigned</option>
                                 {staff.map((s) => {
@@ -640,44 +666,46 @@ const Admin = () => {
                           </div>
 
                           {/* Date/Time */}
-                          <div className="space-y-2">
-                            <span className="text-[9px] uppercase tracking-widest text-gold font-black flex items-center gap-2">
-                              <Calendar className="h-3 w-3" /> Scheduled Time
+                          <div className="space-y-1">
+                            <span className="text-[8px] uppercase tracking-widest text-gold font-black flex items-center gap-1.5">
+                              <Calendar className="h-2.5 w-2.5" /> Scheduled
+                              Time
                             </span>
-                            <h3 className="text-2xl font-light text-gray-200">
+                            <h3 className="text-xl font-light text-gray-200">
                               {app.date}
                             </h3>
-                            <p className="text-xs text-gray-400 flex items-center gap-2 uppercase font-black tracking-widest">
-                              <Clock className="h-3 w-3 text-gold" /> {app.time}
+                            <p className="text-[11px] text-gray-400 flex items-center gap-1.5 uppercase font-black tracking-widest">
+                              <Clock className="h-2.5 w-2.5 text-gold" />{" "}
+                              {app.time}
                             </p>
                           </div>
                         </div>
 
                         {/* Actions */}
-                        <div className="flex items-center gap-4 border-t xl:border-t-0 xl:border-l border-white/5 pt-6 xl:pt-0 xl:pl-10">
-                          <div className="flex flex-wrap gap-3 w-full sm:w-auto">
+                        <div className="flex items-center gap-3 border-t xl:border-t-0 xl:border-l border-white/5 pt-4 xl:pt-0 xl:pl-8">
+                          <div className="flex flex-wrap gap-2 w-full sm:w-auto">
                             {app.status === "pending" && (
                               <button
                                 onClick={() => handleApprove(app._id)}
-                                className="flex-1 sm:flex-none bg-gold text-white px-8 py-3 text-[10px] font-black uppercase hover:brightness-110 transition-all flex items-center justify-center gap-2"
+                                className="flex-1 sm:flex-none bg-gold text-white px-6 py-2.5 text-[9px] font-black uppercase hover:brightness-110 transition-all flex items-center justify-center gap-1.5"
                               >
-                                <CheckCircle className="h-4 w-4" /> Confirm
+                                <CheckCircle className="h-3.5 w-3.5" /> Confirm
                               </button>
                             )}
                             {app.status === "approved" && (
                               <button
                                 onClick={() => handleComplete(app)}
-                                className="flex-1 sm:flex-none bg-green-600 text-white px-8 py-3 text-[10px] font-black uppercase hover:bg-green-500 transition-all flex items-center justify-center gap-2"
+                                className="flex-1 sm:flex-none bg-green-600 text-white px-6 py-2.5 text-[9px] font-black uppercase hover:bg-green-500 transition-all flex items-center justify-center gap-1.5"
                               >
-                                <CheckCircle2 className="h-4 w-4" />
+                                <CheckCircle2 className="h-3.5 w-3.5" />
                                 Mark Paid · KSh {displayPrice.toLocaleString()}
                               </button>
                             )}
                             <button
                               onClick={() => handleDeleteAppointment(app._id)}
-                              className="bg-red-500/10 text-red-500 border border-red-500/20 p-3 hover:bg-red-500 hover:text-white transition-all"
+                              className="bg-red-500/10 text-red-500 border border-red-500/20 p-2.5 hover:bg-red-500 hover:text-white transition-all"
                             >
-                              <Trash2 className="h-5 w-5" />
+                              <Trash2 className="h-4 w-4" />
                             </button>
                           </div>
                         </div>
@@ -690,46 +718,46 @@ const Admin = () => {
 
             {/* ── REPORTS TAB ──────────────────────────────────────────────── */}
             {activeTab === "reports" && (
-              <div className="space-y-12">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              <div className="space-y-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {/* Salon Revenue */}
-                  <div className="glass-panel p-10 bg-gradient-to-br from-[#121212] to-black border-gold/20 relative overflow-hidden">
-                    <div className="absolute top-0 right-0 p-8 opacity-5">
-                      <DollarSign className="h-40 w-40 text-gold" />
+                  <div className="glass-panel p-8 bg-gradient-to-br from-[#121212] to-black border-gold/20 relative overflow-hidden">
+                    <div className="absolute top-0 right-0 p-6 opacity-5">
+                      <DollarSign className="h-32 w-32 text-gold" />
                     </div>
-                    <div className="flex justify-between items-start mb-10 relative z-10">
+                    <div className="flex justify-between items-start mb-8 relative z-10">
                       <div>
-                        <h2 className="text-3xl font-serif font-bold text-white uppercase tracking-widest">
+                        <h2 className="text-2xl font-serif font-bold text-white uppercase tracking-widest">
                           Salon Performance
                         </h2>
-                        <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] mt-2">
+                        <p className="text-[9px] text-gray-500 font-black uppercase tracking-[0.3em] mt-1.5">
                           Cumulative Financial Intelligence
                         </p>
                       </div>
                       {/* Graph button — opens monthly revenue chart */}
                       <button
                         onClick={() => setShowRevenueChart(true)}
-                        className="h-14 w-14 bg-gold/10 border border-gold/30 flex items-center justify-center text-gold hover:bg-gold hover:text-black transition-all group"
+                        className="h-12 w-12 bg-gold/10 border border-gold/30 flex items-center justify-center text-gold hover:bg-gold hover:text-black transition-all group"
                         title="View monthly revenue chart"
                       >
-                        <BarChart3 className="h-8 w-8" />
+                        <BarChart3 className="h-6 w-6" />
                       </button>
                     </div>
-                    <div className="space-y-8 relative z-10">
-                      <div className="flex justify-between items-end border-b border-white/5 pb-6">
-                        <span className="text-xs text-gray-400 font-black uppercase tracking-widest">
+                    <div className="space-y-6 relative z-10">
+                      <div className="flex justify-between items-end border-b border-white/5 pb-4">
+                        <span className="text-[10px] text-gray-400 font-black uppercase tracking-widest">
                           Realized Salon Total
                         </span>
-                        <span className="text-4xl font-serif font-black text-gold">
+                        <span className="text-3xl font-serif font-black text-gold">
                           KSh {stats.totalRevenue.toLocaleString()}
                         </span>
                       </div>
-                      <div className="grid grid-cols-2 gap-8 pt-4">
+                      <div className="grid grid-cols-2 gap-6 pt-2">
                         <div>
-                          <p className="text-[9px] text-gray-500 uppercase font-black mb-1">
+                          <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
                             Services Finished
                           </p>
-                          <p className="text-2xl font-bold">
+                          <p className="text-xl font-bold">
                             {
                               appointments.filter(
                                 (a) => a.status === "completed",
@@ -738,10 +766,10 @@ const Admin = () => {
                           </p>
                         </div>
                         <div>
-                          <p className="text-[9px] text-gray-500 uppercase font-black mb-1">
+                          <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
                             Avg Service Value
                           </p>
-                          <p className="text-2xl font-bold">
+                          <p className="text-xl font-bold">
                             KSh{" "}
                             {stats.totalRevenue > 0
                               ? Math.round(
@@ -755,20 +783,20 @@ const Admin = () => {
                         </div>
                       </div>
                       {/* Today's snapshot */}
-                      <div className="border-t border-white/5 pt-6 flex justify-between items-center">
+                      <div className="border-t border-white/5 pt-4 flex justify-between items-center">
                         <div>
-                          <p className="text-[9px] text-gray-500 uppercase font-black mb-1">
+                          <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
                             Today's Revenue
                           </p>
-                          <p className="text-xl font-bold text-green-400">
+                          <p className="text-lg font-bold text-green-400">
                             KSh {stats.todayRevenue.toLocaleString()}
                           </p>
                         </div>
                         <div className="text-right">
-                          <p className="text-[9px] text-gray-500 uppercase font-black mb-1">
+                          <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
                             Today's Services
                           </p>
-                          <p className="text-xl font-bold text-green-400">
+                          <p className="text-lg font-bold text-green-400">
                             {stats.todayCompleted}
                           </p>
                         </div>
@@ -777,16 +805,16 @@ const Admin = () => {
                   </div>
 
                   {/* Category Revenue */}
-                  <div className="glass-panel p-10 bg-[#121212] border-white/10">
-                    <h3 className="text-xs font-black uppercase tracking-widest text-gold mb-8">
+                  <div className="glass-panel p-8 bg-[#121212] border-white/10">
+                    <h3 className="text-[10px] font-black uppercase tracking-widest text-gold mb-6">
                       Category Revenue Breakdown
                     </h3>
-                    <div className="space-y-6">
+                    <div className="space-y-5">
                       {Object.keys(stats.categoryRevenue).length > 0 ? (
                         Object.entries(stats.categoryRevenue).map(
                           ([cat, rev]) => (
-                            <div key={cat} className="space-y-2">
-                              <div className="flex justify-between text-[10px] font-black uppercase tracking-widest">
+                            <div key={cat} className="space-y-1.5">
+                              <div className="flex justify-between text-[9px] font-black uppercase tracking-widest">
                                 <span className="text-gray-400">{cat}</span>
                                 <span className="text-white">
                                   KSh {rev.toLocaleString()}
@@ -800,7 +828,7 @@ const Admin = () => {
                                   }}
                                 />
                               </div>
-                              <p className="text-[9px] text-gray-600 text-right">
+                              <p className="text-[8px] text-gray-600 text-right">
                                 {stats.totalRevenue > 0
                                   ? ((rev / stats.totalRevenue) * 100).toFixed(
                                       1,
@@ -812,7 +840,7 @@ const Admin = () => {
                           ),
                         )
                       ) : (
-                        <p className="text-center py-10 text-gray-600 italic uppercase text-[10px] tracking-widest">
+                        <p className="text-center py-8 text-gray-600 italic uppercase text-[9px] tracking-widest">
                           No service data recorded.
                         </p>
                       )}
@@ -822,166 +850,116 @@ const Admin = () => {
 
                 {/* Staff Performance — TODAY ONLY, resets each 24hrs */}
                 <div className="glass-panel overflow-hidden border-white/10">
-                  <div className="p-8 border-b border-white/5 flex justify-between items-center bg-[#0C0C0C]">
+                  <div className="p-6 border-b border-white/5 flex justify-between items-center bg-[#0C0C0C]">
                     <div>
-                      <h3 className="text-xl font-serif font-bold uppercase tracking-widest text-gold">
+                      <h3 className="text-lg font-serif font-bold uppercase tracking-widest text-gold">
                         Specialist Performance Ledger
                       </h3>
-                      <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest mt-1">
-                        Individual Contribution — Today Only · Resets at
-                        Midnight
-                      </p>
                     </div>
-                    <div className="flex items-center gap-3">
-                      {/* Live date badge */}
-                      <span className="text-[9px] font-black uppercase tracking-widest border border-gold/20 text-gold/60 px-3 py-2">
-                        {new Date().toLocaleDateString("en-GB", {
-                          weekday: "short",
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })}
-                      </span>
-                      <Award className="h-6 w-6 text-gold opacity-50" />
+                    <div className="flex items-center gap-2">
+                      <Award className="h-5 w-5 text-gold opacity-50" />
                     </div>
                   </div>
-                  <div className="overflow-x-auto">
-                    <table className="w-full text-left">
-                      <thead className="bg-black/60 text-[9px] uppercase font-black tracking-widest text-gray-500">
-                        <tr>
-                          <th className="p-6">Specialist Name</th>
-                          <th className="p-6">Services Today</th>
-                          <th className="p-6 text-right">Revenue Today</th>
-                          <th className="p-6 text-right">% of Today's Total</th>
-                          <th className="p-6 text-right">Avg Per Service</th>
-                        </tr>
-                      </thead>
-                      <tbody className="divide-y divide-white/5">
-                        {stats.staffPerformance.length > 0 ? (
-                          stats.staffPerformance.map((s, idx) => {
-                            const avgPerService =
-                              s.services > 0
-                                ? Math.round(s.revenue / s.services)
-                                : 0;
-                            const pctOfToday =
-                              stats.todayRevenue > 0
-                                ? (
-                                    (s.revenue / stats.todayRevenue) *
-                                    100
-                                  ).toFixed(1)
-                                : "0.0";
-                            return (
-                              <tr
-                                key={idx}
-                                className="hover:bg-white/[0.02] transition-colors group"
-                              >
-                                <td className="p-6">
-                                  <div className="flex items-center gap-3">
-                                    <div className="h-8 w-8 bg-gold/10 border border-gold/20 flex items-center justify-center text-gold font-bold text-[10px]">
-                                      {s.name.charAt(0)}
-                                    </div>
-                                    <span className="font-bold text-sm text-white group-hover:text-gold transition-colors">
-                                      {s.name}
-                                    </span>
-                                  </div>
-                                </td>
-                                <td className="p-6">
-                                  <span className="text-xs text-gray-400">
-                                    {s.services}{" "}
-                                    {s.services === 1 ? "service" : "services"}
-                                  </span>
-                                </td>
-                                <td className="p-6 text-right">
-                                  <span className="font-serif font-bold text-white text-lg">
-                                    KSh {s.revenue.toLocaleString()}
-                                  </span>
-                                </td>
-                                <td className="p-6 text-right">
-                                  <div className="flex flex-col items-end gap-1">
-                                    <span className="text-[10px] font-black text-gold">
-                                      {pctOfToday}%
-                                    </span>
-                                    {/* Mini bar */}
-                                    <div className="w-16 h-1 bg-white/5">
-                                      <div
-                                        className="h-full bg-gold/60 transition-all duration-700"
-                                        style={{ width: `${pctOfToday}%` }}
-                                      />
-                                    </div>
-                                  </div>
-                                </td>
-                                <td className="p-6 text-right">
-                                  <span className="text-xs text-gray-400 font-bold">
-                                    KSh {avgPerService.toLocaleString()}
-                                  </span>
-                                </td>
-                              </tr>
-                            );
-                          })
-                        ) : (
-                          <tr>
-                            <td
-                              colSpan="5"
-                              className="p-20 text-center text-gray-600 italic uppercase text-[10px] tracking-[0.5em]"
-                            >
-                              No services completed today yet.
-                            </td>
-                          </tr>
-                        )}
-                      </tbody>
-                      {/* Daily totals footer */}
-                      {stats.staffPerformance.some((s) => s.services > 0) && (
-                        <tfoot className="bg-black/40 border-t border-gold/20">
-                          <tr>
-                            <td className="p-6 text-[9px] font-black uppercase tracking-widest text-gold">
-                              Daily Total
-                            </td>
-                            <td className="p-6 text-xs text-gray-300 font-bold">
-                              {stats.todayCompleted} services
-                            </td>
-                            <td className="p-6 text-right font-serif font-black text-gold text-xl">
-                              KSh {stats.todayRevenue.toLocaleString()}
-                            </td>
-                            <td className="p-6 text-right text-[10px] text-gold font-black">
-                              100%
-                            </td>
-                            <td className="p-6 text-right text-xs text-gray-400 font-bold">
-                              KSh{" "}
-                              {stats.todayCompleted > 0
-                                ? Math.round(
-                                    stats.todayRevenue / stats.todayCompleted,
-                                  ).toLocaleString()
-                                : 0}
-                            </td>
-                          </tr>
-                        </tfoot>
-                      )}
-                    </table>
-                  </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {stats.staffPerformance.map((s, idx) => {
+                    const avgPerService =
+                      s.services > 0 ? Math.round(s.revenue / s.services) : 0;
+                    const pctOfToday =
+                      stats.todayRevenue > 0
+                        ? ((s.revenue / stats.todayRevenue) * 100).toFixed(1)
+                        : "0.0";
+
+                    return (
+                      <div
+                        key={idx}
+                        className="glass-panel p-6 bg-[#121212] border-white/10 group hover:border-gold/30 transition-all"
+                      >
+                        <div className="flex items-center gap-4 mb-6">
+                          <div className="h-12 w-12 bg-gold/10 border border-gold/20 flex items-center justify-center text-gold font-bold text-xl">
+                            {s.name.charAt(0)}
+                          </div>
+                          <div>
+                            <h3 className="text-xl font-bold text-white tracking-tighter group-hover:text-gold transition-colors">
+                              {s.name}
+                            </h3>
+                            <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest">
+                              {s.specialization?.join(", ")}
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
+                          <div>
+                            <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
+                              Services
+                            </p>
+                            <p className="text-lg font-bold">{s.services}</p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
+                              Revenue
+                            </p>
+                            <p className="text-lg font-serif font-bold text-gold">
+                              KSh {s.revenue.toLocaleString()}
+                            </p>
+                          </div>
+                          <div>
+                            <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
+                              Avg/Service
+                            </p>
+                            <p className="text-xs font-bold text-gray-400">
+                              KSh {avgPerService.toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="text-right">
+                            <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
+                              Share
+                            </p>
+                            <p className="text-xs font-black text-gold">
+                              {pctOfToday}%
+                            </p>
+                          </div>
+                        </div>
+
+                        <div className="mt-4 h-1 bg-white/5 overflow-hidden">
+                          <div
+                            className="h-full bg-gold transition-all duration-1000"
+                            style={{ width: `${pctOfToday}%` }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })}
+                  {stats.staffPerformance.length === 0 && (
+                    <div className="col-span-full py-20 text-center text-gray-600 italic uppercase text-[9px] tracking-[0.5em]">
+                      No services completed today yet.
+                    </div>
+                  )}
+                </div>
                 </div>
 
                 {/* Transaction History */}
                 <div className="glass-panel overflow-hidden border-white/10">
-                  <div className="p-8 border-b border-white/5 flex justify-between items-center">
-                    <h3 className="text-xl font-serif font-bold uppercase tracking-widest">
+                  <div className="p-6 border-b border-white/5 flex justify-between items-center">
+                    <h3 className="text-lg font-serif font-bold uppercase tracking-widest">
                       Transaction History
                     </h3>
-                    <button className="text-[9px] font-black uppercase tracking-widest text-gold flex items-center gap-2 border border-gold/30 px-4 py-2 hover:bg-gold hover:text-black transition-all">
+                    <button className="text-[8px] font-black uppercase tracking-widest text-gold flex items-center gap-1.5 border border-gold/30 px-3 py-1.5 hover:bg-gold hover:text-black transition-all">
                       <Download className="h-3 w-3" /> Export Ledger
                     </button>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
-                      <thead className="bg-black/60 text-[9px] uppercase font-black tracking-widest text-gray-500">
+                      <thead className="bg-black/60 text-[8px] uppercase font-black tracking-widest text-gray-500">
                         <tr>
-                          <th className="p-6">Date</th>
-                          <th className="p-6">Client</th>
-                          <th className="p-6">Service</th>
-                          <th className="p-6">Staff</th>
-                          <th className="p-6">Status</th>
-                          <th className="p-6">Receipt No.</th>
-                          <th className="p-6 text-right">Amount</th>
-                          <th className="p-6 text-right"></th>
+                          <th className="p-4">Date</th>
+                          <th className="p-4">Client</th>
+                          <th className="p-4">Service</th>
+                          <th className="p-4">Staff</th>
+                          <th className="p-4">Status</th>
+                          <th className="p-4">Receipt No.</th>
+                          <th className="p-4 text-right">Amount</th>
+                          <th className="p-4 text-right"></th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
@@ -992,39 +970,39 @@ const Admin = () => {
                               key={app._id}
                               className="hover:bg-white/[0.02] transition-colors"
                             >
-                              <td className="p-6 text-xs text-gray-400">
+                              <td className="p-4 text-[11px] text-gray-400">
                                 {app.date}
                               </td>
-                              <td className="p-6 font-bold text-sm">
+                              <td className="p-4 font-bold text-xs">
                                 {app.name}
                               </td>
-                              <td className="p-6 text-xs italic">
+                              <td className="p-4 text-[11px] italic">
                                 {app.service}
                               </td>
-                              <td className="p-6 text-xs text-gray-400">
+                              <td className="p-4 text-[11px] text-gray-400">
                                 {app.staffId?.name ||
                                   app.handledBy?.name ||
                                   "—"}
                               </td>
-                              <td className="p-6">
-                                <span className="px-3 py-1 text-[8px] font-black uppercase tracking-widest border border-green-500/30 text-green-500">
+                              <td className="p-4">
+                                <span className="px-2 py-0.5 text-[7px] font-black uppercase tracking-widest border border-green-500/30 text-green-500">
                                   completed
                                 </span>
                               </td>
-                              <td className="p-6 text-[10px] font-black text-gold/60 tracking-widest">
+                              <td className="p-4 text-[9px] font-black text-gold/60 tracking-widest">
                                 {app.receiptNo || "—"}
                               </td>
-                              <td className="p-6 text-right font-serif font-bold">
+                              <td className="p-4 text-right font-serif font-bold text-xs">
                                 KSh{" "}
                                 {parseFloat(app.price || 0).toLocaleString()}
                               </td>
-                              <td className="p-6 text-right">
+                              <td className="p-4 text-right">
                                 {app.receiptNo && (
                                   <button
                                     onClick={() => setReceiptAppointment(app)}
-                                    className="text-[9px] font-black uppercase tracking-widest text-gold/60 hover:text-gold flex items-center gap-1 ml-auto border border-gold/10 hover:border-gold/40 px-3 py-1.5 transition-all"
+                                    className="text-[8px] font-black uppercase tracking-widest text-gold/60 hover:text-gold flex items-center gap-1 ml-auto border border-gold/10 hover:border-gold/40 px-2.5 py-1.5 transition-all"
                                   >
-                                    <Receipt className="h-3 w-3" /> View
+                                    <Receipt className="h-2.5 w-2.5" /> View
                                   </button>
                                 )}
                               </td>
@@ -1035,7 +1013,7 @@ const Admin = () => {
                           <tr>
                             <td
                               colSpan="8"
-                              className="p-20 text-center text-gray-600 italic uppercase text-[10px] tracking-[0.5em]"
+                              className="p-16 text-center text-gray-600 italic uppercase text-[9px] tracking-[0.5em]"
                             >
                               No completed transactions yet.
                             </td>
@@ -1050,22 +1028,22 @@ const Admin = () => {
 
             {/* ── ENQUIRIES TAB ─────────────────────────────────────────────── */}
             {activeTab === "enquiries" && (
-              <div className="grid grid-cols-1 gap-6">
+              <div className="grid grid-cols-1 gap-5">
                 {enquiries.length === 0 ? (
-                  <div className="glass-panel p-32 text-center text-gray-600 italic uppercase text-[10px] tracking-[0.5em]">
+                  <div className="glass-panel p-24 text-center text-gray-600 italic uppercase text-[9px] tracking-[0.5em]">
                     The message box is empty.
                   </div>
                 ) : (
                   enquiries.map((enq) => (
                     <div
                       key={enq._id}
-                      className="glass-panel p-10 bg-[#121212] border-white/5 hover:border-gold/20 transition-all duration-500"
+                      className="glass-panel p-8 bg-[#121212] border-white/5 hover:border-gold/20 transition-all duration-500"
                     >
-                      <div className="flex flex-col md:flex-row justify-between gap-8 mb-8">
-                        <div className="space-y-2">
+                      <div className="flex flex-col md:flex-row justify-between gap-6 mb-6">
+                        <div className="space-y-1.5">
                           <div className="flex items-center gap-3">
                             <span
-                              className={`px-3 py-1 text-[8px] font-black uppercase tracking-widest border ${
+                              className={`px-2 py-0.5 text-[7px] font-black uppercase tracking-widest border ${
                                 enq.status === "resolved"
                                   ? "border-green-500 text-green-500"
                                   : "border-gold text-gold"
@@ -1073,13 +1051,13 @@ const Admin = () => {
                             >
                               {enq.status || "new"}
                             </span>
-                            <h3 className="text-3xl font-serif font-bold text-white">
+                            <h3 className="text-2xl font-serif font-bold text-white">
                               {enq.name}
                             </h3>
                           </div>
-                          <p className="text-xs text-gray-500 font-bold uppercase tracking-widest">
+                          <p className="text-[11px] text-gray-500 font-bold uppercase tracking-widest">
                             {enq.email}{" "}
-                            <span className="mx-2 text-white/10">|</span>{" "}
+                            <span className="mx-1 text-white/10">|</span>{" "}
                             {enq.phone}
                           </p>
                         </div>
@@ -1092,27 +1070,29 @@ const Admin = () => {
                                 notes: enq.notes || "",
                               });
                             }}
-                            className="bg-white/5 border border-white/10 p-4 hover:bg-gold hover:text-black transition-all"
+                            className="bg-white/5 border border-white/10 p-3 hover:bg-gold hover:text-black transition-all"
                           >
-                            <Edit className="h-5 w-5" />
+                            <Edit className="h-4 w-4" />
                           </button>
                           <button
                             onClick={() => handleDeleteEnquiry(enq._id)}
-                            className="bg-red-500/10 text-red-500 border border-red-500/20 p-4 hover:bg-red-500 hover:text-white transition-all"
+                            className="bg-red-500/10 text-red-500 border border-red-500/20 p-3 hover:bg-red-500 hover:text-white transition-all"
                           >
-                            <Trash2 className="h-5 w-5" />
+                            <Trash2 className="h-4 w-4" />
                           </button>
                         </div>
                       </div>
-                      <div className="bg-black/60 p-8 border-l-4 border-gold shadow-inner text-gray-300 italic text-lg font-light leading-relaxed mb-6">
+                      <div className="bg-black/60 p-6 border-l-3 border-gold shadow-inner text-gray-300 italic text-base font-light leading-relaxed mb-4">
                         "{enq.message}"
                       </div>
                       {enq.notes && (
-                        <div className="p-4 bg-gold/5 border border-gold/10 rounded">
-                          <p className="text-[9px] uppercase font-black text-gold mb-1">
+                        <div className="p-3 bg-gold/5 border border-gold/10 rounded">
+                          <p className="text-[8px] uppercase font-black text-gold mb-1">
                             Internal Notes
                           </p>
-                          <p className="text-xs text-gray-400">{enq.notes}</p>
+                          <p className="text-[11px] text-gray-400">
+                            {enq.notes}
+                          </p>
                         </div>
                       )}
                     </div>
@@ -1123,7 +1103,7 @@ const Admin = () => {
 
             {/* ── SERVICES TAB ──────────────────────────────────────────────── */}
             {activeTab === "services" && (
-              <div className="space-y-10">
+              <div className="space-y-8">
                 <div className="flex justify-end">
                   <button
                     onClick={() => {
@@ -1138,19 +1118,19 @@ const Admin = () => {
                       });
                       setShowServiceForm(true);
                     }}
-                    className="bg-gold text-white px-8 py-4 text-xs font-black uppercase tracking-widest flex items-center gap-3 hover:scale-105 transition-all shadow-2xl shadow-gold/20"
+                    className="bg-gold text-white px-6 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-2.5 hover:scale-105 transition-all shadow-2xl shadow-gold/20"
                   >
-                    <Plus className="h-4 w-4" /> Add Service
+                    <Plus className="h-3.5 w-3.5" /> Add Service
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {services.map((s) => (
                     <div
                       key={s._id}
-                      className="glass-panel p-8 bg-[#121212] border-white/10 relative overflow-hidden group hover:border-gold/40 transition-all duration-500"
+                      className="glass-panel p-6 bg-[#121212] border-white/10 relative overflow-hidden group hover:border-gold/40 transition-all duration-500"
                     >
                       {s.image && (
-                        <div className="absolute top-0 right-0 w-32 h-32 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <div className="absolute top-0 right-0 w-24 h-24 opacity-10 group-hover:opacity-20 transition-opacity">
                           <img
                             src={s.image}
                             alt=""
@@ -1158,18 +1138,18 @@ const Admin = () => {
                           />
                         </div>
                       )}
-                      <div className="flex justify-between items-start mb-8 relative z-10">
-                        <span className="bg-gold/10 text-gold text-[9px] font-black px-4 py-1.5 uppercase tracking-widest border border-gold/30">
+                      <div className="flex justify-between items-start mb-6 relative z-10">
+                        <span className="bg-gold/10 text-gold text-[8px] font-black px-3 py-1 uppercase tracking-widest border border-gold/30">
                           {s.category}
                         </span>
-                        <span className="text-2xl font-serif font-black text-gold">
+                        <span className="text-xl font-serif font-black text-gold">
                           KSh {s.price}
                         </span>
                       </div>
-                      <h3 className="text-2xl font-bold text-white mb-2 relative z-10">
+                      <h3 className="text-xl font-bold text-white mb-1.5 relative z-10">
                         {s.name}
                       </h3>
-                      <p className="text-[10px] text-gray-500 uppercase tracking-widest mb-10">
+                      <p className="text-[9px] text-gray-500 uppercase tracking-widest mb-8">
                         {s.duration || "60 mins"}
                       </p>
                       <div className="flex gap-2 relative z-10">
@@ -1179,15 +1159,15 @@ const Admin = () => {
                             setServiceFormData(s);
                             setShowServiceForm(true);
                           }}
-                          className="flex-1 bg-white/5 border border-white/10 py-3 flex justify-center hover:bg-gold hover:text-black transition-all"
+                          className="flex-1 bg-white/5 border border-white/10 py-2.5 flex justify-center hover:bg-gold hover:text-black transition-all"
                         >
-                          <Edit className="h-4 w-4" />
+                          <Edit className="h-3.5 w-3.5" />
                         </button>
                         <button
                           onClick={() => deleteService(s._id)}
-                          className="flex-1 bg-red-500/5 border border-red-500/10 py-3 flex justify-center hover:bg-red-500 hover:text-white transition-all"
+                          className="flex-1 bg-red-500/5 border border-red-500/10 py-2.5 flex justify-center hover:bg-red-500 hover:text-white transition-all"
                         >
-                          <Trash2 className="h-4 w-4" />
+                          <Trash2 className="h-3.5 w-3.5" />
                         </button>
                       </div>
                     </div>
@@ -1198,13 +1178,13 @@ const Admin = () => {
 
             {/* ── TEAM TAB ──────────────────────────────────────────────────── */}
             {activeTab === "team" && (
-              <div className="space-y-8">
-                <div className="flex justify-between items-center mb-10 border-b border-white/5 pb-8">
+              <div className="space-y-12">
+                <div className="flex justify-between items-center mb-4 border-b border-white/5 pb-6">
                   <div>
-                    <h2 className="text-3xl font-serif font-bold uppercase tracking-widest text-gold">
+                    <h2 className="text-2xl font-serif font-bold uppercase tracking-widest text-gold">
                       Talent Hub
                     </h2>
-                    <p className="text-[10px] text-gray-500 font-black uppercase tracking-[0.3em] mt-2">
+                    <p className="text-[9px] text-gray-500 font-black uppercase tracking-[0.3em] mt-1.5">
                       Manage permissions and specializations
                     </p>
                   </div>
@@ -1220,106 +1200,173 @@ const Admin = () => {
                       });
                       setShowUserForm(true);
                     }}
-                    className="bg-gold text-white px-8 py-4 text-xs font-black uppercase tracking-widest flex items-center gap-3"
+                    className="bg-gold text-white px-6 py-3 text-[10px] font-black uppercase tracking-widest flex items-center gap-2.5"
                   >
-                    <UserPlus className="h-4 w-4" /> Add Member
+                    <UserPlus className="h-3.5 w-3.5" /> Add Member
                   </button>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                  {users.map((u) => (
-                    <div
-                      key={u._id}
-                      className="glass-panel p-10 bg-[#121212] border-white/5 hover:border-gold/30 transition-all group"
-                    >
-                      <div className="flex items-center gap-6 mb-10">
+
+                {/* Personnel Section */}
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-[0.4em] text-gold/60 mb-8 flex items-center gap-3">
+                    <Shield className="h-4 w-4" /> Personnel & Management
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {users
+                      .filter((u) => u.role !== "client")
+                      .map((u) => (
                         <div
-                          className={`h-16 w-16 border flex items-center justify-center transition-all duration-500 ${u.role !== "client" ? "bg-gold text-black border-gold" : "bg-gold/10 text-gold border-gold/20"}`}
+                          key={u._id}
+                          className="glass-panel p-8 bg-[#121212] border-white/5 hover:border-gold/30 transition-all group"
                         >
-                          <User className="h-8 w-8" />
-                        </div>
-                        <div className="flex-grow">
-                          <h3 className="text-2xl font-bold text-white tracking-tighter">
-                            {u.name}
-                          </h3>
-                          <p className="text-[10px] text-gray-500 font-black uppercase tracking-widest">
-                            {u.email}
-                          </p>
-                          <span className="text-[8px] font-black uppercase tracking-[0.2em] text-gold mt-1 block">
-                            {u.role}
-                          </span>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                          <button
-                            onClick={() => {
-                              setEditingUser(u);
-                              setUserFormData({
-                                ...u,
-                                password: "",
-                                specialization:
-                                  u.specialization?.join(", ") || "",
-                              });
-                              setShowUserForm(true);
-                            }}
-                            className="p-2 bg-white/5 border border-white/10 hover:text-gold transition-colors"
-                          >
-                            <Edit className="h-4 w-4" />
-                          </button>
-                          <button
-                            onClick={() => handleDeleteUser(u._id)}
-                            className="p-2 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                          </button>
-                        </div>
-                      </div>
-                      <div className="space-y-6">
-                        <div className="space-y-3">
-                          <span className="text-[9px] uppercase tracking-widest text-gold font-black block">
-                            Quick Role Toggle
-                          </span>
-                          <div className="grid grid-cols-2 gap-2">
-                            {["client", "staff", "manager", "admin"].map(
-                              (role) => (
-                                <button
-                                  key={role}
-                                  onClick={() => handleUpdateRole(u._id, role)}
-                                  disabled={
-                                    role === "admin" &&
-                                    user.role !== "admin" &&
-                                    user.role !== "manager"
-                                  }
-                                  className={`py-2.5 text-[8px] font-black uppercase tracking-widest border transition-all ${
-                                    u.role === role
-                                      ? "bg-gold text-black border-gold"
-                                      : "border-white/10 text-gray-500 hover:border-gold/50"
-                                  }`}
-                                >
-                                  {role}
-                                </button>
-                              ),
+                          <div className="flex items-center gap-4 mb-8">
+                            <div className="h-12 w-12 bg-gold text-black flex items-center justify-center">
+                              <User className="h-6 w-6" />
+                            </div>
+                            <div className="flex-grow">
+                              <h3 className="text-xl font-bold text-white tracking-tighter">
+                                {u.name}
+                              </h3>
+                              <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest">
+                                {u.email}
+                              </p>
+                              <span className="text-[7px] font-black uppercase tracking-[0.2em] text-gold mt-0.5 block">
+                                {u.role}
+                              </span>
+                            </div>
+                            <div className="flex flex-col gap-1.5">
+                              <button
+                                onClick={() => {
+                                  setEditingUser(u);
+                                  setUserFormData({
+                                    ...u,
+                                    password: "",
+                                    specialization:
+                                      u.specialization?.join(", ") || "",
+                                  });
+                                  setShowUserForm(true);
+                                }}
+                                className="p-1.5 bg-white/5 border border-white/10 hover:text-gold transition-colors"
+                              >
+                                <Edit className="h-3.5 w-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteUser(u._id)}
+                                className="p-1.5 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 hover:text-white transition-all"
+                              >
+                                <Trash2 className="h-3.5 w-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                          <div className="space-y-5">
+                            <div className="space-y-2">
+                              <span className="text-[8px] uppercase tracking-widest text-gold font-black block">
+                                Quick Role Toggle
+                              </span>
+                              <div className="grid grid-cols-2 gap-1.5">
+                                {["client", "staff", "manager", "admin"].map(
+                                  (role) => (
+                                    <button
+                                      key={role}
+                                      onClick={() =>
+                                        handleUpdateRole(u._id, role)
+                                      }
+                                      disabled={
+                                        role === "admin" &&
+                                        user.role !== "admin" &&
+                                        user.role !== "manager"
+                                      }
+                                      className={`py-2 text-[7px] font-black uppercase tracking-widest border transition-all ${
+                                        u.role === role
+                                          ? "bg-gold text-black border-gold"
+                                          : "border-white/10 text-gray-500 hover:border-gold/50"
+                                      }`}
+                                    >
+                                      {role}
+                                    </button>
+                                  ),
+                                )}
+                              </div>
+                            </div>
+                            {u.specialization && (
+                              <div className="pt-4 border-t border-white/5">
+                                <span className="text-[8px] uppercase tracking-widest text-gold font-black block mb-1.5">
+                                  Portfolio
+                                </span>
+                                <div className="flex flex-wrap gap-1.5">
+                                  {u.specialization.map((s) => (
+                                    <span
+                                      key={s}
+                                      className="px-1.5 py-0.5 bg-white/5 border border-white/10 text-[7px] font-black uppercase text-gray-400"
+                                    >
+                                      {s}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
                             )}
                           </div>
                         </div>
-                        {u.role !== "client" && u.specialization && (
-                          <div className="pt-6 border-t border-white/5">
-                            <span className="text-[9px] uppercase tracking-widest text-gold font-black block mb-2">
-                              Portfolio
-                            </span>
-                            <div className="flex flex-wrap gap-2">
-                              {u.specialization.map((s) => (
-                                <span
-                                  key={s}
-                                  className="px-2 py-1 bg-white/5 border border-white/10 text-[8px] font-black uppercase text-gray-400"
-                                >
-                                  {s}
-                                </span>
-                              ))}
+                      ))}
+                  </div>
+                </div>
+
+                {/* Client Section */}
+                <div>
+                  <h3 className="text-sm font-black uppercase tracking-[0.4em] text-gray-500 mb-8 flex items-center gap-3">
+                    <User className="h-4 w-4" /> Client Directory
+                  </h3>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {users
+                      .filter((u) => u.role === "client")
+                      .map((u) => (
+                        <div
+                          key={u._id}
+                          className="glass-panel p-6 bg-[#0F0F0F] border-white/5 hover:border-gold/20 transition-all group"
+                        >
+                          <div className="flex items-center gap-4">
+                            <div className="h-10 w-10 bg-gold/10 text-gold border border-gold/20 flex items-center justify-center">
+                              <User className="h-5 w-5" />
+                            </div>
+                            <div className="flex-grow">
+                              <h3 className="text-lg font-bold text-white tracking-tight">
+                                {u.name}
+                              </h3>
+                              <p className="text-[9px] text-gray-500 font-black uppercase tracking-widest">
+                                {u.email}
+                              </p>
+                            </div>
+                            <div className="flex gap-1.5">
+                              <button
+                                onClick={() => {
+                                  setEditingUser(u);
+                                  setUserFormData({
+                                    ...u,
+                                    password: "",
+                                    specialization: "",
+                                  });
+                                  setShowUserForm(true);
+                                }}
+                                className="p-1.5 bg-white/5 border border-white/10 hover:text-gold transition-colors"
+                              >
+                                <Edit className="h-3 w-3" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteUser(u._id)}
+                                className="p-1.5 bg-red-500/10 text-red-500 border border-red-500/20 hover:bg-red-500 transition-all"
+                              >
+                                <Trash2 className="h-3 w-3" />
+                              </button>
                             </div>
                           </div>
-                        )}
+                        </div>
+                      ))}
+                    {users.filter((u) => u.role === "client").length === 0 && (
+                      <div className="col-span-full py-12 text-center text-gray-600 italic uppercase text-[9px] tracking-widest">
+                        No clients registered yet.
                       </div>
-                    </div>
-                  ))}
+                    )}
+                  </div>
                 </div>
               </div>
             )}

@@ -255,7 +255,7 @@ const Home = () => {
   return (
     <div className="bg-black min-h-screen text-white relative selection:bg-gold selection:text-black">
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section className="relative h-[75vh] flex items-center justify-center overflow-hidden z-10 border-b border-gold/20">
+      <section className="relative h-[65vh] flex items-center justify-center overflow-hidden z-10 border-b border-gold/20">
         <div className="absolute inset-0 bg-black/70 z-10" />
         <img
           src="/images/full facial.JPG"
@@ -278,16 +278,16 @@ const Home = () => {
             <span className="text-white/60 font-black uppercase tracking-[0.8em] text-[8px] mb-6 block">
               The Private Collection
             </span>
-            <h1 className="text-5xl md:text-7xl lg:text-8xl font-serif font-bold uppercase tracking-tighter leading-none mb-8 text-white drop-shadow-2xl">
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-serif font-bold uppercase tracking-tighter leading-none mb-6 text-white drop-shadow-2xl">
               <span className="text-gold">CC BEAUTY CLINIC</span>
             </h1>
-            <p className="text-sm md:text-lg font-light tracking-[0.4em] text-white/80 uppercase mb-12">
+            <p className="text-xs md:text-base font-light tracking-[0.4em] text-white/80 uppercase mb-10">
               Unrivaled Mastery • Absolute Luxury
             </p>
             <div className="flex justify-center">
               <a
                 href="#menu"
-                className="btn-gold px-12 py-5 text-xs tracking-widest"
+                className="btn-gold px-10 py-4 text-xs tracking-widest"
               >
                 Explore Our Services
               </a>
@@ -299,27 +299,27 @@ const Home = () => {
       {/* ── SERVICE MENU ─────────────────────────────────────────────────────── */}
       <section
         id="menu"
-        className="relative z-10 py-24 md:py-32 max-w-7xl mx-auto px-4"
+        className="relative z-10 py-16 md:py-24 max-w-7xl mx-auto px-4"
       >
-        <div className="text-center mb-16 md:mb-24">
+        <div className="text-center mb-12 md:mb-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-4xl md:text-7xl font-serif font-bold uppercase tracking-widest text-gold mb-4 text-shadow-lg">
+            <h2 className="text-3xl md:text-5xl font-serif font-bold uppercase tracking-widest text-gold mb-4 text-shadow-lg">
               Our Services
             </h2>
           </motion.div>
         </div>
 
         {/* Category Tabs */}
-        <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-12 md:mb-20">
+        <div className="flex flex-wrap justify-center gap-2 md:gap-4 mb-8 md:mb-12">
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
-              className={`px-6 md:px-12 py-4 text-[10px] font-black uppercase tracking-widest border transition-all duration-500 ${
+              className={`px-4 md:px-8 py-3 text-[9px] font-black uppercase tracking-widest border transition-all duration-500 ${
                 activeCategory === cat
                   ? "bg-gold text-black border-gold shadow-[0_10px_40px_rgba(212,175,55,0.3)]"
                   : "border-gold/20 text-gold/40 hover:border-gold/60 hover:text-gold"
@@ -338,7 +338,7 @@ const Home = () => {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: "circOut" }}
-            className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8"
+            className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6"
           >
             {loading ? (
               <div className="col-span-full py-20 text-center text-gold animate-pulse uppercase text-[10px] tracking-[0.5em] font-black">
@@ -353,18 +353,18 @@ const Home = () => {
                     whileHover={{ scale: 1.01 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => setSelectedService(service)}
-                    className="group relative bg-[#050505] border border-gold/10 p-8 md:p-12 text-left hover:border-gold transition-all duration-500 flex flex-col justify-between min-h-[180px] md:min-h-[220px]"
+                    className="group relative bg-[#050505] border border-gold/10 p-6 md:p-8 text-left hover:border-gold transition-all duration-500 flex flex-col justify-between min-h-[150px] md:min-h-[180px]"
                   >
-                    <div className="space-y-3 relative z-10">
+                    <div className="space-y-2 relative z-10">
                       <div className="flex justify-between items-start gap-4">
-                        <h3 className="text-xl md:text-3xl font-serif font-bold text-white group-hover:text-gold transition-colors leading-tight">
+                        <h3 className="text-lg md:text-2xl font-serif font-bold text-white group-hover:text-gold transition-colors leading-tight">
                           {service.name}
                         </h3>
-                        <span className="text-xl md:text-3xl font-serif font-black text-gold shrink-0">
+                        <span className="text-lg md:text-2xl font-serif font-black text-gold shrink-0">
                           KSh {service.price}
                         </span>
                       </div>
-                      <p className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-bold group-hover:text-white/60 transition-colors line-clamp-2 italic">
+                      <p className="text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-bold group-hover:text-white/60 transition-colors line-clamp-2 italic">
                         {service.description ||
                           "A signature bespoke treatment for the discerning client."}
                       </p>
@@ -372,20 +372,20 @@ const Home = () => {
 
                     {/* Duration badge */}
                     {service.duration && (
-                      <div className="relative z-10 mt-4">
-                        <span className="text-[9px] uppercase tracking-widest text-gold/40 font-black border border-gold/10 px-3 py-1">
+                      <div className="relative z-10 mt-3">
+                        <span className="text-[8px] uppercase tracking-widest text-gold/40 font-black border border-gold/10 px-2 py-0.5">
                           {service.duration}
                         </span>
                       </div>
                     )}
 
-                    <div className="mt-6 flex items-center justify-between relative z-10">
-                      <div className="h-px w-10 bg-gold/20 group-hover:w-16 group-hover:bg-gold transition-all duration-700" />
-                      <ChevronRight className="h-5 w-5 text-gold group-hover:translate-x-3 transition-transform" />
+                    <div className="mt-4 flex items-center justify-between relative z-10">
+                      <div className="h-px w-8 bg-gold/20 group-hover:w-12 group-hover:bg-gold transition-all duration-700" />
+                      <ChevronRight className="h-4 w-4 text-gold group-hover:translate-x-2 transition-transform" />
                     </div>
 
                     {/* Service-specific background image */}
-                    <div className="absolute top-0 right-0 w-32 h-32 md:w-56 md:h-56 opacity-10 group-hover:opacity-30 transition-all duration-1000 pointer-events-none overflow-hidden">
+                    <div className="absolute top-0 right-0 w-24 h-24 md:w-40 md:h-40 opacity-10 group-hover:opacity-30 transition-all duration-1000 pointer-events-none overflow-hidden">
                       <img
                         src={imgSrc}
                         alt=""
@@ -402,9 +402,9 @@ const Home = () => {
       </section>
 
       {/* ── GROUP DISCOUNTS ──────────────────────────────────────────────────── */}
-      <section className="py-24 bg-black relative overflow-hidden border-y border-gold/20">
+      <section className="py-16 md:py-20 bg-black relative overflow-hidden border-y border-gold/20">
         <div className="max-w-7xl mx-auto px-4 relative z-10">
-          <div className="text-center mb-16">
+          <div className="text-center mb-12">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -413,14 +413,14 @@ const Home = () => {
               <span className="text-gold font-black uppercase tracking-[0.5em] text-[10px]">
                 Shared Experiences
               </span>
-              <h2 className="text-4xl md:text-6xl font-serif font-bold uppercase tracking-widest text-white mt-4">
+              <h2 className="text-3xl md:text-5xl font-serif font-bold uppercase tracking-widest text-white mt-4">
                 Group <span className="text-gold italic">Privileges</span>
               </h2>
-              <div className="h-0.5 w-20 bg-gold mx-auto mt-8" />
+              <div className="h-0.5 w-16 bg-gold mx-auto mt-6" />
             </motion.div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
             {[
               {
                 title: "Girlies",
@@ -453,24 +453,24 @@ const Home = () => {
             ].map((offer, idx) => (
               <motion.div
                 key={idx}
-                whileHover={{ y: -10 }}
-                className="bg-[#080808] border border-gold/10 p-10 text-center space-y-4 hover:border-gold/50 transition-all duration-500"
+                whileHover={{ y: -5 }}
+                className="bg-[#080808] border border-gold/10 p-6 md:p-8 text-center space-y-4 hover:border-gold/50 transition-all duration-500"
               >
-                <div className="flex justify-center mb-6">
-                  <Icon icon={offer.icon} className="h-8 w-8 text-gold" />
+                <div className="flex justify-center mb-4">
+                  <Icon icon={offer.icon} className="h-6 w-6 text-gold" />
                 </div>
-                <h3 className="text-2xl font-serif font-bold text-white uppercase tracking-tighter">
+                <h3 className="text-xl font-serif font-bold text-white uppercase tracking-tighter">
                   {offer.title}
                 </h3>
-                <div className="space-y-1">
-                  <p className="text-[10px] text-white/40 uppercase font-black tracking-widest">
+                <div className="space-y-0.5">
+                  <p className="text-[9px] text-white/40 uppercase font-black tracking-widest">
                     {offer.guests}
                   </p>
-                  <p className="text-3xl font-serif font-black text-gold">
+                  <p className="text-2xl font-serif font-black text-gold">
                     {offer.discount}
                   </p>
                 </div>
-                <p className="text-[10px] text-white/60 italic uppercase tracking-widest leading-relaxed pt-6 border-t border-gold/10">
+                <p className="text-[9px] text-white/60 italic uppercase tracking-widest leading-relaxed pt-4 border-t border-gold/10">
                   {offer.desc}
                 </p>
               </motion.div>
@@ -485,7 +485,7 @@ const Home = () => {
           (() => {
             const modalImg = getServiceImage(selectedService);
             return (
-              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-12">
+              <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-8">
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
@@ -498,10 +498,10 @@ const Home = () => {
                   initial={{ scale: 0.95, opacity: 0, y: 40 }}
                   animate={{ scale: 1, opacity: 1, y: 0 }}
                   exit={{ scale: 0.95, opacity: 0, y: 40 }}
-                  className="relative w-full max-w-6xl h-fit max-h-[90vh] bg-black border border-gold/30 shadow-[0_0_150px_rgba(0,0,0,1)] overflow-hidden flex flex-col md:flex-row z-[110]"
+                  className="relative w-full max-w-5xl h-fit max-h-[90vh] bg-black border border-gold/30 shadow-[0_0_150px_rgba(0,0,0,1)] overflow-hidden flex flex-col md:flex-row z-[110]"
                 >
                   {/* Side image panel */}
-                  <div className="w-full md:w-2/5 h-56 md:h-auto relative overflow-hidden group shrink-0">
+                  <div className="w-full md:w-2/5 h-48 md:h-auto relative overflow-hidden group shrink-0">
                     <img
                       src={modalImg}
                       alt={selectedService.name}
@@ -509,9 +509,9 @@ const Home = () => {
                       onError={(e) => handleImgError(e, selectedService)}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-black via-black/40 to-transparent" />
-                    <div className="absolute bottom-6 left-6 md:bottom-12 md:left-10 space-y-3">
-                      <Sparkles className="text-gold h-8 w-8 md:h-10 md:w-10 animate-pulse" />
-                      <h4 className="text-white font-serif text-lg md:text-2xl italic leading-snug">
+                    <div className="absolute bottom-4 left-4 md:bottom-10 md:left-8 space-y-2">
+                      <Sparkles className="text-gold h-6 w-6 md:h-8 md:w-8 animate-pulse" />
+                      <h4 className="text-white font-serif text-base md:text-xl italic leading-snug">
                         The Art of <br />
                         Personal Perfection
                       </h4>
@@ -519,20 +519,20 @@ const Home = () => {
                   </div>
 
                   {/* Content panel */}
-                  <div className="flex-1 p-8 md:p-14 flex flex-col justify-between overflow-y-auto">
+                  <div className="flex-1 p-6 md:p-10 flex flex-col justify-between overflow-y-auto">
                     <button
                       onClick={() => setSelectedService(null)}
-                      className="absolute top-6 right-6 md:top-8 md:right-8 p-2 hover:rotate-90 transition-transform duration-500 text-gold/60 hover:text-gold"
+                      className="absolute top-4 right-4 md:top-6 md:right-6 p-2 hover:rotate-90 transition-transform duration-500 text-gold/60 hover:text-gold"
                     >
-                      <X className="h-8 w-8" />
+                      <X className="h-6 w-6" />
                     </button>
 
-                    <div className="space-y-10">
+                    <div className="space-y-6 md:space-y-8">
                       {/* Category label */}
                       <motion.span
                         initial={{ opacity: 0, x: -10 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="text-[9px] uppercase tracking-[0.6em] text-gold/50 font-black block pt-4 md:pt-0"
+                        className="text-[8px] uppercase tracking-[0.6em] text-gold/50 font-black block pt-2 md:pt-0"
                       >
                         {selectedService.category}
                       </motion.span>
@@ -541,7 +541,7 @@ const Home = () => {
                       <motion.h2
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-3xl md:text-6xl font-serif font-bold text-white uppercase tracking-tighter leading-none"
+                        className="text-2xl md:text-5xl font-serif font-bold text-white uppercase tracking-tighter leading-none"
                       >
                         {selectedService.name}
                       </motion.h2>
@@ -550,22 +550,22 @@ const Home = () => {
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="py-8 border-y border-gold/10 flex items-end justify-between gap-6 flex-wrap"
+                        className="py-4 md:py-6 border-y border-gold/10 flex items-end justify-between gap-4 flex-wrap"
                       >
                         <div>
-                          <p className="text-[9px] uppercase text-gold/40 tracking-[0.3em] font-black mb-1">
+                          <p className="text-[8px] uppercase text-gold/40 tracking-[0.3em] font-black mb-1">
                             Charge
                           </p>
-                          <p className="text-4xl md:text-5xl font-serif font-black text-gold">
+                          <p className="text-3xl md:text-4xl font-serif font-black text-gold">
                             KSh {selectedService.price}
                           </p>
                         </div>
                         {selectedService.duration && (
                           <div className="text-right">
-                            <p className="text-[9px] uppercase text-gold/40 tracking-[0.3em] font-black mb-1">
+                            <p className="text-[8px] uppercase text-gold/40 tracking-[0.3em] font-black mb-1">
                               Duration
                             </p>
-                            <p className="text-xl font-serif font-bold text-white/70">
+                            <p className="text-lg font-serif font-bold text-white/70">
                               {selectedService.duration}
                             </p>
                           </div>
@@ -577,7 +577,7 @@ const Home = () => {
                         <motion.p
                           initial={{ opacity: 0, y: 10 }}
                           animate={{ opacity: 1, y: 0 }}
-                          className="text-white/50 text-sm font-light italic leading-relaxed"
+                          className="text-white/50 text-xs md:text-sm font-light italic leading-relaxed"
                         >
                           {selectedService.description}
                         </motion.p>
@@ -587,13 +587,13 @@ const Home = () => {
                       <motion.div
                         initial={{ opacity: 0, y: 10 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="flex flex-wrap gap-3"
+                        className="flex flex-wrap gap-2 md:gap-3"
                       >
                         {["Certified Master Techs", "Luxury Environment"].map(
                           (tag) => (
                             <span
                               key={tag}
-                              className="px-4 py-2 border border-gold/20 bg-gold/5 text-[9px] uppercase tracking-[0.2em] text-gold font-black"
+                              className="px-3 py-1.5 border border-gold/20 bg-gold/5 text-[8px] uppercase tracking-[0.2em] text-gold font-black"
                             >
                               {tag}
                             </span>
@@ -607,17 +607,17 @@ const Home = () => {
                       initial={{ opacity: 0, y: 20 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.3 }}
-                      className="pt-10 pb-2"
+                      className="pt-8 pb-1"
                     >
                       <Link
                         to="/booking"
-                        className="group relative overflow-hidden bg-gold px-10 py-6 flex items-center justify-center gap-4 transition-all duration-500 shadow-[0_0_30px_rgba(212,175,55,0.25)] hover:shadow-[0_0_50px_rgba(212,175,55,0.5)]"
+                        className="group relative overflow-hidden bg-gold px-8 py-4 flex items-center justify-center gap-3 transition-all duration-500 shadow-[0_0_30px_rgba(212,175,55,0.25)] hover:shadow-[0_0_50px_rgba(212,175,55,0.5)]"
                         onClick={() => setSelectedService(null)}
                       >
-                        <span className="relative z-10 text-black text-sm font-black uppercase tracking-[0.4em]">
+                        <span className="relative z-10 text-black text-[11px] font-black uppercase tracking-[0.4em]">
                           Confirm Reservation
                         </span>
-                        <ChevronRight className="relative z-10 h-5 w-5 text-black group-hover:translate-x-2 transition-transform" />
+                        <ChevronRight className="relative z-10 h-4 w-4 text-black group-hover:translate-x-2 transition-transform" />
                         <div className="absolute inset-0 bg-white translate-y-full group-hover:translate-y-0 transition-transform duration-500" />
                       </Link>
                     </motion.div>
@@ -629,27 +629,27 @@ const Home = () => {
       </AnimatePresence>
 
       {/* ── FOOTER STATS ─────────────────────────────────────────────────────── */}
-      <section className="py-32 border-t border-gold/20 bg-black">
-        <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-16 md:gap-32">
+      <section className="py-20 md:py-24 border-t border-gold/20 bg-black">
+        <div className="max-w-5xl mx-auto flex flex-wrap justify-center gap-10 md:gap-24">
           {[
             {
-              icon: <Star className="h-12 w-12 text-gold animate-pulse" />,
+              icon: <Star className="h-10 w-10 text-gold animate-pulse" />,
               label: "5-Star Luxury",
             },
             {
               icon: (
-                <Icon icon="mdi:hair-dryer" className="h-10 w-10 text-gold" />
+                <Icon icon="mdi:hair-dryer" className="h-8 w-8 text-gold" />
               ),
               label: "Master Craft",
             },
             {
-              icon: <Sparkles className="h-12 w-12 text-gold animate-pulse" />,
+              icon: <Sparkles className="h-10 w-10 text-gold animate-pulse" />,
               label: "Pure Luxury",
             },
           ].map(({ icon, label }) => (
-            <div key={label} className="flex flex-col items-center gap-6 group">
+            <div key={label} className="flex flex-col items-center gap-4 group">
               {icon}
-              <span className="text-[10px] uppercase tracking-[0.5em] font-black text-gold/60 group-hover:text-gold transition-colors">
+              <span className="text-[9px] uppercase tracking-[0.5em] font-black text-gold/60 group-hover:text-gold transition-colors">
                 {label}
               </span>
             </div>

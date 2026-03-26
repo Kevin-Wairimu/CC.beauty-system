@@ -89,8 +89,14 @@ export const createAppointment = async (req, res) => {
 
     (async () => {
       try {
+        // Email Notifications
         await sendBookingEmail(populatedAppointment);
         await sendClientBookingEmail(populatedAppointment);
+
+        // SMS Notifications
+        await sendBookingSMS(populatedAppointment);
+        await sendClientBookingSMS(populatedAppointment);
+
         console.log(
           `Notifications triggered for appointment: ${createdAppointment._id}`,
         );
@@ -139,12 +145,26 @@ export const getAppointments = async (req, res) => {
 export const deleteAppointment = async (req, res) => {
   try {
     const appointment = await Appointment.findById(req.params.id);
-    if (appointment) {
-      await appointment.deleteOne();
-      res.json({ message: "Appointment removed" });
-    } else {
-      res.status(404).json({ message: "Appointment not found" });
+    if (!appointment) {
+      return res.status(404).json({ message: "Appointment not found" });
     }
+
+    // ── Authorization Check ───────────────────────────────────────────────────
+    if (req.user.role !== "admin" && req.user.role !== "manager") {
+      const isMyAppointment =
+        (appointment.clientId &&
+          appointment.clientId.toString() === req.user._id.toString()) ||
+        appointment.email?.toLowerCase() === req.user.email?.toLowerCase();
+
+      if (!isMyAppointment) {
+        return res
+          .status(403)
+          .json({ message: "Not authorized to remove this record" });
+      }
+    }
+
+    await appointment.deleteOne();
+    res.json({ message: "Appointment removed" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -165,8 +185,36 @@ export const updateAppointmentStatus = async (req, res) => {
 
     const oldStatus = appointment.status;
 
-    // ── STAFF: restricted update ──────────────────────────────────────────────
-    if (req.user.role === "staff") {
+    // ── CLIENT: can only cancel their own ────────────────────────────────────
+    if (req.user.role === "client") {
+      const isMyAppointment =
+        (appointment.clientId &&
+          appointment.clientId.toString() === req.user._id.toString()) ||
+        appointment.email?.toLowerCase() === req.user.email?.toLowerCase();
+
+      if (!isMyAppointment) {
+        return res
+          .status(403)
+          .json({ message: "Not authorized to modify this reservation" });
+      }
+
+      // Clients can ONLY cancel OR reschedule (update date/time)
+      if (req.body.status === "cancelled") {
+        appointment.status = "cancelled";
+        if (req.body.cancellationReason) {
+          appointment.cancellationReason = req.body.cancellationReason;
+        }
+      } else if (req.body.date || req.body.time) {
+        if (req.body.date) appointment.date = req.body.date;
+        if (req.body.time) appointment.time = req.body.time;
+      } else {
+        return res
+          .status(403)
+          .json({ message: "Clients can only cancel or reschedule sessions" });
+      }
+
+      // ── STAFF: restricted update ──────────────────────────────────────────────
+    } else if (req.user.role === "staff") {
       const isMyAppointment =
         appointment.staffId &&
         appointment.staffId.toString() === req.user._id.toString();
@@ -244,17 +292,26 @@ export const updateAppointmentStatus = async (req, res) => {
     // Approval notifications
     if (
       oldStatus !== "approved" &&
-      updatedAppointment.status === "approved" &&
-      updatedAppointment.email
+      updatedAppointment.status === "approved"
     ) {
       (async () => {
         try {
           const populatedForNotif = await Appointment.findById(
             updatedAppointment._id,
           ).populate("staffId", "name _id");
-          await sendApprovalEmail(populatedForNotif);
+          
+          // Email
+          if (updatedAppointment.email) {
+            await sendApprovalEmail(populatedForNotif);
+          }
+
+          // SMS
+          if (updatedAppointment.phone) {
+            await sendClientApprovalSMS(populatedForNotif);
+          }
+
           console.log(
-            `Approval email triggered for appointment: ${updatedAppointment._id}`,
+            `Approval notifications triggered for appointment: ${updatedAppointment._id}`,
           );
         } catch (err) {
           console.error("Background Status Notification Error:", err.message);
