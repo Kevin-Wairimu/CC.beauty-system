@@ -13,7 +13,7 @@ router.get('/', protect, getAppointments);
 // Only Admin/Manager can delete
 router.delete('/:id', protect, authorize('admin', 'manager'), deleteAppointment);
 
-// Only Admin/Manager can update status/assign staff
-router.put('/:id/status', protect, authorize('admin', 'manager'), updateAppointmentStatus);
+// Only Admin/Manager/Staff can update status/assign staff
+router.put('/:id/status', protect, authorize('admin', 'manager', 'staff'), updateAppointmentStatus);
 
 export default router;

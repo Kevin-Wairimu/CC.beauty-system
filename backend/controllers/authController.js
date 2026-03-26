@@ -114,10 +114,12 @@ export const resetPassword = async (req, res) => {
 };
 
 // @desc    Get all users (Admin only)
-// @desc    Get all staff members (Public)
+// @desc    Get all staff members (For Booking)
 export const getStaff = async (req, res) => {
   try {
-    const staff = await User.find({ role: 'staff' }).select('name specialization');
+    const staff = await User.find({ 
+      role: { $in: ['staff', 'manager', 'admin'] } 
+    }).select('name specialization role');
     res.json(staff);
   } catch (error) {
     res.status(500).json({ message: error.message });

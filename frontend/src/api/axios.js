@@ -11,7 +11,20 @@ const api = axios.create({
 
 // Add a request interceptor to include the token in headers
 api.interceptors.request.use((config) => {
-  const user = JSON.parse(localStorage.getItem("userInfo"));
+  // Check sessionStorage (tab-specific) first
+  let storedUser = sessionStorage.getItem("userInfo");
+
+  if (!storedUser) {
+    // Fallback to localStorage (persistent) for new tabs
+    storedUser = localStorage.getItem("userInfo");
+    if (storedUser) {
+      // Pin it to this tab's session so future changes in other tabs don't affect this one
+      sessionStorage.setItem("userInfo", storedUser);
+    }
+  }
+
+  const user = storedUser ? JSON.parse(storedUser) : null;
+  
   if (user && user.token) {
     config.headers.Authorization = `Bearer ${user.token}`;
   }

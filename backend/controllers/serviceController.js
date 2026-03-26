@@ -1,46 +1,211 @@
-import Service from '../models/Service.js';
+import Service from "../models/Service.js";
 
-// @desc    Get all services
+// ─────────────────────────────────────────────────────────────────────────────
+// SERVICE NAME → IMAGE MAP
+// Mirrors the seed file exactly. Keys are lowercase + trimmed for safe matching.
+// ─────────────────────────────────────────────────────────────────────────────
+const SERVICE_IMAGE_MAP = {
+  // NAILS
+  "manicure plain": "/images/Manicure.JPG",
+  "pedicure plain": "/images/milk and honey.JPG",
+  "manicure gel": "/images/Manicure.JPG",
+  "pedicure gel": "/images/milk and honey.JPG",
+  "jelly pedicure (2 step)": "/images/milk and honey.JPG",
+  "jelly pedicure (4 step)": "/images/milk and honey.JPG",
+  santorini: "/images/Manicure.JPG",
+  "tips gel": "/images/tips builder.JPG",
+  "tips builder": "/images/tips builder.JPG",
+  "tips gumgel": "/images/Overlay gumgel.JPG",
+  "overlay builder": "/images/Overlay builder.JPG",
+  "overlay gumgel": "/images/Overlay gumgel.JPG",
+  sculpting: "/images/Sculpting.JPG",
+  "gel x": "/images/Gel x.JPG",
+  acrylics: "/images/acrylic overlay.JPG",
+  "acrylic overlay": "/images/acrylic overlay.JPG",
+
+  // LASHES
+  clusters: "/images/Cluster lashes.JPG",
+  "individual classic": "/images/classic.JPG",
+  "individual hybrid": "/images/hybrid.JPG",
+  "individual volume": "/images/volume.JPG",
+  "individual mega volume": "/images/mega.JPG",
+  "individual recession (refill/retouch)": "/images/Refill.JPG",
+  "mink lashes": "/images/mink lashes.JPG",
+  "strip lashes": "/images/strip lashes.JPG",
+
+  // WIGS
+  "wig laundry": "/images/Wig laundry.JPG",
+  "wig gluing": "/images/Wig styling.JPG",
+  "gluing + edges": "/images/Wig styling.JPG",
+  "wig styling": "/images/Wig styling.JPG",
+  "flat iron": "/images/flat iron.JPG",
+  tinting: "/images/Wig curling.JPG",
+  "cut lacing": "/images/Wig styling.JPG",
+
+  // MAKEUP
+  "touch up": "/images/Touch up makeup.JPG",
+  "soft glam": "/images/soft glam.JPG",
+  "full makeup": "/images/full makeup.JPG",
+  "bridal makeup": "/images/bridal makeup.JPG",
+  "bridal team": "/images/Brides makeup.JPG",
+
+  // EYEBROWS
+  "eyebrow tinting": "/images/Touch up makeup.JPG",
+  "eyebrow threading": "/images/Touch up makeup.JPG",
+  "eyebrow tweezing": "/images/Touch up makeup.JPG",
+  "eyebrow trimming": "/images/Touch up makeup.JPG",
+
+  // FACIAL
+  "mini facial": "/images/mini facial.JPG",
+  scrubbing: "/images/scrubbing.JPG",
+  "full facial": "/images/full facial.JPG",
+
+  // HAIR
+  "blow dry": "/images/wash and full blowdry.JPG",
+  "wash & set": "/images/Wash and set.JPG",
+  "hair wash": "/images/Wash.JPG",
+  "wash and straightening": "/images/Wash.JPG",
+  "wash and full blowdry": "/images/wash and full blowdry.JPG",
+  "undoing twists": "/images/Wash.JPG",
+  "undoing cornrows": "/images/Wash.JPG",
+  "undoing braids": "/images/Wash.JPG",
+  "kids lines": "/images/center kids cornrows.JPG",
+  "kito lines": "/images/center kids cornrows.JPG",
+  "lip cornrows": "/images/center kids cornrows.JPG",
+  "fulani cornrows": "/images/center kids cornrows.JPG",
+  "back ghanaians": "/images/center kids cornrows.JPG",
+  "up ghanaians": "/images/center kids cornrows.JPG",
+  "knotless braids": "/images/center kids cornrows.JPG",
+  "knotless twist braids": "/images/center kids cornrows.JPG",
+  "jumbo knotless braids": "/images/center kids cornrows.JPG",
+  crotchets: "/images/center kids cornrows.JPG",
+  "fulani stitchlines": "/images/center kids cornrows.JPG",
+  "up stitchlines": "/images/center kids cornrows.JPG",
+  "back stitchlines": "/images/center kids cornrows.JPG",
+  "box braids": "/images/center kids cornrows.JPG",
+  "boho knotless braids": "/images/center kids cornrows.JPG",
+  "boho bob braids": "/images/center kids cornrows.JPG",
+  "twist braids": "/images/center kids cornrows.JPG",
+  "marley twists": "/images/center kids cornrows.JPG",
+  "spring twists": "/images/center kids cornrows.JPG",
+  "twist outs": "/images/center kids cornrows.JPG",
+  "mini twists": "/images/center kids cornrows.JPG",
+  "coily twists": "/images/center kids cornrows.JPG",
+  "havana curls": "/images/center kids cornrows.JPG",
+  "invisible locs": "/images/center kids cornrows.JPG",
+  "gel styling": "/images/center kids cornrows.JPG",
+  "butterfly locs": "/images/center kids cornrows.JPG",
+  "gypsy locs": "/images/center kids cornrows.JPG",
+  "mermaid braids": "/images/center kids cornrows.JPG",
+  "italian curls": "/images/center kids cornrows.JPG",
+  "natural twists": "/images/center kids cornrows.JPG",
+  "lemonade braids": "/images/center kids cornrows.JPG",
+  "boho/bohemian braids/curls": "/images/center kids cornrows.JPG",
+  "sisterlocks retouch": "/images/center kids cornrows.JPG",
+  "loc retwist": "/images/center kids cornrows.JPG",
+  "boho locs": "/images/center kids cornrows.JPG",
+};
+
+// Category-level fallback — used when name has no match in the map
+const CATEGORY_FALLBACKS = {
+  NAILS: "/images/Manicure.JPG",
+  LASHES: "/images/classic.JPG",
+  WIGS: "/images/Wig laundry.JPG",
+  MAKEUP: "/images/full makeup.JPG",
+  EYEBROWS: "/images/Touch up makeup.JPG",
+  FACIAL: "/images/mini facial.JPG",
+  HAIR: "/images/Wash.JPG",
+  DEFAULT: "/images/full facial.JPG",
+};
+
+/**
+ * resolveImage — returns the correct image path for a service.
+ *
+ * Priority:
+ *   1. service.image already set in DB → use it as-is
+ *   2. SERVICE_IMAGE_MAP match by normalised name → use mapped path
+ *   3. CATEGORY_FALLBACKS → DEFAULT
+ *
+ * This runs at READ time so the frontend always receives a resolved image,
+ * even for services that were created without one.
+ */
+const resolveImage = (service) => {
+  if (service.image) return service.image;
+
+  const key = (service.name ?? "").trim().toLowerCase();
+  if (SERVICE_IMAGE_MAP[key]) return SERVICE_IMAGE_MAP[key];
+
+  return (
+    CATEGORY_FALLBACKS[(service.category ?? "").toUpperCase()] ??
+    CATEGORY_FALLBACKS.DEFAULT
+  );
+};
+
+/**
+ * Converts a Mongoose document to a plain object and injects
+ * the resolved image so the frontend always gets a populated field.
+ */
+const withResolvedImage = (doc) => {
+  const obj = doc.toObject();
+  obj.image = resolveImage(obj);
+  return obj;
+};
+
+// ─────────────────────────────────────────────────────────────────────────────
+
+// @desc    Get all services — images auto-resolved if missing
 export const getServices = async (req, res) => {
   try {
     const services = await Service.find({});
-    res.json(services);
+    res.json(services.map(withResolvedImage));
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
-// @desc    Create a service
+// @desc    Create a service — image auto-resolved if not provided
 export const createService = async (req, res) => {
   try {
     const { name, category, price, description, image, duration } = req.body;
-    const service = new Service({ name, category, price, description, image, duration });
-    const createdService = await service.save();
-    res.status(201).json(createdService);
+
+    const service = new Service({
+      name,
+      category,
+      price,
+      description,
+      image,
+      duration,
+    });
+    const created = await service.save();
+
+    res.status(201).json(withResolvedImage(created));
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
 };
 
-// @desc    Update a service
+// @desc    Update a service — image auto-resolved if cleared/not provided
 export const updateService = async (req, res) => {
   try {
     const { name, category, price, description, image, duration } = req.body;
     const service = await Service.findById(req.params.id);
 
-    if (service) {
-      service.name = name || service.name;
-      service.category = category || service.category;
-      service.price = price || service.price;
-      service.description = description || service.description;
-      service.image = image || service.image;
-      service.duration = duration || service.duration;
-
-      const updatedService = await service.save();
-      res.json(updatedService);
-    } else {
-      res.status(404).json({ message: 'Service not found' });
+    if (!service) {
+      return res.status(404).json({ message: "Service not found" });
     }
+
+    service.name = name || service.name;
+    service.category = category || service.category;
+    service.price = price || service.price;
+    service.description = description || service.description;
+    service.duration = duration || service.duration;
+
+    // Only overwrite image if a new one was explicitly passed in
+    // (empty string or null means "let it auto-resolve")
+    if (image) service.image = image;
+
+    const updated = await service.save();
+    res.json(withResolvedImage(updated));
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -52,9 +217,9 @@ export const deleteService = async (req, res) => {
     const service = await Service.findById(req.params.id);
     if (service) {
       await service.deleteOne();
-      res.json({ message: 'Service removed' });
+      res.json({ message: "Service removed" });
     } else {
-      res.status(404).json({ message: 'Service not found' });
+      res.status(404).json({ message: "Service not found" });
     }
   } catch (error) {
     res.status(500).json({ message: error.message });

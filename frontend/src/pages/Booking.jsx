@@ -57,7 +57,6 @@ const Booking = () => {
         ]);
         setServices(servicesRes.data);
         setStaff(staffRes.data);
-        // Initially, everyone is in 'others' or just 'staff'
         setFilteredStaff({ appropriate: [], others: staffRes.data });
       } catch (error) {
         console.error("Booking Data Fetch Error:", error);
@@ -88,7 +87,6 @@ const Booking = () => {
       if (selectedService) {
         const category = selectedService.category.toUpperCase();
 
-        // Filter based on specialization
         const appropriate = staff.filter((s) => {
           return s.specialization?.some(
             (spec) => spec.toUpperCase() === category,
@@ -102,9 +100,6 @@ const Booking = () => {
         });
 
         setTimeout(() => setFilteredStaff({ appropriate, others }), 0);
-
-        // We no longer clear staffId if they pick someone else,
-        // but we can check if the current staffId is in appropriate
       }
     } else {
       setTimeout(() => setFilteredStaff({ appropriate: [], others: staff }), 0);
@@ -118,7 +113,6 @@ const Booking = () => {
     e.preventDefault();
     setStatus({ loading: true, success: false, error: "" });
 
-    // Find the actual service object to get the ID if needed
     const serviceObj = services.find((s) => s.name === formData.service);
     const submissionData = {
       ...formData,
@@ -157,7 +151,6 @@ const Booking = () => {
     if (name === "Milka") return "Hairdresser";
     if (name === "Ceisey") return "Wig Stylist, Nail Technician";
 
-    // Fallback based on specialization array if name not matched
     if (specs.length === 0) return "Master Technician";
     return specs
       .map((s) => {
@@ -205,14 +198,6 @@ const Booking = () => {
           </motion.div>
         )}
 
-        {status.error && (
-          <div className="bg-red-500/10 border border-red-500/30 p-6 mb-8 text-center">
-            <p className="text-red-500 font-bold uppercase tracking-widest text-xs">
-              {status.error}
-            </p>
-          </div>
-        )}
-
         <motion.form
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -220,7 +205,6 @@ const Booking = () => {
           onSubmit={handleSubmit}
           className="glass-panel p-8 md:p-16 shadow-2xl relative overflow-hidden bg-[#121212]"
         >
-          {/* Subtle Glow */}
           <div className="absolute top-0 right-0 w-96 h-96 bg-gold/[0.03] blur-[120px] rounded-full -mr-48 -mt-48 pointer-events-none"></div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-10">
@@ -299,7 +283,7 @@ const Booking = () => {
 
             <div className="group">
               <label className="flex items-center gap-2 text-[10px] font-black uppercase tracking-[0.3em] text-gold mb-3">
-                <Star className="h-3 w-3" /> Preferred Therapist
+                <Star className="h-3 w-3" /> Preferred Specialist
               </label>
               <select
                 name="staffId"
@@ -308,14 +292,14 @@ const Booking = () => {
                 className="w-full bg-transparent border-b border-white/10 group-focus-within:border-gold py-4 outline-none transition-all text-white text-lg font-light appearance-none cursor-pointer"
               >
                 <option value="" className="bg-[#1a1a1a] text-gray-600 italic">
-                  -- Choose therapist --
+                  -- Any Available Specialist --
                 </option>
 
                 {formData.service ? (
                   <>
-                    {filteredStaff.appropriate.length > 0 ? (
+                    {filteredStaff.appropriate.length > 0 && (
                       <optgroup
-                        label="Available Specialists"
+                        label="Specialists for this Service"
                         className="bg-[#1a1a1a] text-gold text-xs uppercase font-black"
                       >
                         {filteredStaff.appropriate.map((s) => (
@@ -328,26 +312,25 @@ const Booking = () => {
                           </option>
                         ))}
                       </optgroup>
-                    ) : (
-                      <optgroup
-                        label="Master Technicians"
-                        className="bg-[#1a1a1a] text-gray-500 text-xs uppercase font-black"
-                      >
-                        {staff.map((s) => (
-                          <option
-                            key={s._id}
-                            value={s._id}
-                            className="bg-[#1a1a1a] text-white uppercase"
-                          >
-                            {s.name} - {getStaffTitle(s.name, s.specialization)}
-                          </option>
-                        ))}
-                      </optgroup>
                     )}
+                    <optgroup
+                      label="All Specialists"
+                      className="bg-[#1a1a1a] text-gray-500 text-xs uppercase font-black"
+                    >
+                      {staff.map((s) => (
+                        <option
+                          key={s._id}
+                          value={s._id}
+                          className="bg-[#1a1a1a] text-white uppercase"
+                        >
+                          {s.name} - {getStaffTitle(s.name, s.specialization)}
+                        </option>
+                      ))}
+                    </optgroup>
                   </>
                 ) : (
                   <optgroup
-                    label="Our Master Technicians"
+                    label="Our Specialists"
                     className="bg-[#1a1a1a] text-gray-500 text-xs uppercase font-black"
                   >
                     {staff.map((s) => (
@@ -362,12 +345,6 @@ const Booking = () => {
                   </optgroup>
                 )}
               </select>
-              {formData.service && filteredStaff.appropriate.length === 0 && (
-                <p className="text-[8px] text-gray-500 uppercase font-black mt-2 tracking-widest">
-                  Any available master technician will be assigned for this
-                  service.
-                </p>
-              )}
             </div>
           </div>
 

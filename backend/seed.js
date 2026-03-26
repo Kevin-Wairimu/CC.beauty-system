@@ -13,128 +13,112 @@ const services = [
     category: "NAILS",
     price: "600",
     duration: "45 mins",
-    image:
-      "https://images.unsplash.com/photo-1632345031435-8727f6897d53?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Manicure.JPG",
   },
   {
     name: "Pedicure Plain",
     category: "NAILS",
     price: "800",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1519415510236-8559b1985a22?auto=format&fit=crop&w=800&q=80",
+    image: "/images/milk and honey.JPG",
   },
   {
     name: "Manicure Gel",
     category: "NAILS",
     price: "1200",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1604654894610-df490c9a77ca?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Manicure.JPG",
   },
   {
     name: "Pedicure Gel",
     category: "NAILS",
     price: "1500",
     duration: "75 mins",
-    image:
-      "https://images.unsplash.com/photo-1522338140262-f46f591261c8?auto=format&fit=crop&w=800&q=80",
+    image: "/images/milk and honey.JPG",
   },
   {
     name: "Jelly Pedicure (2 Step)",
     category: "NAILS",
     price: "1000",
     duration: "75 mins",
-    image:
-      "https://images.unsplash.com/photo-1544467328-94451631dff5?auto=format&fit=crop&w=800&q=80",
+    image: "/images/milk and honey.JPG",
   },
   {
     name: "Jelly Pedicure (4 Step)",
     category: "NAILS",
     price: "1200",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&w=800&q=80",
+    image: "/images/milk and honey.JPG",
   },
   {
     name: "Santorini",
     category: "NAILS",
     price: "1000",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1563161433-ef291f176222?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Manicure.JPG",
   },
   {
     name: "Tips Gel",
     category: "NAILS",
     price: "1200",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?auto=format&fit=crop&w=800&q=80",
+    image: "/images/tips builder.JPG",
   },
   {
     name: "Tips Builder",
     category: "NAILS",
     price: "1500",
     duration: "120 mins",
-    image:
-      "https://images.unsplash.com/photo-1634712282287-14ed57b9cc89?auto=format&fit=crop&w=800&q=80",
+    image: "/images/tips builder.JPG",
   },
   {
     name: "Tips Gumgel",
     category: "NAILS",
     price: "2000",
     duration: "120 mins",
-    image:
-      "https://images.unsplash.com/photo-1457972851104-4fd469440bf9?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Overlay gumgel.JPG",
   },
   {
     name: "Overlay Builder",
     category: "NAILS",
     price: "1500",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1510520434124-5bc7e642b61d?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Overlay builder.JPG",
   },
   {
     name: "Overlay Gumgel",
     category: "NAILS",
     price: "2000",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1599426184804-5ec8f540bd0a?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Overlay gumgel.JPG",
   },
   {
     name: "Sculpting",
     category: "NAILS",
     price: "3000",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1604902396830-aca29e19b067?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Sculpting.JPG",
   },
   {
     name: "Gel X",
     category: "NAILS",
     price: "3000",
     duration: "120 mins",
-    image:
-      "https://images.unsplash.com/photo-1629190842240-5e60802c011e?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Gel x.JPG",
   },
   {
     name: "Acrylics",
     category: "NAILS",
     price: "3500",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1610992015732-2449b0c26670?auto=format&fit=crop&w=800&q=80",
+    image: "/images/acrylic overlay.JPG",
   },
   {
     name: "Acrylic Overlay",
     category: "NAILS",
     price: "3000",
     duration: "120 mins",
-    image:
-      "https://images.unsplash.com/photo-1522337628061-92f35a78274d?auto=format&fit=crop&w=800&q=80",
+    image: "/images/acrylic overlay.JPG",
   },
 
   // LASHES
@@ -143,64 +127,56 @@ const services = [
     category: "LASHES",
     price: "1500",
     duration: "45 mins",
-    image:
-      "https://images.unsplash.com/photo-1583001931046-f080373c66f7?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Cluster lashes.JPG",
   },
   {
     name: "Individual Classic",
     category: "LASHES",
     price: "2500",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80",
+    image: "/images/classic.JPG",
   },
   {
     name: "Individual Hybrid",
     category: "LASHES",
     price: "3500",
     duration: "120 mins",
-    image:
-      "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=800&q=80",
+    image: "/images/hybrid.JPG",
   },
   {
     name: "Individual Volume",
     category: "LASHES",
     price: "4500",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1576426863848-c21f53c60b19?auto=format&fit=crop&w=800&q=80",
+    image: "/images/volume.JPG",
   },
   {
     name: "Individual Mega Volume",
     category: "LASHES",
     price: "6500",
     duration: "180 mins",
-    image:
-      "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=800&q=80",
+    image: "/images/mega.JPG",
   },
   {
     name: "Individual Recession (Refill/Retouch)",
     category: "LASHES",
     price: "1500",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1515377905703-c4788e51af15?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Refill.JPG",
   },
   {
     name: "Mink Lashes",
     category: "LASHES",
     price: "8500",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1546182990-dffeafbe841d?auto=format&fit=crop&w=800&q=80",
+    image: "/images/mink lashes.JPG",
   },
   {
     name: "Strip Lashes",
     category: "LASHES",
     price: "250",
     duration: "15 mins",
-    image:
-      "https://images.unsplash.com/photo-1588331464319-756ef1b854ec?auto=format&fit=crop&w=800&q=80",
+    image: "/images/strip lashes.JPG",
   },
 
   // WIGS
@@ -209,56 +185,49 @@ const services = [
     category: "WIGS",
     price: "1000",
     duration: "120 mins",
-    image:
-      "https://images.unsplash.com/photo-1620331311520-246422ff82f9?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wig laundry.JPG",
   },
   {
     name: "Wig Gluing",
     category: "WIGS",
     price: "1000",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wig styling.JPG",
   },
   {
     name: "Gluing + Edges",
     category: "WIGS",
     price: "1100",
     duration: "75 mins",
-    image:
-      "https://images.unsplash.com/photo-1632233033500-606623668858?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wig styling.JPG",
   },
   {
     name: "Wig Styling",
     category: "WIGS",
     price: "2000",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1560066984-138dadb4c035?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wig styling.JPG",
   },
   {
     name: "Flat Iron",
     category: "WIGS",
     price: "1000",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/flat iron.JPG",
   },
   {
     name: "Tinting",
     category: "WIGS",
     price: "300",
     duration: "45 mins",
-    image:
-      "https://images.unsplash.com/photo-1620331310118-2059344199c4?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wig curling.JPG",
   },
   {
     name: "Cut Lacing",
     category: "WIGS",
     price: "200",
     duration: "30 mins",
-    image:
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wig styling.JPG",
   },
 
   // MAKEUP
@@ -267,40 +236,35 @@ const services = [
     category: "MAKEUP",
     price: "1500",
     duration: "30 mins",
-    image:
-      "https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Touch up makeup.JPG",
   },
   {
     name: "Soft Glam",
     category: "MAKEUP",
     price: "2000",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1522335789203-aabd1fc54bc9?auto=format&fit=crop&w=800&q=80",
+    image: "/images/soft glam.JPG",
   },
   {
     name: "Full Makeup",
     category: "MAKEUP",
     price: "2500",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1516975080664-ed2fc6a32937?auto=format&fit=crop&w=800&q=80",
+    image: "/images/full makeup.JPG",
   },
   {
     name: "Bridal Makeup",
     category: "MAKEUP",
     price: "3500",
     duration: "120 mins",
-    image:
-      "https://images.unsplash.com/photo-1519699047748-de8e457a634e?auto=format&fit=crop&w=800&q=80",
+    image: "/images/bridal makeup.JPG",
   },
   {
     name: "Bridal Team",
     category: "MAKEUP",
     price: "3000",
     duration: "300 mins",
-    image:
-      "https://images.unsplash.com/photo-1526045478516-99145907023c?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Brides makeup.JPG",
   },
 
   // EYEBROWS
@@ -309,32 +273,28 @@ const services = [
     category: "EYEBROWS",
     price: "500",
     duration: "30 mins",
-    image:
-      "https://images.unsplash.com/photo-1522337628061-92f35a78274d?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Touch up makeup.JPG",
   },
   {
     name: "Eyebrow Threading",
     category: "EYEBROWS",
     price: "300",
     duration: "20 mins",
-    image:
-      "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Touch up makeup.JPG",
   },
   {
     name: "Eyebrow Tweezing",
     category: "EYEBROWS",
     price: "300",
     duration: "20 mins",
-    image:
-      "https://images.unsplash.com/photo-1600428791234-170fab1149c5?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Touch up makeup.JPG",
   },
   {
     name: "Eyebrow Trimming",
     category: "EYEBROWS",
     price: "200",
     duration: "15 mins",
-    image:
-      "https://images.unsplash.com/photo-1512496015851-a90fb38ba796?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Touch up makeup.JPG",
   },
 
   // FACIAL
@@ -343,24 +303,21 @@ const services = [
     category: "FACIAL",
     price: "2000",
     duration: "45 mins",
-    image:
-      "https://images.unsplash.com/photo-1570172619666-1142fa96105e?auto=format&fit=crop&w=800&q=80",
+    image: "/images/mini facial.JPG",
   },
   {
     name: "Scrubbing",
     category: "FACIAL",
     price: "1500",
     duration: "30 mins",
-    image:
-      "https://images.unsplash.com/photo-1512290923902-8a9f81dc236c?auto=format&fit=crop&w=800&q=80",
+    image: "/images/scrubbing.JPG",
   },
   {
     name: "Full Facial",
     category: "FACIAL",
     price: "3500",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80",
+    image: "/images/full facial.JPG",
   },
   // HAIR
   {
@@ -368,328 +325,301 @@ const services = [
     category: "HAIR",
     price: "1000",
     duration: "45 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/wash and full blowdry.JPG",
   },
   {
     name: "Wash & Set",
     category: "HAIR",
     price: "1200",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wash and set.JPG",
   },
   {
     name: "Hair Wash",
     category: "HAIR",
     price: "500",
     duration: "30 mins",
-    image:
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wash.JPG",
   },
   {
     name: "Wash and Straightening",
     category: "HAIR",
     price: "500",
     duration: "45 mins",
-    image:
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wash.JPG",
   },
   {
     name: "Wash and Full Blowdry",
     category: "HAIR",
     price: "1000",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/wash and full blowdry.JPG",
   },
   {
     name: "Undoing Twists",
     category: "HAIR",
     price: "500",
     duration: "45 mins",
-    image:
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wash.JPG",
   },
   {
     name: "Undoing Cornrows",
     category: "HAIR",
     price: "500",
     duration: "45 mins",
-    image:
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wash.JPG",
   },
   {
     name: "Undoing Braids",
     category: "HAIR",
     price: "500",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1562322140-8baeececf3df?auto=format&fit=crop&w=800&q=80",
+    image: "/images/Wash.JPG",
   },
   {
     name: "Kids Lines",
     category: "HAIR",
     price: "300",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Kito Lines",
     category: "HAIR",
     price: "500",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Lip Cornrows",
     category: "HAIR",
     price: "500",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Fulani Cornrows",
     category: "HAIR",
     price: "1500",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Back Ghanaians",
     category: "HAIR",
     price: "1000",
     duration: "120 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Up Ghanaians",
     category: "HAIR",
     price: "1500",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Knotless Braids",
     category: "HAIR",
     price: "3000",
     duration: "240 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Knotless Twist Braids",
     category: "HAIR",
     price: "2000",
     duration: "210 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Jumbo Knotless Braids",
     category: "HAIR",
     price: "1500",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Crotchets",
     category: "HAIR",
     price: "1500",
     duration: "120 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
-    name: "Stitchlines",
+    name: "Fulani Stitchlines",
     category: "HAIR",
-    price: "3500",
+    price: "2500",
     duration: "180 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
+  },
+  {
+    name: " Up Stitchlines",
+    category: "HAIR",
+    price: "2200",
+    duration: "180 mins",
+    image: "/images/center kids cornrows.JPG",
+  },
+  {
+    name: "Back Stitchlines",
+    category: "HAIR",
+    price: "2000",
+    duration: "180 mins",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Box Braids",
     category: "HAIR",
     price: "1500",
     duration: "210 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Boho Knotless Braids",
     category: "HAIR",
     price: "2000",
     duration: "240 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Boho Bob Braids",
     category: "HAIR",
     price: "2000",
     duration: "180 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Twist Braids",
     category: "HAIR",
     price: "2000",
     duration: "180 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Marley Twists",
     category: "HAIR",
     price: "2000",
     duration: "180 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Spring Twists",
     category: "HAIR",
     price: "2000",
     duration: "180 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Twist Outs",
     category: "HAIR",
     price: "1500",
     duration: "90 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Mini Twists",
     category: "HAIR",
     price: "3000",
     duration: "240 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Coily Twists",
     category: "HAIR",
     price: "1500",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Havana Curls",
     category: "HAIR",
     price: "2000",
     duration: "180 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Invisible Locs",
     category: "HAIR",
     price: "1700",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Gel Styling",
     category: "HAIR",
     price: "1500",
     duration: "60 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Butterfly Locs",
     category: "HAIR",
     price: "2500",
     duration: "240 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Gypsy Locs",
     category: "HAIR",
     price: "2000",
     duration: "210 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Mermaid Braids",
     category: "HAIR",
     price: "2000",
     duration: "210 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Italian Curls",
     category: "HAIR",
     price: "2000",
     duration: "180 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Natural Twists",
     category: "HAIR",
     price: "2500",
     duration: "180 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Lemonade Braids",
     category: "HAIR",
     price: "1700",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Boho/Bohemian Braids/Curls",
     category: "HAIR",
     price: "2000",
     duration: "210 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Sisterlocks Retouch",
     category: "HAIR",
     price: "2000",
     duration: "150 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Loc Retwist",
     category: "HAIR",
     price: "1500",
     duration: "120 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
   {
     name: "Boho Locs",
     category: "HAIR",
     price: "2000",
     duration: "210 mins",
-    image:
-      "https://images.unsplash.com/photo-1595475241949-0f024f7836fd?auto=format&fit=crop&w=800&q=80",
+    image: "/images/center kids cornrows.JPG",
   },
 ];
 
