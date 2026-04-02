@@ -48,7 +48,7 @@ const Contact = () => {
         >
           <Sparkles className="text-gold h-10 w-10 mx-auto mb-4 animate-pulse" />
           <h1 className="text-3xl md:text-5xl font-serif font-bold uppercase tracking-widest text-gold mb-4">
-            Contact Our Studio
+            Contact Our Clinic
           </h1>
           <p className="text-gray-300 text-xs md:text-base italic tracking-[0.2em] font-light uppercase">
             We are here to assist your beauty journey
@@ -112,7 +112,7 @@ const Contact = () => {
                 </div>
                 <div>
                   <h3 className="text-gold font-bold uppercase tracking-[0.2em] text-[10px] mb-2">
-                    Studio Location
+                    Clinic Location
                   </h3>
                   <p className="text-gray-100 font-light text-base md:text-lg tracking-wide leading-relaxed">
                     CC Beauty Clinic,

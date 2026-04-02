@@ -611,6 +611,7 @@ const Home = () => {
                     >
                       <Link
                         to="/booking"
+                        state={{ serviceName: selectedService.name }}
                         className="group relative overflow-hidden bg-gold px-8 py-4 flex items-center justify-center gap-3 transition-all duration-500 shadow-[0_0_30px_rgba(212,175,55,0.25)] hover:shadow-[0_0_50px_rgba(212,175,55,0.5)]"
                         onClick={() => setSelectedService(null)}
                       >

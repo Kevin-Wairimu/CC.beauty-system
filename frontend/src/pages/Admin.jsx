@@ -133,16 +133,20 @@ const Admin = () => {
           .catch(() => ({ data: [] }));
         const allUsers = Array.isArray(userRes.data) ? userRes.data : [];
         setUsers(allUsers);
-        // Only actual 'staff' role members are considered for the performance ledger and assignments
+        
+        // ✅ Include anyone with a specialization in the ledger (Admin, Manager, or Staff)
         setStaff(
-          allUsers.filter((u) => u.role?.toLowerCase() === "staff"),
+          allUsers.filter((u) => 
+            u.role?.toLowerCase() === "staff" || 
+            (u.specialization && u.specialization.length > 0)
+          ),
         );
       }
 
       setLoading(false);
     } catch (error) {
       console.error("FetchData Error:", error);
-      toast.error("Syncing error. Please refresh.");
+      toast.error("Connection interrupted. Please refresh.");
       setLoading(false);
     }
   }, [user]);
@@ -221,9 +225,7 @@ const Admin = () => {
       activeEnquiries: enquiries.filter(
         (e) => e.status !== "closed" && e.status !== "resolved",
       ).length,
-      staffPerformance: staff
-        .filter((s) => s.role?.toLowerCase() === "staff")
-        .map((s) => staffStats[s._id]),
+      staffPerformance: staff.map((s) => staffStats[s._id]),
       categoryRevenue: categoryStats,
       monthlyData,
       todayCompleted: completed.filter((a) => isToday(a.date)).length,
@@ -232,6 +234,44 @@ const Admin = () => {
         .reduce((s, a) => s + parseFloat(a.price || 0), 0),
     };
   }, [appointments, enquiries, staff]);
+
+  // ── Transaction CRUD State ───────────────────────────────────────────
+  const [showTransactionForm, setShowTransactionForm] = useState(false);
+  const [editingTransaction, setEditingTransaction] = useState(null);
+  const [transactionData, setTransactionData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    service: "",
+    price: "",
+    staffId: "",
+    date: new Date().toISOString().split("T")[0],
+  });
+
+  const handleTransactionSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (editingTransaction) {
+        await api.put(`/appointments/${editingTransaction._id}`, {
+          ...transactionData,
+          status: "completed",
+        });
+        toast.success("Transaction Updated");
+      } else {
+        await api.post("/appointments", {
+          ...transactionData,
+          status: "completed",
+          time: "Manual Entry",
+        });
+        toast.success("Transaction Added");
+      }
+      setShowTransactionForm(false);
+      setEditingTransaction(null);
+      fetchData();
+    } catch (err) {
+      toast.error("Transaction failed");
+    }
+  };
 
   // ── Active appointments (exclude completed/cancelled/rejected) ─────────────
   const activeAppointments = useMemo(
@@ -281,8 +321,18 @@ const Admin = () => {
 
   const handleUpdateRole = async (userId, role) => {
     try {
-      await api.put(`/auth/users/${userId}/role`, { role });
+      const { data: updatedUser } = await api.put(`/auth/users/${userId}/role`, { role });
       toast.success("Role Updated");
+
+      // If updating yourself, update the auth context to trigger re-routing
+      if (userId === user._id) {
+        const userInfo = { ...user, role: updatedUser.role };
+        localStorage.setItem("userInfo", JSON.stringify(userInfo));
+        sessionStorage.setItem("userInfo", JSON.stringify(userInfo));
+        // Force refresh to trigger useAuth's initial logic and Login's redirect
+        window.location.reload();
+      }
+
       fetchData();
     } catch {
       toast.error("Role update failed");
@@ -944,9 +994,24 @@ const Admin = () => {
                     <h3 className="text-lg font-serif font-bold uppercase tracking-widest">
                       Transaction History
                     </h3>
-                    <button className="text-[8px] font-black uppercase tracking-widest text-gold flex items-center gap-1.5 border border-gold/30 px-3 py-1.5 hover:bg-gold hover:text-black transition-all">
-                      <Download className="h-3 w-3" /> Export Ledger
-                    </button>
+                    <div className="flex gap-2">
+                      <button 
+                        onClick={() => {
+                          setEditingTransaction(null);
+                          setTransactionData({
+                            name: "", email: "", phone: "", service: "", price: "", staffId: "", 
+                            date: new Date().toISOString().split("T")[0]
+                          });
+                          setShowTransactionForm(true);
+                        }}
+                        className="text-[8px] font-black uppercase tracking-widest text-gold flex items-center gap-1.5 border border-gold/30 px-3 py-1.5 hover:bg-gold hover:text-black transition-all"
+                      >
+                        <Plus className="h-3 w-3" /> Manual Entry
+                      </button>
+                      <button className="text-[8px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-1.5 border border-white/10 px-3 py-1.5 hover:bg-white/5 transition-all">
+                        <Download className="h-3 w-3" /> Export Ledger
+                      </button>
+                    </div>
                   </div>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
@@ -959,7 +1024,7 @@ const Admin = () => {
                           <th className="p-4">Status</th>
                           <th className="p-4">Receipt No.</th>
                           <th className="p-4 text-right">Amount</th>
-                          <th className="p-4 text-right"></th>
+                          <th className="p-4 text-right">Actions</th>
                         </tr>
                       </thead>
                       <tbody className="divide-y divide-white/5">
@@ -997,14 +1062,41 @@ const Admin = () => {
                                 {parseFloat(app.price || 0).toLocaleString()}
                               </td>
                               <td className="p-4 text-right">
-                                {app.receiptNo && (
+                                <div className="flex justify-end gap-1.5">
+                                  {app.receiptNo && (
+                                    <button
+                                      onClick={() => setReceiptAppointment(app)}
+                                      className="p-1.5 text-gold/60 hover:text-gold border border-gold/10 hover:border-gold/30 transition-all"
+                                      title="View Receipt"
+                                    >
+                                      <Receipt className="h-3.5 w-3.5" />
+                                    </button>
+                                  )}
                                   <button
-                                    onClick={() => setReceiptAppointment(app)}
-                                    className="text-[8px] font-black uppercase tracking-widest text-gold/60 hover:text-gold flex items-center gap-1 ml-auto border border-gold/10 hover:border-gold/40 px-2.5 py-1.5 transition-all"
+                                    onClick={() => {
+                                      setEditingTransaction(app);
+                                      setTransactionData({
+                                        name: app.name,
+                                        email: app.email,
+                                        phone: app.phone,
+                                        service: app.service,
+                                        price: app.price,
+                                        staffId: app.staffId?._id || app.staffId || "",
+                                        date: app.date || new Date().toISOString().split("T")[0]
+                                      });
+                                      setShowTransactionForm(true);
+                                    }}
+                                    className="p-1.5 text-gray-500 hover:text-white border border-white/5 hover:border-white/20 transition-all"
                                   >
-                                    <Receipt className="h-2.5 w-2.5" /> View
+                                    <Edit className="h-3.5 w-3.5" />
                                   </button>
-                                )}
+                                  <button
+                                    onClick={() => handleDeleteAppointment(app._id)}
+                                    className="p-1.5 text-red-500/50 hover:text-red-500 border border-red-500/10 hover:border-red-500/30 transition-all"
+                                  >
+                                    <Trash2 className="h-3.5 w-3.5" />
+                                  </button>
+                                </div>
                               </td>
                             </tr>
                           ))}
@@ -1959,6 +2051,124 @@ const Admin = () => {
                   className="w-full bg-gold text-white py-4 font-black uppercase tracking-widest mt-4"
                 >
                   Save Identity
+                </button>
+              </form>
+            </motion.div>
+          </div>
+        )}
+      </AnimatePresence>
+
+      {/* ── TRANSACTION MODAL ────────────────────────────────────────────────── */}
+      <AnimatePresence>
+        {showTransactionForm && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/95 backdrop-blur-xl">
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              className="bg-[#111111] border-2 border-gold/30 p-10 w-full max-w-xl shadow-2xl"
+            >
+              <div className="flex justify-between items-start mb-10">
+                <div>
+                  <h2 className="text-3xl font-serif font-bold uppercase tracking-widest text-gold">
+                    {editingTransaction ? "Edit Transaction" : "Manual Entry"}
+                  </h2>
+                  <p className="text-[9px] uppercase tracking-[0.4em] text-gray-500 font-black mt-1">
+                    Financial Record Intelligence
+                  </p>
+                </div>
+                <button
+                  onClick={() => setShowTransactionForm(false)}
+                  className="p-2 hover:bg-gold hover:text-black transition-all rounded-full"
+                >
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
+              <form onSubmit={handleTransactionSubmit} className="space-y-6">
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-gold font-black">
+                      Client Name
+                    </label>
+                    <input
+                      required
+                      value={transactionData.name}
+                      onChange={(e) => setTransactionData({...transactionData, name: e.target.value})}
+                      className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-gold font-black">
+                      Phone
+                    </label>
+                    <input
+                      required
+                      value={transactionData.phone}
+                      onChange={(e) => setTransactionData({...transactionData, phone: e.target.value})}
+                      className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-gold font-black">
+                      Service Provided
+                    </label>
+                    <select
+                      required
+                      value={transactionData.service}
+                      onChange={(e) => setTransactionData({...transactionData, service: e.target.value})}
+                      className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
+                    >
+                      <option value="">Select Service</option>
+                      {services.map(s => <option key={s._id} value={s.name}>{s.name}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-gold font-black">
+                      Amount (KSh)
+                    </label>
+                    <input
+                      required
+                      type="number"
+                      value={transactionData.price}
+                      onChange={(e) => setTransactionData({...transactionData, price: e.target.value})}
+                      className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
+                    />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-6">
+                  <div className="space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-gold font-black">
+                      Provider
+                    </label>
+                    <select
+                      required
+                      value={transactionData.staffId}
+                      onChange={(e) => setTransactionData({...transactionData, staffId: e.target.value})}
+                      className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
+                    >
+                      <option value="">Select Specialist</option>
+                      {staff.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-[9px] uppercase tracking-widest text-gold font-black">
+                      Date
+                    </label>
+                    <input
+                      required
+                      type="date"
+                      value={transactionData.date}
+                      onChange={(e) => setTransactionData({...transactionData, date: e.target.value})}
+                      className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
+                    />
+                  </div>
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-gold text-white py-4 font-black uppercase tracking-widest mt-4 shadow-2xl shadow-gold/20"
+                >
+                  {editingTransaction ? "Update Record" : "Save Transaction"}
                 </button>
               </form>
             </motion.div>

@@ -41,13 +41,7 @@ export const createAppointment = async (req, res) => {
       `[CREATE APPOINTMENT] Incoming staffId: "${staffId}" for service: "${service}"`,
     );
 
-    if (!req.user) {
-      return res
-        .status(401)
-        .json({ message: "Authentication required to book a session." });
-    }
-
-    const clientId = req.user._id;
+    const clientId = req.user ? req.user._id : null;
 
     let validStaffId = null;
     if (staffId && mongoose.Types.ObjectId.isValid(staffId)) {
@@ -66,9 +60,9 @@ export const createAppointment = async (req, res) => {
     }
 
     const appointment = new Appointment({
-      name: name || req.user.name,
+      name: name || (req.user ? req.user.name : ""),
       phone,
-      email: email || req.user.email,
+      email: email || (req.user ? req.user.email : ""),
       service,
       date,
       time,

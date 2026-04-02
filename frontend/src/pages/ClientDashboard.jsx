@@ -333,7 +333,7 @@ const ClientDashboard = () => {
           <div className="py-24 text-center">
             <div className="w-10 h-10 border-t-2 border-gold rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gold animate-pulse uppercase tracking-[0.4em] text-[9px] font-black">
-              Synchronising Your Services...
+              cc beauty
             </p>
           </div>
         ) : (

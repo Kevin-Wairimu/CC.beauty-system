@@ -1,11 +1,11 @@
 import express from 'express';
 import { createAppointment, getAppointments, deleteAppointment, updateAppointmentStatus } from '../controllers/appointmentController.js';
-import { protect, authorize } from '../middleware/authMiddleware.js';
+import { protect, tryProtect, authorize } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
 
 // Allow anyone to create, but protect for authenticated info
-router.post('/', protect, createAppointment);
+router.post('/', tryProtect, createAppointment);
 
 // Protect get: only authorized users can see lists
 router.get('/', protect, getAppointments);

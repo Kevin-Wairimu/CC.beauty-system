@@ -22,7 +22,7 @@ const ResetPassword = lazy(() => import('./pages/ResetPassword'));
 const LoadingFallback = () => (
   <div className="h-screen bg-[#0F0F0F] flex flex-col items-center justify-center text-gold">
     <div className="w-12 h-12 border-t-2 border-gold rounded-full animate-spin mb-4"></div>
-    <span className="uppercase tracking-[0.4em] text-[10px] font-black">Syncing Luxury...</span>
+    <span className="uppercase tracking-[0.4em] text-[10px] font-black">cc beauty</span>
   </div>
 );
 

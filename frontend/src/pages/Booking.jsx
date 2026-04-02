@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import api from "../api/axios";
 import {
   Calendar,
@@ -21,13 +21,9 @@ const VALID_SPECS = ["NAILS", "MAKEUP", "LASHES", "WIGS", "HAIR", "EYEBROWS", "F
 const Booking = () => {
   const { user, loading } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  useEffect(() => {
-    if (!loading && !user) {
-      toast.error("Login first");
-      navigate("/login");
-    }
-  }, [user, loading, navigate]);
+  // Removed mandatory login redirect
 
   const [services, setServices] = useState([]);
   const [staff, setStaff] = useState([]);
@@ -58,7 +54,18 @@ const Booking = () => {
           api.get("/services"),
           api.get("/auth/staff"),
         ]);
-        setServices(servicesRes.data);
+        const fetchedServices = servicesRes.data;
+        setServices(fetchedServices);
+
+        // Pre-select service if passed from Home
+        if (location.state?.serviceName) {
+          const matchedService = fetchedServices.find(
+            (s) => s.name === location.state.serviceName
+          );
+          if (matchedService) {
+            setFormData((prev) => ({ ...prev, service: matchedService.name }));
+          }
+        }
 
         const specialists = staffRes.data.filter((s) => {
           if (s.role?.toLowerCase() !== "staff") return false;
@@ -74,7 +81,7 @@ const Booking = () => {
       }
     };
     fetchData();
-  }, []);
+  }, [location.state]);
 
   useEffect(() => {
     if (user) {
@@ -90,28 +97,40 @@ const Booking = () => {
   }, [user]);
 
   useEffect(() => {
-    if (formData.service) {
+    if (formData.service && services.length > 0 && staff.length > 0) {
       const selectedService = services.find((s) => s.name === formData.service);
       if (selectedService) {
-        const category = selectedService.category.toUpperCase();
+        const category = (selectedService.category || "").toUpperCase().trim();
 
+        // 1. Filter Recommended
         const appropriate = staff.filter((s) =>
-          s.specialization?.some((spec) => spec.toUpperCase() === category),
+          (s.specialization || []).some(
+            (spec) => spec.toUpperCase().trim() === category
+          )
         );
 
-        // Others built by exclusion — guaranteed no duplicates
+        // 2. Filter Others (exclude recommended to avoid duplicates)
         const appropriateIds = new Set(appropriate.map((s) => s._id));
         const others = staff.filter((s) => !appropriateIds.has(s._id));
 
-        setTimeout(() => setFilteredStaff({ appropriate, others }), 0);
+        setFilteredStaff({ appropriate, others });
       }
     } else {
-      setTimeout(() => setFilteredStaff({ appropriate: [], others: staff }), 0);
+      setFilteredStaff({ appropriate: [], others: staff });
     }
   }, [formData.service, staff, services]);
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => {
+      const newData = { ...prev, [name]: value };
+      // Reset staffId if service changes to force re-evaluation of recommendations
+      if (name === "service") {
+        newData.staffId = "";
+      }
+      return newData;
+    });
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -408,7 +427,7 @@ const Booking = () => {
             className="w-full bg-gold text-white font-black text-base py-4 md:py-5 uppercase tracking-[0.5em] disabled:opacity-50 transition-all duration-500 shadow-2xl"
           >
             {status.loading
-              ? "Synchronizing Request..."
+              ? "cc beauty"
               : "Finalize Reservation"}
           </motion.button>
         </motion.form>

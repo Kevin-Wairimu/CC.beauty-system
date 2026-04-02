@@ -4,29 +4,33 @@ const connectDB = async () => {
   try {
     const mongoUri = process.env.MONGO_URI;
 
-    // Ensure the URI targets cc_beauty if not already specified
-    let finalUri = mongoUri;
-    if (finalUri && !finalUri.includes("/cc_beauty")) {
-      // Logic to insert cc_beauty before the query parameters
-      if (finalUri.includes("?")) {
-        finalUri = finalUri.replace("?", "cc_beauty?");
-      } else if (!finalUri.endsWith("/")) {
-        finalUri = finalUri + "/cc_beauty";
-      } else {
-        finalUri = finalUri + "cc_beauty";
-      }
+    if (!mongoUri) {
+      throw new Error("MONGO_URI is not defined in environment variables");
     }
 
-    const conn = await mongoose.connect(
-      finalUri || "mongodb://localhost:27017/cc_beauty",
-    );
+    const conn = await mongoose.connect(mongoUri, {
+      family: 4, // Forces IPv4 (Fixes many Windows/ISP issues)
+      serverSelectionTimeoutMS: 5000, // Fails faster if connection is impossible
+    });
 
-    console.log(
-      ` CC Beauty System connected to Database: ${conn.connection.name}`,
-    );
-    console.log(` Host: ${conn.connection.host}`);
+    console.log(` MongoDB Connected: ${conn.connection.host}`);
+    console.log(` Database: ${conn.connection.name}`);
   } catch (error) {
-    console.error(`❌ MongoDB Connection Error: ${error.message}`);
+    console.error(` MongoDB Connection Error: ${error.message}`);
+
+    if (error.message.includes("IP that isn't whitelisted")) {
+      console.log(
+        " Double-check Atlas: Network Access > IP Whitelist (0.0.0.0/0)",
+      );
+    } else if (error.message.includes("Could not connect to any servers")) {
+      console.log(
+        " Network Block Detected: Your ISP or Firewall is likely blocking port 27017.",
+      );
+      console.log(
+        " Recommended Fix: Try a VPN or a different network (like a Mobile Hotspot).",
+      );
+    }
+
     process.exit(1);
   }
 };

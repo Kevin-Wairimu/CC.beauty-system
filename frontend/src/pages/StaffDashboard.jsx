@@ -184,7 +184,7 @@ const StaffDashboard = () => {
           <div className="py-20 text-center">
             <div className="w-10 h-10 border-t-2 border-gold rounded-full animate-spin mx-auto mb-4" />
             <p className="text-gold animate-pulse uppercase tracking-[0.5em] font-black text-[10px]">
-              Synchronizing Schedule...
+              cc beauty
             </p>
           </div>
         ) : (

@@ -18,7 +18,10 @@ const testConnection = async () => {
   }
 
   try {
-    const conn = await mongoose.connect(mongoUri, { serverSelectionTimeoutMS: 10000 });
+    const conn = await mongoose.connect(mongoUri, { 
+      serverSelectionTimeoutMS: 10000,
+      family: 4 // Use IPv4
+    });
     console.log(`✅ Connection successful to: ${conn.connection.name}`);
     await mongoose.disconnect();
     process.exit(0);
