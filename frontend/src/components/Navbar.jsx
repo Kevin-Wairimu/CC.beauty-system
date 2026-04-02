@@ -330,7 +330,7 @@ const Navbar = () => {
                         className="w-full flex items-center gap-2 text-red-500/40 hover:text-red-500 text-[9px] font-black uppercase tracking-[0.3em] py-3 px-2 transition-colors"
                       >
                         <LogOut className="h-3 w-3" />
-                        Terminate Session
+                        Logout
                       </button>
                     </div>
                   ) : (
@@ -340,14 +340,14 @@ const Navbar = () => {
                         onClick={closeMenu}
                         className="bg-gold text-black py-5 text-center text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white transition-colors"
                       >
-                        Begin Journey
+                        login
                       </Link>
                       <Link
                         to="/login"
                         onClick={closeMenu}
                         className="text-center text-gold/60 hover:text-gold text-[9px] font-black uppercase tracking-[0.4em] py-3 border border-white/5 hover:border-gold/20 transition-all"
                       >
-                        Member Access
+                        Register
                       </Link>
                     </div>
                   )}

@@ -370,15 +370,6 @@ const Home = () => {
                       </p>
                     </div>
 
-                    {/* Duration badge */}
-                    {service.duration && (
-                      <div className="relative z-10 mt-3">
-                        <span className="text-[8px] uppercase tracking-widest text-gold/40 font-black border border-gold/10 px-2 py-0.5">
-                          {service.duration}
-                        </span>
-                      </div>
-                    )}
-
                     <div className="mt-4 flex items-center justify-between relative z-10">
                       <div className="h-px w-8 bg-gold/20 group-hover:w-12 group-hover:bg-gold transition-all duration-700" />
                       <ChevronRight className="h-4 w-4 text-gold group-hover:translate-x-2 transition-transform" />
@@ -546,7 +537,7 @@ const Home = () => {
                         {selectedService.name}
                       </motion.h2>
 
-                      {/* Price + Duration */}
+                      {/* Price */}
                       <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
@@ -560,16 +551,6 @@ const Home = () => {
                             KSh {selectedService.price}
                           </p>
                         </div>
-                        {selectedService.duration && (
-                          <div className="text-right">
-                            <p className="text-[8px] uppercase text-gold/40 tracking-[0.3em] font-black mb-1">
-                              Duration
-                            </p>
-                            <p className="text-lg font-serif font-bold text-white/70">
-                              {selectedService.duration}
-                            </p>
-                          </div>
-                        )}
                       </motion.div>
 
                       {/* Description */}

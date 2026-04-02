@@ -166,7 +166,13 @@ export const getServices = async (req, res) => {
 // @desc    Create a service — image auto-resolved if not provided
 export const createService = async (req, res) => {
   try {
-    const { name, category, price, description, image, duration } = req.body;
+    const { name, category, price, description } = req.body;
+    let image = req.body.image;
+
+    // If a file was uploaded via Multer/Cloudinary
+    if (req.file && req.file.path) {
+      image = req.file.path;
+    }
 
     const service = new Service({
       name,
@@ -174,7 +180,6 @@ export const createService = async (req, res) => {
       price,
       description,
       image,
-      duration,
     });
     const created = await service.save();
 
@@ -187,7 +192,8 @@ export const createService = async (req, res) => {
 // @desc    Update a service — image auto-resolved if cleared/not provided
 export const updateService = async (req, res) => {
   try {
-    const { name, category, price, description, image, duration } = req.body;
+    const { name, category, price, description } = req.body;
+    let image = req.body.image;
     const service = await Service.findById(req.params.id);
 
     if (!service) {
@@ -198,11 +204,14 @@ export const updateService = async (req, res) => {
     service.category = category || service.category;
     service.price = price || service.price;
     service.description = description || service.description;
-    service.duration = duration || service.duration;
 
-    // Only overwrite image if a new one was explicitly passed in
-    // (empty string or null means "let it auto-resolve")
-    if (image) service.image = image;
+    // If a file was uploaded via Multer/Cloudinary
+    if (req.file && req.file.path) {
+      service.image = req.file.path;
+    } else if (image !== undefined) {
+      // image explicitly passed (even if empty string)
+      service.image = image;
+    }
 
     const updated = await service.save();
     res.json(withResolvedImage(updated));

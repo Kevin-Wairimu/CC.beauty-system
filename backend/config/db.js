@@ -9,25 +9,23 @@ const connectDB = async () => {
     }
 
     const conn = await mongoose.connect(mongoUri, {
-      family: 4, // Forces IPv4 (Fixes many Windows/ISP issues)
-      serverSelectionTimeoutMS: 5000, // Fails faster if connection is impossible
+      serverSelectionTimeoutMS: 10000, // Increased timeout for stability
     });
 
     console.log(` MongoDB Connected: ${conn.connection.host}`);
-    console.log(` Database: ${conn.connection.name}`);
   } catch (error) {
     console.error(` MongoDB Connection Error: ${error.message}`);
 
     if (error.message.includes("IP that isn't whitelisted")) {
       console.log(
-        " Double-check Atlas: Network Access > IP Whitelist (0.0.0.0/0)",
+        "Suggestion: Check MongoDB Atlas > Network Access. Ensure 0.0.0.0/0 is added.",
       );
-    } else if (error.message.includes("Could not connect to any servers")) {
+    } else if (
+      error.message.includes("bad auth") ||
+      error.message.includes("Authentication failed")
+    ) {
       console.log(
-        " Network Block Detected: Your ISP or Firewall is likely blocking port 27017.",
-      );
-      console.log(
-        " Recommended Fix: Try a VPN or a different network (like a Mobile Hotspot).",
+        "Suggestion: Check your password. If it contains special characters like '!', '@', or '#', they MUST be URL-encoded (e.g., '!' becomes '%21').",
       );
     }
 

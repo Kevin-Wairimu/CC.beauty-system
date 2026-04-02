@@ -94,6 +94,7 @@ const Admin = () => {
     duration: "",
     image: "",
   });
+  const [selectedImage, setSelectedImage] = useState(null);
 
   // User Form State
   const [showUserForm, setShowUserForm] = useState(false);
@@ -304,11 +305,18 @@ const Admin = () => {
   const handleUserSubmit = async (e) => {
     e.preventDefault();
     try {
+      const payload = {
+        ...userData,
+        specialization: (typeof userData.specialization === "string")
+          ? userData.specialization.split(",").map((s) => s.trim().toUpperCase()).filter(s => s !== "")
+          : userData.specialization || [],
+      };
+
       if (editingUser) {
-        await api.put(`/auth/users/${editingUser._id}/role`, userData);
+        await api.put(`/auth/users/${editingUser._id}/role`, payload);
         toast.success("User Updated");
       } else {
-        await api.post("/auth/register", userData);
+        await api.post("/auth/register", payload);
         toast.success("User Created");
       }
       fetchData();
@@ -437,21 +445,44 @@ const Admin = () => {
     }
   };
 
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setSelectedImage(e.target.files[0]);
+    }
+  };
+
   const handleServiceSubmit = async (e) => {
     e.preventDefault();
     try {
+      const formData = new FormData();
+      formData.append("name", serviceData.name);
+      formData.append("category", serviceData.category);
+      formData.append("price", serviceData.price);
+      formData.append("description", serviceData.description || "");
+      
+      if (selectedImage) {
+        formData.append("image", selectedImage);
+      } else {
+        formData.append("image", serviceData.image || "");
+      }
+
+      const config = {
+        headers: { "Content-Type": "multipart/form-data" },
+      };
+
       if (editingService) {
-        await api.put(`/services/${editingService._id}`, serviceData);
+        await api.put(`/services/${editingService._id}`, formData, config);
         toast.success("Menu Updated");
       } else {
-        await api.post("/services", serviceData);
+        await api.post("/services", formData, config);
         toast.success("New Service Added");
       }
       fetchData();
       setShowServiceForm(false);
       setEditingService(null);
-    } catch {
-      toast.error("Save failed");
+      setSelectedImage(null);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Save failed");
     }
   };
 
@@ -1241,9 +1272,6 @@ const Admin = () => {
                       <h3 className="text-xl font-bold text-white mb-1.5 relative z-10">
                         {s.name}
                       </h3>
-                      <p className="text-[9px] text-gray-500 uppercase tracking-widest mb-8">
-                        {s.duration || "60 mins"}
-                      </p>
                       <div className="flex gap-2 relative z-10">
                         <button
                           onClick={() => {
@@ -1879,23 +1907,6 @@ const Admin = () => {
                       placeholder="e.g. FACIAL"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <label className="text-[9px] uppercase tracking-widest text-gold font-black">
-                      Duration
-                    </label>
-                    <input
-                      required
-                      value={serviceData.duration}
-                      onChange={(e) =>
-                        setServiceFormData({
-                          ...serviceData,
-                          duration: e.target.value,
-                        })
-                      }
-                      className="w-full bg-black border-b border-white/10 p-4 outline-none focus:border-gold transition-all text-white font-light"
-                      placeholder="e.g. 90 Mins"
-                    />
-                  </div>
                 </div>
                 <div className="grid grid-cols-2 gap-8">
                   <div className="space-y-2">
@@ -1917,19 +1928,25 @@ const Admin = () => {
                   </div>
                   <div className="space-y-2">
                     <label className="text-[9px] uppercase tracking-widest text-gold font-black">
-                      Image URL
+                      Service Image
                     </label>
-                    <input
-                      value={serviceData.image}
-                      onChange={(e) =>
-                        setServiceFormData({
-                          ...serviceData,
-                          image: e.target.value,
-                        })
-                      }
-                      className="w-full bg-black border-b border-white/10 p-4 outline-none focus:border-gold transition-all text-white font-light"
-                      placeholder="https://... or /images/..."
-                    />
+                    <div className="flex items-center gap-4">
+                      { (selectedImage || serviceData.image) && (
+                        <div className="h-12 w-12 border border-gold/30 overflow-hidden bg-black flex-shrink-0">
+                          <img 
+                            src={selectedImage ? URL.createObjectURL(selectedImage) : serviceData.image} 
+                            alt="Preview" 
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      )}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        onChange={handleImageChange}
+                        className="w-full bg-black border-b border-white/10 p-3 outline-none focus:border-gold transition-all text-white text-[10px]"
+                      />
+                    </div>
                   </div>
                 </div>
                 <button
