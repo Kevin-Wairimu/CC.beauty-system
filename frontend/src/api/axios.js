@@ -1,11 +1,6 @@
 import axios from "axios";
 
-// Automatically switch between Local and Production URLs
-const baseURL =
-  import.meta.env.VITE_API_URL ||
-  (window.location.hostname === "localhost"
-    ? "http://localhost:5000/api"
-    : "https://cc-beauty-system.onrender.com/api");
+const baseURL = "http://localhost:5001/api";
 
 const api = axios.create({
   baseURL: baseURL,

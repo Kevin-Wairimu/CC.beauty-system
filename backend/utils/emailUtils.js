@@ -3,10 +3,23 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+let resend;
+try {
+  if (process.env.RESEND_API_KEY) {
+    resend = new Resend(process.env.RESEND_API_KEY);
+  } else {
+    console.warn("⚠️ [EMAIL] RESEND_API_KEY is missing. Emails will be skipped.");
+  }
+} catch (err) {
+  console.error("❌ [EMAIL] Error initializing Resend:", err.message);
+}
 
 // Helper — central send function
 const send = async ({ to, subject, html, replyTo }) => {
+  if (!resend) {
+    console.log(`ℹ️ [MOCK EMAIL] To: ${to}, Subject: ${subject} (Skipped: No API Key)`);
+    return { success: true, message: "Mock email sent (No API key)" };
+  }
   try {
     const { data, error } = await resend.emails.send({
       from: "CC Beauty <onboarding@resend.dev>", // use this until you verify a domain

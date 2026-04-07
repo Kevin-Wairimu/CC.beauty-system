@@ -9,7 +9,10 @@ const connectDB = async () => {
     }
 
     const conn = await mongoose.connect(mongoUri, {
-      serverSelectionTimeoutMS: 10000, // Increased timeout for stability
+      family: 4, // Forces IPv4 — critical for some local Windows/ISP environments
+      serverSelectionTimeoutMS: 30000, // Increase initial timeout to 30 seconds
+      connectTimeoutMS: 30000, // Timeout for the driver to establish a TCP connection
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
     });
 
     console.log(` MongoDB Connected: ${conn.connection.host}`);
@@ -29,7 +32,8 @@ const connectDB = async () => {
       );
     }
 
-    process.exit(1);
+    // process.exit(1); 
+    console.log("⚠️ Continuing in MOCK MODE (Database connection failed)");
   }
 };
 

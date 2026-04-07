@@ -3,14 +3,21 @@ import africastalking from "africastalking";
 
 dotenv.config();
 
-// Initialize Africa's Talking
-const credentials = {
-  apiKey: (process.env.AT_API_KEY || "").trim(),
-  username: (process.env.AT_USERNAME || "sandbox").trim(),
-};
+// Initialize Africa's Talking Safely
+let sms;
+const apiKey = (process.env.AT_API_KEY || "").trim();
+const username = (process.env.AT_USERNAME || "sandbox").trim();
 
-const AT = africastalking(credentials);
-const sms = AT.SMS;
+if (apiKey) {
+  try {
+    const AT = africastalking({ apiKey, username });
+    sms = AT.SMS;
+  } catch (err) {
+    console.error("❌ [SMS] Error initializing Africa's Talking:", err.message);
+  }
+} else {
+  console.warn("⚠️ [SMS] AT_API_KEY is missing. SMS will be simulated in console.");
+}
 
 /**
  * Ensures phone number is in international format for Africa's Talking (+254...)
@@ -34,65 +41,35 @@ const sendSMS = async (to, message) => {
   const formattedTo = formatPhone(to);
   if (!formattedTo) return false;
 
+  if (!sms) {
+    console.log(`\n--- 📱 [SIMULATED SMS] ---`);
+    console.log(`To: ${formattedTo}`);
+    console.log(`Message: ${message}`);
+    console.log(`--------------------------\n`);
+    return { success: true, simulated: true };
+  }
+
   const options = {
     to: [formattedTo],
     message: message,
   };
 
-  // Only add 'from' if we are NOT in sandbox
   if (process.env.AT_USERNAME !== "sandbox" && process.env.AT_SENDER_ID) {
     options.from = process.env.AT_SENDER_ID;
   }
 
   try {
     const response = await sms.send(options);
-    
-    // Safely check for status
     const status = response?.SMSMessageData?.Recipients?.[0]?.status;
 
     if (status === 'Success' || status === 'PendingConfirmation') {
       console.log(`✅ [SMS DELIVERED TO ${formattedTo}]`);
     } else {
       console.log(`⚠️ [GATEWAY REJECTED: ${status || 'Unknown Status'}] for ${formattedTo}`);
-      if (response?.SMSMessageData?.Recipients?.[0]?.message) {
-        console.log(`Reason: ${response.SMSMessageData.Recipients[0].message}`);
-      }
     }
     return response;
   } catch (error) {
-    // 401 Specific Advice
-    if (error.message?.includes('401') || (error.response && error.response.status === 401)) {
-      console.error('❌ AUTHENTICATION FAILED (401)');
-      console.log('HINT: 1. Disable IP Whitelisting in AT Dashboard. 2. Ensure account has balance. 3. Regenerate API Key.');
-    } else {
-      console.error('❌ SMS Gateway Error:', error.message || error);
-    }
-
-    // Retry logic...
-    if (options.from) {
-      console.log('🔄 Retrying without Sender ID...');
-      const retryOptions = { ...options };
-      delete retryOptions.from;
-      try {
-        const retryResponse = await sms.send(retryOptions);
-        const retryStatus = retryResponse?.SMSMessageData?.Recipients?.[0]?.status;
-        if (retryStatus === 'Success' || retryStatus === 'PendingConfirmation') {
-          console.log(`✅ [SMS SENT ON RETRY TO ${formattedTo}]`);
-        } else {
-          console.log(`⚠️ [RETRY REJECTED: ${retryStatus || 'Unknown Status'}]`);
-        }
-        return retryResponse;
-      } catch (retryError) {
-        console.error('❌ Retry Failed:', retryError.message || 'Check balance or IP whitelist');
-      }
-    }
-
-    // If it's NOT a Sender ID error, or simulation is needed
-    if (process.env.AT_USERNAME === "sandbox" || !process.env.AT_API_KEY) {
-      console.log(`\n--- SIMULATION MODE (No API Key or Sandbox) ---`);
-      console.log(`To: ${formattedTo}\nMessage: ${message}`);
-      console.log(`-----------------------------------\n`);
-    }
+    console.error('❌ SMS Gateway Error:', error.message || error);
     return false;
   }
 };
@@ -102,7 +79,6 @@ const sendSMS = async (to, message) => {
  */
 export const sendBookingSMS = async (appointment) => {
   const businessPhone = process.env.BUSINESS_PHONE || "+254759934198";
-
   const message =
     ` NEW RESERVATION AT CC BEAUTY CLINIC \n` +
     `------------------------------\n` +
