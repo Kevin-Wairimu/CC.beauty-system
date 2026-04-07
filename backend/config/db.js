@@ -32,8 +32,7 @@ const connectDB = async () => {
       );
     }
 
-    // process.exit(1); 
-    console.log("⚠️ Continuing in MOCK MODE (Database connection failed)");
+    process.exit(1);
   }
 };
 

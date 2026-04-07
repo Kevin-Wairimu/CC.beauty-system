@@ -130,106 +130,13 @@ const withResolvedImage = (doc) => {
   return obj;
 };
 
-const REAL_SERVICES_MOCK = [
-  { name: "Manicure Plain", category: "NAILS", price: "600" },
-  { name: "Pedicure Plain", category: "NAILS", price: "800" },
-  { name: "Manicure Gel", category: "NAILS", price: "1200" },
-  { name: "Pedicure Gel", category: "NAILS", price: "1500" },
-  { name: "Jelly Pedicure (2 Step)", category: "NAILS", price: "1000" },
-  { name: "Jelly Pedicure (4 Step)", category: "NAILS", price: "1200" },
-  { name: "Santorini", category: "NAILS", price: "1000" },
-  { name: "Tips Gel", category: "NAILS", price: "1200" },
-  { name: "Tips Builder", category: "NAILS", price: "1500" },
-  { name: "Tips Gumgel", category: "NAILS", price: "2000" },
-  { name: "Overlay Builder", category: "NAILS", price: "1500" },
-  { name: "Overlay Gumgel", category: "NAILS", price: "2000" },
-  { name: "Sculpting", category: "NAILS", price: "3000" },
-  { name: "Gel X", category: "NAILS", price: "3000" },
-  { name: "Acrylics", category: "NAILS", price: "3500" },
-  { name: "Acrylic Overlay", category: "NAILS", price: "3000" },
-  { name: "Clusters", category: "LASHES", price: "1500" },
-  { name: "Individual Classic", category: "LASHES", price: "2500" },
-  { name: "Individual Hybrid", category: "LASHES", price: "3500" },
-  { name: "Individual Volume", category: "LASHES", price: "4500" },
-  { name: "Individual Mega Volume", category: "LASHES", price: "6500" },
-  { name: "Individual Recession (Refill/Retouch)", category: "LASHES", price: "1500" },
-  { name: "Mink Lashes", category: "LASHES", price: "8500" },
-  { name: "Strip Lashes", category: "LASHES", price: "250" },
-  { name: "Wig Laundry", category: "WIGS", price: "1000" },
-  { name: "Wig Gluing", category: "WIGS", price: "1000" },
-  { name: "Gluing + Edges", category: "WIGS", price: "1100" },
-  { name: "Wig Styling", category: "WIGS", price: "2000" },
-  { name: "Flat Iron", category: "WIGS", price: "1000" },
-  { name: "Tinting", category: "WIGS", price: "300" },
-  { name: "Cut Lacing", category: "WIGS", price: "200" },
-  { name: "Touch Up", category: "MAKEUP", price: "1500" },
-  { name: "Soft Glam", category: "MAKEUP", price: "2000" },
-  { name: "Full Makeup", category: "MAKEUP", price: "2500" },
-  { name: "Bridal Makeup", category: "MAKEUP", price: "3500" },
-  { name: "Bridal Team", category: "MAKEUP", price: "3000" },
-  { name: "Eyebrow Tinting", category: "EYEBROWS", price: "500" },
-  { name: "Eyebrow Threading", category: "EYEBROWS", price: "300" },
-  { name: "Eyebrow Tweezing", category: "EYEBROWS", price: "300" },
-  { name: "Eyebrow Trimming", category: "EYEBROWS", price: "200" },
-  { name: "Mini Facial", category: "FACIAL", price: "2000" },
-  { name: "Scrubbing", category: "FACIAL", price: "1500" },
-  { name: "Full Facial", category: "FACIAL", price: "3500" },
-  { name: "Wash & Straightening", category: "HAIR", price: "300" },
-  { name: "Hair Wash", category: "HAIR", price: "500" },
-  { name: "Wash and Full Blow-dry", category: "HAIR", price: "500" },
-  { name: "Undoing Twists", category: "HAIR", price: "500" },
-  { name: "Undoing Cornrows", category: "HAIR", price: "300" },
-  { name: "Undoing Braids", category: "HAIR", price: "500" },
-  { name: "Kids Lines", category: "HAIR", price: "300" },
-  { name: "Kito Lines", category: "HAIR", price: "500" },
-  { name: "Lip Cornrows", category: "HAIR", price: "500" },
-  { name: "Fulani Cornrows", category: "HAIR", price: "1500" },
-  { name: "Back Ghanaians", category: "HAIR", price: "1000" },
-  { name: "Up Ghanaians", category: "HAIR", price: "1500" },
-  { name: "Small Knotless Braids", category: "HAIR", price: "2500" },
-  { name: "Long Medium Knotless Braids", category: "HAIR", price: "2000" },
-  { name: "Medium Knotless Braids", category: "HAIR", price: "1500" },
-  { name: "Knotless Twist Braids", category: "HAIR", price: "2000" },
-  { name: "Jumbo Knotless Braids", category: "HAIR", price: "1500" },
-  { name: "Crotchets", category: "HAIR", price: "1500" },
-  { name: "Fulani Stitchlines", category: "HAIR", price: "2500" },
-  { name: " Up Stitchlines", category: "HAIR", price: "2200" },
-  { name: "Back Stitchlines", category: "HAIR", price: "2000" },
-  { name: "Box Braids", category: "HAIR", price: "1500" },
-  { name: "Boho Knotless Braids", category: "HAIR", price: "2000" },
-  { name: "Boho Bob Braids", category: "HAIR", price: "2000" },
-  { name: "Twist Braids", category: "HAIR", price: "2000" },
-  { name: "Marley Twists", category: "HAIR", price: "2000" },
-  { name: "Spring Twists", category: "HAIR", price: "2000" },
-  { name: "Twist Outs", category: "HAIR", price: "1500" },
-  { name: "Mini Twists", category: "HAIR", price: "3000" },
-  { name: "Coily Twists", category: "HAIR", price: "1500" },
-  { name: "Havana Curls", category: "HAIR", price: "2000" },
-  { name: "Invisible Locs", category: "HAIR", price: "1700" },
-  { name: "Gel Styling", category: "HAIR", price: "1500" },
-  { name: "Butterfly Locs", category: "HAIR", price: "2500" },
-  { name: "Gypsy Locs", category: "HAIR", price: "2000" },
-  { name: "Mermaid Braids", category: "HAIR", price: "2000" },
-  { name: "Italian Curls", category: "HAIR", price: "2000" },
-  { name: "Natural Twists", category: "HAIR", price: "2500" },
-  { name: "Lemonade Braids", category: "HAIR", price: "1700" },
-  { name: "Boho/Bohemian Braids/Curls", category: "HAIR", price: "2000" },
-  { name: "Sisterlocks Retouch", category: "HAIR", price: "2000" },
-  { name: "Loc Retwist", category: "HAIR", price: "1500" },
-  { name: "Boho Locs", category: "HAIR", price: "2000" },
-].map((s, idx) => ({ ...s, _id: `mock-${idx}` }));
-
 // @desc    Get all services — images auto-resolved if missing
 export const getServices = async (req, res) => {
   try {
     const services = await Service.find({});
-    if (services.length > 0) {
-        return res.json(services.map(withResolvedImage));
-    }
-    throw new Error("No services in database");
+    res.json(services.map(withResolvedImage));
   } catch (error) {
-    console.error("Database unavailable or empty, returning real service list as mock:", error.message);
-    res.json(REAL_SERVICES_MOCK.map(withResolvedImage));
+    res.status(500).json({ message: error.message });
   }
 };
 
