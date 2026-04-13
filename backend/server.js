@@ -30,6 +30,9 @@ connectDB();
 
 const app = express();
 
+// Trust proxy for Render/Cloudflare
+app.set('trust proxy', 1);
+
 // Security Middlewares
 app.use(helmet()); // Set security HTTP headers
 app.use(compression()); // Compress responses
