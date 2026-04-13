@@ -17,6 +17,10 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 const connectionString = process.env.DATABASE_URL;
 
+if (!connectionString) {
+  console.error('❌ DATABASE_URL is missing. Database connection will fail.');
+}
+
 // Parse numbers from Postgres numeric to JS float
 types.setTypeParser(1700, function(val) {
   return parseFloat(val);
@@ -25,7 +29,7 @@ types.setTypeParser(1700, function(val) {
 // Explicit SSL configuration for pg Pool
 const pool = new Pool({ 
   connectionString,
-  ssl: {
+  ssl: connectionString && connectionString.includes('localhost') ? false : {
     rejectUnauthorized: false
   },
   max: 5,

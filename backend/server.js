@@ -23,9 +23,10 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 if (process.env.DATABASE_URL) {
-  console.log(' DATABASE_URL loaded');
+  console.log('✅ DATABASE_URL loaded');
 } else {
-  console.error(' DATABASE_URL NOT FOUND in process.env');
+  console.error('❌ DATABASE_URL NOT FOUND in process.env');
+  console.error('Please ensure you have set DATABASE_URL in your .env file or your deployment environment variables.');
 }
 
 connectDB();
