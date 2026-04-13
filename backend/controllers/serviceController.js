@@ -136,7 +136,8 @@ export const getServices = async (req, res) => {
     const services = await prisma.service.findMany({});
     res.json(services.map(withResolvedImage));
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(`SERVICE_CONTROLLER_ERROR:`, error.message);
+    res.status(500).json({ message: "Operation failed", error: error.message });
   }
 };
 
@@ -204,6 +205,7 @@ export const deleteService = async (req, res) => {
       res.status(404).json({ message: "Service not found" });
     }
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(`SERVICE_CONTROLLER_ERROR:`, error.message);
+    res.status(500).json({ message: "Operation failed", error: error.message });
   }
 };
