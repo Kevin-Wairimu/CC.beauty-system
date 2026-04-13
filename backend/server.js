@@ -3,7 +3,6 @@ import dotenv from 'dotenv';
 import cors from 'cors';
 import helmet from 'helmet';
 import compression from 'compression';
-import mongoSanitize from 'express-mongo-sanitize';
 import rateLimit from 'express-rate-limit';
 import connectDB from './config/db.js';
 
@@ -21,10 +20,10 @@ const __dirname = path.dirname(__filename);
 
 dotenv.config({ path: path.join(__dirname, '.env') });
 
-if (process.env.MONGO_URI) {
-  console.log(' MONGO_URI loaded from .env:', process.env.MONGO_URI.substring(0, 20) + '...');
+if (process.env.DATABASE_URL) {
+  console.log(' DATABASE_URL loaded from .env');
 } else {
-  console.error(' MONGO_URI NOT FOUND in process.env');
+  console.error(' DATABASE_URL NOT FOUND in process.env');
 }
 
 connectDB();
@@ -33,7 +32,6 @@ const app = express();
 
 // Security Middlewares
 app.use(helmet()); // Set security HTTP headers
-app.use(mongoSanitize()); // Prevent NoSQL injection
 app.use(compression()); // Compress responses
 
 // Rate limiting

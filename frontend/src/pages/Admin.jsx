@@ -118,7 +118,7 @@ const Admin = () => {
     try {
       setLoading(true);
       const [appRes, enqRes, serRes] = await Promise.all([
-        api.get("/appointments").catch(() => ({ data: [] })),
+        api.get("/appointments?includeDeleted=true").catch(() => ({ data: [] })),
         api.get("/enquiry").catch(() => ({ data: [] })),
         api.get("/services").catch(() => ({ data: [] })),
       ]);

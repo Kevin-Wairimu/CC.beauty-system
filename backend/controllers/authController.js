@@ -1,6 +1,7 @@
-import User from "../models/User.js";
+import { prisma } from "../config/db.js";
 import jwt from "jsonwebtoken";
 import crypto from "crypto";
+import bcrypt from "bcryptjs";
 import { sendResetPasswordEmail } from "../utils/emailUtils.js";
 
 const VALID_SPECIALIZATIONS = ["NAILS", "MAKEUP", "LASHES", "WIGS", "HAIR", "EYEBROWS", "FACIAL", "SKIN"];
@@ -12,84 +13,115 @@ const generateToken = (id) => {
 // @desc    Auth user & get token
 export const authUser = async (req, res) => {
   const { email, password } = req.body;
-  console.log(`[LOGIN ATTEMPT] Email: ${email}, Password: ${password}`);
 
-  const user = await User.findOne({ email });
-  console.log(`[LOGIN LOOKUP] User found:`, user ? user.email : "null");
+  try {
+    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
 
-  if (user) {
-    const isMatch = await user.matchPassword(password);
-    console.log(`[LOGIN MATCH] Password match result:`, isMatch);
-    if (isMatch) {
-      return res.json({
-        _id: user._id,
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        permissions: user.permissions,
-        token: generateToken(user._id),
-      });
+    if (user) {
+      const isMatch = await bcrypt.compare(password, user.password);
+      if (isMatch) {
+        return res.json({
+          _id: user.id,
+          name: user.name,
+          email: user.email,
+          role: user.role,
+          specialization: user.specialization,
+          permissions: {
+            approveBookings: user.approveBookings,
+            manageStaff: user.manageStaff,
+            manageServices: user.manageServices,
+          },
+          token: generateToken(user.id),
+        });
+      }
     }
-  }
 
-  res.status(401).json({ message: "Invalid email or password" });
+    res.status(401).json({ message: "Invalid email or password" });
+  } catch (error) {
+    console.error("Login Error:", error.message);
+    res.status(500).json({ message: "Server connection failed. Please try again." });
+  }
 };
 
 // @desc    Register a new user
 export const registerUser = async (req, res) => {
   const { name, email, password, role, specialization } = req.body;
-  const userExists = await User.findOne({ email });
 
-  if (userExists) {
-    return res.status(400).json({ message: "User already exists" });
-  }
+  try {
+    const userExists = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
 
-  const user = await User.create({
-    name,
-    email,
-    password,
-    role: role || "client",
-    specialization: specialization || [],
-  });
+    if (userExists) {
+      return res.status(400).json({ message: "User already exists" });
+    }
 
-  if (user) {
-    res.status(201).json({
-      _id: user._id,
-      name: user.name,
-      email: user.email,
-      role: user.role,
-      specialization: user.specialization,
-      permissions: user.permissions,
-      token: generateToken(user._id),
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(password, salt);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email: email.toLowerCase(),
+        password: hashedPassword,
+        role: role || "client",
+        specialization: specialization || [],
+      },
     });
-  } else {
-    res.status(400).json({ message: "Invalid user data" });
+
+    if (user) {
+      res.status(201).json({
+        _id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        specialization: user.specialization,
+        permissions: {
+          approveBookings: user.approveBookings,
+          manageStaff: user.manageStaff,
+          manageServices: user.manageServices,
+        },
+        token: generateToken(user.id),
+      });
+    } else {
+      res.status(400).json({ message: "Invalid user data" });
+    }
+  } catch (error) {
+    console.error("Registration Error:", error.message);
+    res.status(500).json({ message: "Server connection failed. Please try again." });
   }
 };
 
 // @desc    Forgot Password
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
-  const user = await User.findOne({ email });
-
-  if (!user) {
-    return res
-      .status(404)
-      .json({ message: "User with this email does not exist" });
-  }
-
-  // Get reset token
-  const resetToken = user.getResetPasswordToken();
-  await user.save();
-
   try {
-    await sendResetPasswordEmail(user, resetToken);
+    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+
+    if (!user) {
+      return res
+        .status(404)
+        .json({ message: "User with this email does not exist" });
+    }
+
+    const resetToken = crypto.randomBytes(20).toString('hex');
+    const resetPasswordToken = crypto
+      .createHash('sha256')
+      .update(resetToken)
+      .digest('hex');
+    const resetPasswordExpire = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        resetPasswordToken,
+        resetPasswordExpire,
+      }
+    });
+
+    await sendResetPasswordEmail({ ...user, resetPasswordToken, resetPasswordExpire }, resetToken);
     res.json({ message: "Password reset link sent to your email" });
   } catch (error) {
-    user.resetPasswordToken = undefined;
-    user.resetPasswordExpire = undefined;
-    await user.save();
-    res.status(500).json({ message: "Email could not be sent" });
+    console.error("Forgot Password Error:", error.message);
+    res.status(500).json({ message: error.message });
   }
 };
 
@@ -100,45 +132,76 @@ export const resetPassword = async (req, res) => {
     .update(req.params.token)
     .digest("hex");
 
-  const user = await User.findOne({
-    resetPasswordToken,
-    resetPasswordExpire: { $gt: Date.now() },
-  });
-
-  if (!user) {
-    return res.status(400).json({ message: "Invalid or expired reset token" });
-  }
-
-  user.password = req.body.password;
-  user.resetPasswordToken = undefined;
-  user.resetPasswordExpire = undefined;
-  await user.save();
-
-  res.json({ message: "Password reset successful. You can now login." });
-};
-
-// @desc    Get all users (Admin only)
-// @desc    Get all staff members (For Booking)
-export const getStaff = async (req, res) => {
   try {
-    const staff = await User.find({ role: "staff" }).select("-password");
-
-    // Only return staff who have AT LEAST ONE valid beauty specialization
-    const bookableStaff = staff.filter((s) => {
-      const specs = (s.specialization || []).map((sp) => sp.toUpperCase());
-      return specs.some((sp) => VALID_SPECIALIZATIONS.includes(sp));
+    const user = await prisma.user.findFirst({
+      where: {
+        resetPasswordToken,
+        resetPasswordExpire: { gt: new Date() },
+      },
     });
 
-    res.json(bookableStaff);
+    if (!user) {
+      return res.status(400).json({ message: "Invalid or expired reset token" });
+    }
+
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(req.body.password, salt);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetPasswordToken: null,
+        resetPasswordExpire: null,
+      }
+    });
+
+    res.json({ message: "Password reset successful. You can now login." });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 };
 
+// @desc    Get all staff members (For Booking)
+export const getStaff = async (req, res) => {
+  try {
+    const staff = await prisma.user.findMany({
+      where: { 
+        OR: [
+          { role: "staff" },
+          { role: "admin" }
+        ]
+      },
+    });
+
+    const bookableStaff = staff.filter((s) => {
+      const specs = (s.specialization || []).map((sp) => sp.toUpperCase());
+      return specs.some((sp) => VALID_SPECIALIZATIONS.includes(sp));
+    });
+
+    res.json(bookableStaff.map(s => ({ ...s, _id: s.id })));
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+// @desc    Get all users (Admin only)
 export const getUsers = async (req, res) => {
   try {
-    const users = await User.find({}).select("-password");
-    res.json(users);
+    const users = await prisma.user.findMany({
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        specialization: true,
+        approveBookings: true,
+        manageStaff: true,
+        manageServices: true,
+      }
+    });
+    const mappedUsers = users.map(u => ({ ...u, _id: u.id }));
+    res.json(mappedUsers);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -147,32 +210,39 @@ export const getUsers = async (req, res) => {
 // @desc    Update user details (Admin only)
 export const updateUserRole = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await prisma.user.findUnique({ where: { id: req.params.id } });
     if (user) {
-      user.name = req.body.name || user.name;
-      user.email = req.body.email || user.email;
-      user.role = req.body.role || user.role;
-
+      const data = {};
+      if (req.body.name) data.name = req.body.name;
+      if (req.body.email) data.email = req.body.email.toLowerCase();
+      if (req.body.role) data.role = req.body.role;
       if (req.body.password) {
-        user.password = req.body.password;
+        const salt = await bcrypt.genSalt(10);
+        data.password = await bcrypt.hash(req.body.password, salt);
       }
-
-      if (req.body.specialization) {
-        user.specialization = req.body.specialization;
-      }
-
+      if (req.body.specialization) data.specialization = req.body.specialization;
       if (req.body.permissions) {
-        user.permissions = { ...user.permissions, ...req.body.permissions };
+        if (req.body.permissions.approveBookings !== undefined) data.approveBookings = req.body.permissions.approveBookings;
+        if (req.body.permissions.manageStaff !== undefined) data.manageStaff = req.body.permissions.manageStaff;
+        if (req.body.permissions.manageServices !== undefined) data.manageServices = req.body.permissions.manageServices;
       }
 
-      const updatedUser = await user.save();
+      const updatedUser = await prisma.user.update({
+        where: { id: req.params.id },
+        data,
+      });
+
       res.json({
-        _id: updatedUser._id,
+        _id: updatedUser.id,
         name: updatedUser.name,
         email: updatedUser.email,
         role: updatedUser.role,
         specialization: updatedUser.specialization,
-        permissions: updatedUser.permissions,
+        permissions: {
+          approveBookings: updatedUser.approveBookings,
+          manageStaff: updatedUser.manageStaff,
+          manageServices: updatedUser.manageServices,
+        },
       });
     } else {
       res.status(404).json({ message: "User not found" });
@@ -185,12 +255,12 @@ export const updateUserRole = async (req, res) => {
 // @desc    Delete user (Admin only)
 export const deleteUser = async (req, res) => {
   try {
-    const user = await User.findById(req.params.id);
+    const user = await prisma.user.findUnique({ where: { id: req.params.id } });
     if (user) {
       if (user.role === "admin") {
         return res.status(400).json({ message: "Cannot delete admin user" });
       }
-      await user.deleteOne();
+      await prisma.user.delete({ where: { id: req.params.id } });
       res.json({ message: "User removed" });
     } else {
       res.status(404).json({ message: "User not found" });

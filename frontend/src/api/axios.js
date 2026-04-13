@@ -3,7 +3,7 @@ import axios from "axios";
 const baseURL =
   import.meta.env.VITE_API_URL ||
   (window.location.hostname === "localhost"
-    ? "http://localhost:5000/api"
+    ? "http://localhost:5001/api"
     : "https://cc-beauty-system.onrender.com/api");
 
 const api = axios.create({

@@ -68,7 +68,8 @@ const Booking = () => {
         }
 
         const specialists = staffRes.data.filter((s) => {
-          if (s.role?.toLowerCase() !== "staff") return false;
+          const role = s.role?.toLowerCase();
+          if (role !== "staff" && role !== "admin") return false;
           const specs = (s.specialization || []).map((sp) => sp.toUpperCase());
           return specs.some((sp) => VALID_SPECS.includes(sp));
         });

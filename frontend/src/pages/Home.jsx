@@ -244,12 +244,15 @@ const Home = () => {
   }, []);
 
   // ── Derived ─────────────────────────────────────────────────────────────────
-  const groupedServices = services.reduce((acc, service) => {
-    if (!acc[service.category]) acc[service.category] = [];
-    acc[service.category].push(service);
-    return acc;
-  }, {});
-  const categories = Object.keys(groupedServices);
+  const groupedServices = React.useMemo(() => {
+    return services.reduce((acc, service) => {
+      if (!acc[service.category]) acc[service.category] = [];
+      acc[service.category].push(service);
+      return acc;
+    }, {});
+  }, [services]);
+
+  const categories = React.useMemo(() => Object.keys(groupedServices), [groupedServices]);
 
   // ─────────────────────────────────────────────────────────────────────────────
   return (
@@ -261,6 +264,7 @@ const Home = () => {
           src="/images/full facial.JPG"
           alt="CC Beauty Clinic"
           className="absolute inset-0 w-full h-full object-cover grayscale opacity-40"
+          loading="eager"
           onError={(e) => {
             e.target.onerror = null;
             e.target.src = CATEGORY_FALLBACKS.DEFAULT;

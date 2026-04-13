@@ -1,22 +1,22 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
-import User from './models/User.js';
+import connectDB from "./config/db.js";
+import User from "./models/User.js";
 
 dotenv.config();
+connectDB();
 
 const exhaustiveCheck = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
-    console.log('--- EXHAUSTIVE USER LIST ---');
+    console.log("--- EXHAUSTIVE USER LIST ---");
     const users = await User.find({}).sort({ name: 1 });
     console.log(`Total users in DB: ${users.length}`);
-    
-    users.forEach(u => {
-      console.log(`- ID: ${u._id}, Name: "${u.name}", Email: "${u.email}", Role: "${u.role}", Specs: [${u.specialization.join(', ')}]`);
-    });
 
-    // We will look for "kevin", "Martha" duplicates, and "Ceisey wairimu"
-    // Then we can delete them by ID.
+    users.forEach((u) => {
+      console.log(
+        `- ID: ${u._id}, Name: "${u.name}", Email: "${u.email}", Role: "${u.role}", Specs: [${u.specialization.join(", ")}]`,
+      );
+    });
 
     process.exit();
   } catch (error) {

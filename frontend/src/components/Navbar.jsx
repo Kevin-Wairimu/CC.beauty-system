@@ -25,24 +25,22 @@ const Navbar = () => {
     { name: "Contact", path: "/contact" },
   ];
 
-  const closeMenu = () => setIsMenuOpen(false);
+  const closeMenu = () => {
+    if (isMenuOpen) setIsMenuOpen(false);
+  };
 
   /* Lock body scroll when mobile menu opens */
   useEffect(() => {
-    document.body.style.overflow = isMenuOpen ? "hidden" : "auto";
-
-    return () => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
       document.body.style.overflow = "auto";
-    };
+    }
   }, [isMenuOpen]);
 
   /* Close mobile menu on route change */
   useEffect(() => {
-    // Escape synchronous execution to avoid React Hook linting errors
-    const handle = setTimeout(() => {
-      closeMenu();
-    }, 0);
-    return () => clearTimeout(handle);
+    closeMenu();
   }, [location.pathname]);
 
   /* Scroll to section for anchor links */

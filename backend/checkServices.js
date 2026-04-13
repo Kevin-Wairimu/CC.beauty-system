@@ -1,12 +1,13 @@
 import mongoose from 'mongoose';
 import dotenv from 'dotenv';
+import connectDB from './config/db.js';
 import Service from './models/Service.js';
 
 dotenv.config();
+connectDB();
 
 const checkServices = async () => {
   try {
-    await mongoose.connect(process.env.MONGO_URI);
     const services = await Service.find({});
     const categories = [...new Set(services.map(s => s.category.toUpperCase()))];
     console.log('--- Service Categories ---');

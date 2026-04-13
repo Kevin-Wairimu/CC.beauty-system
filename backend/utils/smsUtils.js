@@ -13,10 +13,12 @@ if (apiKey) {
     const AT = africastalking({ apiKey, username });
     sms = AT.SMS;
   } catch (err) {
-    console.error("❌ [SMS] Error initializing Africa's Talking:", err.message);
+    console.error("[SMS] Error initializing Africa's Talking:", err.message);
   }
 } else {
-  console.warn("⚠️ [SMS] AT_API_KEY is missing. SMS will be simulated in console.");
+  console.warn(
+    "[SMS] AT_API_KEY is missing. SMS will be simulated in console.",
+  );
 }
 
 /**
@@ -62,14 +64,16 @@ const sendSMS = async (to, message) => {
     const response = await sms.send(options);
     const status = response?.SMSMessageData?.Recipients?.[0]?.status;
 
-    if (status === 'Success' || status === 'PendingConfirmation') {
-      console.log(`✅ [SMS DELIVERED TO ${formattedTo}]`);
+    if (status === "Success" || status === "PendingConfirmation") {
+      console.log(`[SMS DELIVERED TO ${formattedTo}]`);
     } else {
-      console.log(`⚠️ [GATEWAY REJECTED: ${status || 'Unknown Status'}] for ${formattedTo}`);
+      console.log(
+        `[GATEWAY REJECTED: ${status || "Unknown Status"}] for ${formattedTo}`,
+      );
     }
     return response;
   } catch (error) {
-    console.error('❌ SMS Gateway Error:', error.message || error);
+    console.error("SMS Gateway Error:", error.message || error);
     return false;
   }
 };
@@ -114,14 +118,15 @@ export const sendClientBookingSMS = async (appointment) => {
  * SMS to the guest when their reservation is approved.
  */
 export const sendClientApprovalSMS = async (appointment) => {
-  const message = `✨ CC BEAUTY CLINIC ✨\n` +
-                  `------------------------------\n` +
-                  `GREAT NEWS ${appointment.name.toUpperCase()}!\n` +
-                  `Your reservation for ${appointment.service} is CONFIRMED.\n` +
-                  `Therapist: ${appointment.staffId?.name || 'Assigned Master'}\n` +
-                  `Schedule: ${appointment.date} at ${appointment.time}\n` +
-                  `------------------------------\n` +
-                  `See you at Kilimanjaro City Arcade!`;
+  const message =
+    `CC BEAUTY CLINIC \n` +
+    `------------------------------\n` +
+    `GREAT NEWS ${appointment.name.toUpperCase()}!\n` +
+    `Your reservation for ${appointment.service} is CONFIRMED.\n` +
+    `Therapist: ${appointment.staffId?.name || "Assigned Master"}\n` +
+    `Schedule: ${appointment.date} at ${appointment.time}\n` +
+    `------------------------------\n` +
+    `See you at Kilimanjaro City Arcade!`;
 
   return await sendSMS(appointment.phone, message);
 };

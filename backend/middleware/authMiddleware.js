@@ -1,5 +1,5 @@
 import jwt from 'jsonwebtoken';
-import User from '../models/User.js';
+import { prisma } from '../config/db.js';
 
 export const protect = async (req, res, next) => {
   let token;
@@ -12,7 +12,19 @@ export const protect = async (req, res, next) => {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-      req.user = await User.findById(decoded.id).select('-password');
+      req.user = await prisma.user.findUnique({
+        where: { id: decoded.id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          approveBookings: true,
+          manageStaff: true,
+          manageServices: true,
+          specialization: true,
+        }
+      });
       
       if (!req.user) {
         return res.status(401).json({ message: 'Not authorized, user not found' });
@@ -40,7 +52,19 @@ export const tryProtect = async (req, res, next) => {
     try {
       token = req.headers.authorization.split(' ')[1];
       const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = await User.findById(decoded.id).select('-password');
+      req.user = await prisma.user.findUnique({
+        where: { id: decoded.id },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          approveBookings: true,
+          manageStaff: true,
+          manageServices: true,
+          specialization: true,
+        }
+      });
     } catch (error) {
       console.error('Optional auth failed:', error.message);
     }

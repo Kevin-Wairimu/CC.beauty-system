@@ -1,6 +1,4 @@
-import Appointment from "../models/Appointment.js";
-import Service from "../models/Service.js";
-import mongoose from "mongoose";
+import { prisma } from "../config/db.js";
 import {
   sendBookingEmail,
   sendApprovalEmail,
@@ -13,7 +11,6 @@ import {
 } from "../utils/smsUtils.js";
 
 // ─── Receipt Number Generator ────────────────────────────────────────────────
-// Format: CC-YYYYMMDD-XXXX  e.g. CC-20240315-7492
 const generateReceiptNo = () => {
   const date = new Date();
   const datePart = date.toISOString().slice(0, 10).replace(/-/g, "");
@@ -37,69 +34,62 @@ export const createAppointment = async (req, res) => {
       staffId,
       price,
     } = req.body;
-    console.log(
-      `[CREATE APPOINTMENT] Incoming staffId: "${staffId}" for service: "${service}"`,
-    );
 
-    const clientId = req.user ? req.user._id : null;
+    const clientId = req.user ? req.user.id : null;
 
+    // Verify staffId exists if provided to prevent foreign key crashes
     let validStaffId = null;
-    if (staffId && mongoose.Types.ObjectId.isValid(staffId)) {
-      validStaffId = staffId;
+    if (staffId) {
+      const staffExists = await prisma.user.findUnique({ where: { id: staffId } });
+      if (staffExists) validStaffId = staffId;
     }
 
     // Auto-resolve price from service catalog if not provided
-    let resolvedPrice = price || 0;
-    if (
-      !resolvedPrice &&
-      serviceId &&
-      mongoose.Types.ObjectId.isValid(serviceId)
-    ) {
-      const svc = await Service.findById(serviceId);
+    let resolvedPrice = parseFloat(price) || 0;
+    if (!resolvedPrice && serviceId) {
+      const svc = await prisma.service.findUnique({ where: { id: serviceId } });
       if (svc?.price) resolvedPrice = parseFloat(svc.price) || 0;
     }
 
-    const appointment = new Appointment({
-      name: name || (req.user ? req.user.name : ""),
-      phone,
-      email: email || (req.user ? req.user.email : ""),
-      service,
-      date,
-      time,
-      notes,
-      clientId,
-      serviceId,
-      staffId: validStaffId,
-      price: resolvedPrice,
+    const appointment = await prisma.appointment.create({
+      data: {
+        name: name || (req.user ? req.user.name : ""),
+        phone,
+        email: email || (req.user ? req.user.email : ""),
+        service,
+        date,
+        time,
+        notes,
+        clientId,
+        serviceId,
+        staffId: validStaffId,
+        price: resolvedPrice,
+      },
+      include: {
+        staff: { select: { id: true, name: true } },
+        serviceRelation: { select: { id: true, name: true } },
+      }
     });
 
-    const createdAppointment = await appointment.save();
-
-    const populatedAppointment = await Appointment.findById(
-      createdAppointment._id,
-    )
-      .populate("staffId", "name _id")
-      .populate("serviceId", "name _id");
+    const mappedAppointment = { 
+      ...appointment, 
+      _id: appointment.id,
+      staffId: appointment.staff ? { ...appointment.staff, _id: appointment.staff.id } : null,
+      serviceId: appointment.serviceRelation ? { ...appointment.serviceRelation, _id: appointment.serviceRelation.id } : null,
+    };
 
     (async () => {
       try {
-        // Email Notifications
-        await sendBookingEmail(populatedAppointment);
-        await sendClientBookingEmail(populatedAppointment);
-
-        // SMS Notifications
-        await sendBookingSMS(populatedAppointment);
-        await sendClientBookingSMS(populatedAppointment);
-
-        console.log(
-          `Notifications triggered for appointment: ${createdAppointment._id}`,
-        );
+        await sendBookingEmail(mappedAppointment);
+        await sendClientBookingEmail(mappedAppointment);
+        await sendBookingSMS(mappedAppointment);
+        await sendClientBookingSMS(mappedAppointment);
       } catch (notifError) {
         console.error("Background Notification Error:", notifError.message);
       }
     })();
 
-    res.status(201).json(createdAppointment);
+    res.status(201).json(mappedAppointment);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -109,26 +99,45 @@ export const createAppointment = async (req, res) => {
 
 export const getAppointments = async (req, res) => {
   try {
-    let query = {};
+    const includeDeleted = req.query.includeDeleted === 'true';
+    const where = {};
+    
+    if (!includeDeleted) {
+      where.isDeleted = false;
+    }
 
     if (req.user) {
       if (req.user.role === "staff") {
-        query = { staffId: req.user._id };
+        where.staffId = req.user.id;
       } else if (req.user.role === "client") {
-        query = {
-          $or: [{ clientId: req.user._id }, { email: req.user.email }],
-        };
+        where.OR = [
+          { clientId: req.user.id },
+          { email: req.user.email }
+        ];
       }
     }
 
-    const appointments = await Appointment.find(query)
-      .populate("clientId", "name email _id")
-      .populate("staffId", "name _id")
-      .populate("serviceId", "name price _id") // ← include price for auto-resolve
-      .populate("handledBy", "name _id")
-      .sort({ createdAt: -1 });
+    const appointments = await prisma.appointment.findMany({
+      where,
+      include: {
+        client: { select: { id: true, name: true, email: true } },
+        staff: { select: { id: true, name: true } },
+        serviceRelation: { select: { id: true, name: true, price: true } },
+        handledBy: { select: { id: true, name: true } },
+      },
+      orderBy: { createdAt: 'desc' },
+    });
 
-    res.json(appointments);
+    const mappedAppointments = appointments.map(app => ({
+      ...app,
+      _id: app.id,
+      clientId: app.client ? { ...app.client, _id: app.client.id } : null,
+      staffId: app.staff ? { ...app.staff, _id: app.staff.id } : null,
+      serviceId: app.serviceRelation ? { ...app.serviceRelation, _id: app.serviceRelation.id } : null,
+      handledBy: app.handledBy ? { ...app.handledBy, _id: app.handledBy.id } : null,
+    }));
+
+    res.json(mappedAppointments);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -138,27 +147,28 @@ export const getAppointments = async (req, res) => {
 
 export const deleteAppointment = async (req, res) => {
   try {
-    const appointment = await Appointment.findById(req.params.id);
+    const appointment = await prisma.appointment.findUnique({ where: { id: req.params.id } });
     if (!appointment) {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
-    // ── Authorization Check ───────────────────────────────────────────────────
     if (req.user.role !== "admin" && req.user.role !== "manager") {
       const isMyAppointment =
-        (appointment.clientId &&
-          appointment.clientId.toString() === req.user._id.toString()) ||
+        (appointment.clientId && appointment.clientId === req.user.id) ||
         appointment.email?.toLowerCase() === req.user.email?.toLowerCase();
 
       if (!isMyAppointment) {
-        return res
-          .status(403)
-          .json({ message: "Not authorized to remove this record" });
+        return res.status(403).json({ message: "Not authorized to remove this record" });
       }
     }
 
-    await appointment.deleteOne();
-    res.json({ message: "Appointment removed" });
+    // Soft delete: set isDeleted to true
+    await prisma.appointment.update({
+      where: { id: req.params.id },
+      data: { isDeleted: true }
+    });
+    
+    res.json({ message: "Appointment removed from view" });
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
@@ -168,159 +178,119 @@ export const deleteAppointment = async (req, res) => {
 
 export const updateAppointmentStatus = async (req, res) => {
   try {
-    const appointment = await Appointment.findById(req.params.id).populate(
-      "serviceId",
-      "name price",
-    ); // ← needed for auto price lookup
+    const appointment = await prisma.appointment.findUnique({
+      where: { id: req.params.id },
+      include: { serviceRelation: true }
+    });
 
-    if (!appointment) {
+    if (!appointment || appointment.isDeleted) {
       return res.status(404).json({ message: "Appointment not found" });
     }
 
     const oldStatus = appointment.status;
+    const data = {};
 
-    // ── CLIENT: can only cancel their own ────────────────────────────────────
     if (req.user.role === "client") {
       const isMyAppointment =
-        (appointment.clientId &&
-          appointment.clientId.toString() === req.user._id.toString()) ||
+        (appointment.clientId && appointment.clientId === req.user.id) ||
         appointment.email?.toLowerCase() === req.user.email?.toLowerCase();
 
       if (!isMyAppointment) {
-        return res
-          .status(403)
-          .json({ message: "Not authorized to modify this reservation" });
+        return res.status(403).json({ message: "Not authorized to modify this reservation" });
       }
 
-      // Clients can ONLY cancel OR reschedule (update date/time)
       if (req.body.status === "cancelled") {
-        appointment.status = "cancelled";
+        data.status = "cancelled";
         if (req.body.cancellationReason) {
-          appointment.cancellationReason = req.body.cancellationReason;
+          data.cancellationReason = req.body.cancellationReason;
         }
       } else if (req.body.date || req.body.time) {
-        if (req.body.date) appointment.date = req.body.date;
-        if (req.body.time) appointment.time = req.body.time;
+        if (req.body.date) data.date = req.body.date;
+        if (req.body.time) data.time = req.body.time;
       } else {
-        return res
-          .status(403)
-          .json({ message: "Clients can only cancel or reschedule sessions" });
+        return res.status(403).json({ message: "Clients can only cancel or reschedule sessions" });
       }
 
-      // ── STAFF: restricted update ──────────────────────────────────────────────
     } else if (req.user.role === "staff") {
-      const isMyAppointment =
-        appointment.staffId &&
-        appointment.staffId.toString() === req.user._id.toString();
+      const isMyAppointment = appointment.staffId && appointment.staffId === req.user.id;
 
       if (!isMyAppointment) {
-        return res
-          .status(403)
-          .json({ message: "Not authorized to update this appointment" });
+        return res.status(403).json({ message: "Not authorized to update this appointment" });
       }
 
       if (req.body.price !== undefined || req.body.staffId !== undefined) {
-        return res
-          .status(403)
-          .json({ message: "Staff cannot modify price or assignment" });
+        return res.status(403).json({ message: "Staff cannot modify price or assignment" });
       }
 
-      if (req.body.status !== undefined) appointment.status = req.body.status;
+      if (req.body.status !== undefined) data.status = req.body.status;
 
-      // ── ADMIN / MANAGER: full control ─────────────────────────────────────────
     } else {
-      if (req.body.status !== undefined) appointment.status = req.body.status;
+      if (req.body.status !== undefined) data.status = req.body.status;
+      if (req.body.staffId !== undefined) data.staffId = req.body.staffId || null;
 
-      if (req.body.staffId !== undefined) {
-        appointment.staffId =
-          req.body.staffId && mongoose.Types.ObjectId.isValid(req.body.staffId)
-            ? req.body.staffId
-            : null;
-      }
-
-      // ── AUTO-PRICE ON COMPLETION ───────────────────────────────────────────
-      // When marking as completed:
-      //   1. Use price already on appointment if it's > 0
-      //   2. Otherwise pull from populated serviceId
-      //   3. Otherwise fall back to whatever was passed in the body
-      // Admin never needs to type a price manually.
       if (req.body.status === "completed") {
         let finalPrice = appointment.price;
 
         if (!finalPrice || finalPrice === 0) {
-          // Try serviceId (populated above)
-          const svcPrice = parseFloat(appointment.serviceId?.price);
-          if (!isNaN(svcPrice) && svcPrice > 0) {
-            finalPrice = svcPrice;
-          }
+          const svcPrice = parseFloat(appointment.serviceRelation?.price);
+          if (!isNaN(svcPrice) && svcPrice > 0) finalPrice = svcPrice;
         }
 
-        // Allow explicit override only if admin passes price AND it's > 0
         if (req.body.price !== undefined && parseFloat(req.body.price) > 0) {
           finalPrice = parseFloat(req.body.price);
         }
 
-        appointment.price = finalPrice;
-        appointment.paymentStatus = "paid";
+        data.price = finalPrice;
+        data.paymentStatus = "paid";
 
-        // Generate receipt number if not already set
         if (!appointment.receiptNo) {
-          // Ensure uniqueness — retry once on collision
           let receipt = generateReceiptNo();
-          const exists = await Appointment.findOne({ receiptNo: receipt });
+          const exists = await prisma.appointment.findUnique({ where: { receiptNo: receipt } });
           if (exists) receipt = generateReceiptNo();
-          appointment.receiptNo = receipt;
+          data.receiptNo = receipt;
         }
       } else {
-        // Non-completion status update: allow manual paymentStatus if sent
-        if (req.body.paymentStatus !== undefined) {
-          appointment.paymentStatus = req.body.paymentStatus;
-        }
+        if (req.body.paymentStatus !== undefined) data.paymentStatus = req.body.paymentStatus;
       }
     }
 
-    if (req.user) appointment.handledBy = req.user._id;
+    if (req.user) data.handledById = req.user.id;
 
-    const updatedAppointment = await appointment.save();
+    const updatedAppointment = await prisma.appointment.update({
+      where: { id: req.params.id },
+      data,
+      include: {
+        client: { select: { id: true, name: true, email: true } },
+        staff: { select: { id: true, name: true } },
+        serviceRelation: { select: { id: true, name: true, price: true } },
+        handledBy: { select: { id: true, name: true } },
+      }
+    });
 
-    // Approval notifications
-    if (
-      oldStatus !== "approved" &&
-      updatedAppointment.status === "approved"
-    ) {
+    if (oldStatus !== "approved" && updatedAppointment.status === "approved") {
       (async () => {
         try {
-          const populatedForNotif = await Appointment.findById(
-            updatedAppointment._id,
-          ).populate("staffId", "name _id");
-          
-          // Email
-          if (updatedAppointment.email) {
-            await sendApprovalEmail(populatedForNotif);
-          }
-
-          // SMS
-          if (updatedAppointment.phone) {
-            await sendClientApprovalSMS(populatedForNotif);
-          }
-
-          console.log(
-            `Approval notifications triggered for appointment: ${updatedAppointment._id}`,
-          );
+          const mappedForNotif = {
+            ...updatedAppointment,
+            _id: updatedAppointment.id,
+            staffId: updatedAppointment.staff ? { ...updatedAppointment.staff, _id: updatedAppointment.staff.id } : null,
+          };
+          if (updatedAppointment.email) await sendApprovalEmail(mappedForNotif);
+          if (updatedAppointment.phone) await sendClientApprovalSMS(mappedForNotif);
         } catch (err) {
           console.error("Background Status Notification Error:", err.message);
         }
       })();
     }
 
-    // Return fully populated so frontend receipt has all fields
-    const populated = await Appointment.findById(updatedAppointment._id)
-      .populate("clientId", "name email")
-      .populate("staffId", "name")
-      .populate("serviceId", "name price")
-      .populate("handledBy", "name");
-
-    res.json(populated);
+    res.json({
+      ...updatedAppointment,
+      _id: updatedAppointment.id,
+      clientId: updatedAppointment.client ? { ...updatedAppointment.client, _id: updatedAppointment.client.id } : null,
+      staffId: updatedAppointment.staff ? { ...updatedAppointment.staff, _id: updatedAppointment.staff.id } : null,
+      serviceId: updatedAppointment.serviceRelation ? { ...updatedAppointment.serviceRelation, _id: updatedAppointment.serviceRelation.id } : null,
+      handledBy: updatedAppointment.handledBy ? { ...updatedAppointment.handledBy, _id: updatedAppointment.handledBy.id } : null,
+    });
   } catch (error) {
     res.status(400).json({ message: error.message });
   }

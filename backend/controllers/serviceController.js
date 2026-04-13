@@ -1,4 +1,4 @@
-import Service from "../models/Service.js";
+import { prisma } from "../config/db.js";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // SERVICE NAME → IMAGE MAP
@@ -125,7 +125,7 @@ const resolveImage = (service) => {
 };
 
 const withResolvedImage = (doc) => {
-  const obj = doc.toObject ? doc.toObject() : doc;
+  const obj = { ...doc, _id: doc.id };
   obj.image = resolveImage(obj);
   return obj;
 };
@@ -133,7 +133,7 @@ const withResolvedImage = (doc) => {
 // @desc    Get all services — images auto-resolved if missing
 export const getServices = async (req, res) => {
   try {
-    const services = await Service.find({});
+    const services = await prisma.service.findMany({});
     res.json(services.map(withResolvedImage));
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -146,8 +146,15 @@ export const createService = async (req, res) => {
     const { name, category, price, description } = req.body;
     let image = req.body.image;
     if (req.file && req.file.path) image = req.file.path;
-    const service = new Service({ name, category, price, description, image });
-    const created = await service.save();
+    const created = await prisma.service.create({
+      data: {
+        name,
+        category,
+        price,
+        description,
+        image
+      }
+    });
     res.status(201).json(withResolvedImage(created));
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -159,18 +166,27 @@ export const updateService = async (req, res) => {
   try {
     const { name, category, price, description } = req.body;
     let image = req.body.image;
-    const service = await Service.findById(req.params.id);
+    const service = await prisma.service.findUnique({ where: { id: req.params.id } });
     if (!service) return res.status(404).json({ message: "Service not found" });
-    service.name = name || service.name;
-    service.category = category || service.category;
-    service.price = price || service.price;
-    service.description = description || service.description;
+    
+    const data = {
+      name: name || service.name,
+      category: category || service.category,
+      price: price || service.price,
+      description: description || service.description,
+    };
+    
     if (req.file && req.file.path) {
-      service.image = req.file.path;
+      data.image = req.file.path;
     } else if (image !== undefined) {
-      service.image = image;
+      data.image = image;
     }
-    const updated = await service.save();
+    
+    const updated = await prisma.service.update({
+      where: { id: req.params.id },
+      data
+    });
+    
     res.json(withResolvedImage(updated));
   } catch (error) {
     res.status(400).json({ message: error.message });
@@ -180,9 +196,9 @@ export const updateService = async (req, res) => {
 // @desc    Delete a service
 export const deleteService = async (req, res) => {
   try {
-    const service = await Service.findById(req.params.id);
+    const service = await prisma.service.findUnique({ where: { id: req.params.id } });
     if (service) {
-      await service.deleteOne();
+      await prisma.service.delete({ where: { id: req.params.id } });
       res.json({ message: "Service removed" });
     } else {
       res.status(404).json({ message: "Service not found" });
