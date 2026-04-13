@@ -18,9 +18,14 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
-  console.error('❌ DATABASE_URL is missing. Database connection will fail.');
-} else if (connectionString.includes('@') && connectionString.split('@').length > 2) {
-  console.warn('⚠️  Your DATABASE_URL contains multiple "@" symbols. Ensure your password is percent-encoded (e.g., replace "@" with "%40").');
+  console.error("DATABASE_URL is missing. Database connection will fail.");
+} else if (
+  connectionString.includes("@") &&
+  connectionString.split("@").length > 2
+) {
+  console.warn(
+    'Your DATABASE_URL contains multiple "@" symbols. Ensure your password is percent-encoded (e.g., replace "@" with "%40").',
+  );
 }
 
 // Parse numbers from Postgres numeric to JS float
