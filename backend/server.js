@@ -15,13 +15,13 @@ import authRoutes from './routes/auth.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
+dotenv.config();
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-dotenv.config({ path: path.join(__dirname, '.env') });
-
 if (process.env.DATABASE_URL) {
-  console.log(' DATABASE_URL loaded from .env');
+  console.log(' DATABASE_URL loaded');
 } else {
   console.error(' DATABASE_URL NOT FOUND in process.env');
 }
