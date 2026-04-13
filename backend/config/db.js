@@ -12,9 +12,6 @@ const __dirname = path.dirname(__filename);
 // Ensure env variables are loaded
 dotenv.config();
 
-// FIX: This bypasses the self-signed certificate error globally for this process
-process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
-
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
