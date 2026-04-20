@@ -14,6 +14,105 @@ import {
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 
+const Section = ({ icon, title, color, items, emptyMsg, handleComplete }) => (
+  <section className="space-y-6">
+    <div className="flex items-center gap-4 mb-6 pb-4 border-b border-white/5">
+      <span className={color}>{icon}</span>
+      <h2
+        className={`text-sm font-black uppercase tracking-[0.3em] ${color}`}
+      >
+        {title}
+      </h2>
+      <span className="ml-auto text-[10px] font-black px-3 py-1 border border-white/10 text-gray-500 tracking-widest uppercase">
+        {items.length}
+      </span>
+    </div>
+
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      {items.length > 0 ? (
+        items.map((app) => (
+          <motion.div
+            key={app._id}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className={`glass-panel p-6 md:p-8 border-gold/20 bg-[#18181B] relative overflow-hidden ${
+              app.status === "completed" ? "opacity-60" : ""
+            }`}
+          >
+            <div className="flex justify-between items-start mb-6">
+              <div>
+                <h3 className="text-xl md:text-2xl font-serif font-bold text-white uppercase tracking-tight">
+                  {app.service}
+                </h3>
+                <p className="text-[9px] text-gold uppercase font-black tracking-widest mt-1">
+                  {app.status === "approved"
+                    ? "Confirmed Service"
+                    : app.status === "pending"
+                      ? "Awaiting Review"
+                      : "Session History"}
+                </p>
+              </div>
+              <div
+                className={`px-2.5 py-1 text-[7px] font-black uppercase tracking-widest border ${
+                  app.status === "completed"
+                    ? "border-green-500 text-green-500"
+                    : app.status === "pending"
+                      ? "border-gray-500 text-gray-500"
+                      : "border-gold text-gold"
+                }`}
+              >
+                {app.status}
+              </div>
+            </div>
+
+            <div className="space-y-4 mb-6">
+              <div className="flex items-center gap-4 text-gray-300">
+                <User className="h-3.5 w-3.5 text-gold" />
+                <span className="text-sm font-bold uppercase">
+                  {app.name}
+                </span>
+              </div>
+              <div className="flex items-center gap-4 text-gray-400">
+                <Phone className="h-3.5 w-3.5 text-gold" />
+                <span className="text-[11px]">{app.phone}</span>
+              </div>
+              <div className="flex items-center gap-6 pt-4 border-t border-white/5">
+                <div className="flex items-center gap-2">
+                  <Calendar className="h-3.5 w-3.5 text-gold" />
+                  <span className="text-[11px] uppercase font-bold">
+                    {app.date}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-3.5 w-3.5 text-gold" />
+                  <span className="text-[11px] uppercase font-bold">
+                    {app.time}
+                  </span>
+                </div>
+              </div>
+            </div>
+
+            {app.status !== "completed" && app.status !== "pending" && (
+              <button
+                onClick={() => handleComplete(app._id)}
+                className="w-full bg-gold text-black py-3.5 uppercase text-[9px] font-black tracking-[0.3em] hover:bg-white transition-all duration-500 shadow-xl"
+              >
+                Mark As Completed
+              </button>
+            )}
+          </motion.div>
+        ))
+      ) : (
+        <div className="col-span-full glass-panel p-16 text-center border-white/5 bg-white/[0.02]">
+          <p className="text-gray-500 italic uppercase tracking-widest text-[10px]">
+            {emptyMsg}
+          </p>
+        </div>
+      )}
+    </div>
+  </section>
+);
+
 const StaffDashboard = () => {
   const { user } = useAuth();
   const [appointments, setAppointments] = useState([]);
@@ -58,105 +157,6 @@ const StaffDashboard = () => {
     (a) => a.status === "approved" || a.status === "pending",
   );
   const historyJobs = appointments.filter((a) => a.status === "completed");
-
-  const Section = ({ icon, title, color, items, emptyMsg }) => (
-    <section className="space-y-6">
-      <div className="flex items-center gap-4 mb-6 pb-4 border-b border-white/5">
-        <span className={color}>{icon}</span>
-        <h2
-          className={`text-sm font-black uppercase tracking-[0.3em] ${color}`}
-        >
-          {title}
-        </h2>
-        <span className="ml-auto text-[10px] font-black px-3 py-1 border border-white/10 text-gray-500 tracking-widest uppercase">
-          {items.length}
-        </span>
-      </div>
-
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {items.length > 0 ? (
-          items.map((app) => (
-            <motion.div
-              key={app._id}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              className={`glass-panel p-6 md:p-8 border-gold/20 bg-[#18181B] relative overflow-hidden ${
-                app.status === "completed" ? "opacity-60" : ""
-              }`}
-            >
-              <div className="flex justify-between items-start mb-6">
-                <div>
-                  <h3 className="text-xl md:text-2xl font-serif font-bold text-white uppercase tracking-tight">
-                    {app.service}
-                  </h3>
-                  <p className="text-[9px] text-gold uppercase font-black tracking-widest mt-1">
-                    {app.status === "approved"
-                      ? "Confirmed Service"
-                      : app.status === "pending"
-                        ? "Awaiting Review"
-                        : "Session History"}
-                  </p>
-                </div>
-                <div
-                  className={`px-2.5 py-1 text-[7px] font-black uppercase tracking-widest border ${
-                    app.status === "completed"
-                      ? "border-green-500 text-green-500"
-                      : app.status === "pending"
-                        ? "border-gray-500 text-gray-500"
-                        : "border-gold text-gold"
-                  }`}
-                >
-                  {app.status}
-                </div>
-              </div>
-
-              <div className="space-y-4 mb-6">
-                <div className="flex items-center gap-4 text-gray-300">
-                  <User className="h-3.5 w-3.5 text-gold" />
-                  <span className="text-sm font-bold uppercase">
-                    {app.name}
-                  </span>
-                </div>
-                <div className="flex items-center gap-4 text-gray-400">
-                  <Phone className="h-3.5 w-3.5 text-gold" />
-                  <span className="text-[11px]">{app.phone}</span>
-                </div>
-                <div className="flex items-center gap-6 pt-4 border-t border-white/5">
-                  <div className="flex items-center gap-2">
-                    <Calendar className="h-3.5 w-3.5 text-gold" />
-                    <span className="text-[11px] uppercase font-bold">
-                      {app.date}
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="h-3.5 w-3.5 text-gold" />
-                    <span className="text-[11px] uppercase font-bold">
-                      {app.time}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              {app.status !== "completed" && app.status !== "pending" && (
-                <button
-                  onClick={() => handleComplete(app._id)}
-                  className="w-full bg-gold text-black py-3.5 uppercase text-[9px] font-black tracking-[0.3em] hover:bg-white transition-all duration-500 shadow-xl"
-                >
-                  Mark As Completed
-                </button>
-              )}
-            </motion.div>
-          ))
-        ) : (
-          <div className="col-span-full glass-panel p-16 text-center border-white/5 bg-white/[0.02]">
-            <p className="text-gray-500 italic uppercase tracking-widest text-[10px]">
-              {emptyMsg}
-            </p>
-          </div>
-        )}
-      </div>
-    </section>
-  );
 
   return (
     <div className="bg-[#0F0F0F] min-h-screen text-white py-12 px-4">
@@ -225,6 +225,7 @@ const StaffDashboard = () => {
                       color="text-gold"
                       items={activeJobs.filter((j) => j.status === "approved")}
                       emptyMsg="No active assignments for today."
+                      handleComplete={handleComplete}
                     />
                     <Section
                       icon={<Hourglass className="h-4 w-4" />}
@@ -232,6 +233,7 @@ const StaffDashboard = () => {
                       color="text-gray-500"
                       items={activeJobs.filter((j) => j.status === "pending")}
                       emptyMsg="No pending requests in your queue."
+                      handleComplete={handleComplete}
                     />
                   </div>
                 ) : (
@@ -241,6 +243,7 @@ const StaffDashboard = () => {
                     color="text-green-500"
                     items={historyJobs}
                     emptyMsg="Your service history begins with your first session."
+                    handleComplete={handleComplete}
                   />
                 )}
               </motion.div>

@@ -22,7 +22,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-hot-toast";
 
 const ClientDashboard = () => {
-  const { user } = useAuth();
+  const { user, updateProfile } = useAuth();
   const [appointments, setAppointments] = useState([]);
   const [loading, setLoading] = useState(true);
   const [receiptApp, setReceiptApp] = useState(null);
@@ -91,6 +91,27 @@ const ClientDashboard = () => {
       fetchUserAppointments();
     } catch (error) {
       toast.error("Reschedule failed");
+    }
+  };
+
+  const [isUpdating, setIsUpdating] = useState(false);
+  const [profileData, setProfileData] = useState({
+    name: user?.name || "",
+    email: user?.email || "",
+    phone: user?.phone || "",
+  });
+
+  const handleProfileUpdate = async (e) => {
+    e.preventDefault();
+    setIsUpdating(true);
+    try {
+      const { data } = await api.put("/auth/profile", profileData);
+      updateProfile(data); // update context
+      toast.success("Profile Updated");
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Update failed");
+    } finally {
+      setIsUpdating(false);
     }
   };
 

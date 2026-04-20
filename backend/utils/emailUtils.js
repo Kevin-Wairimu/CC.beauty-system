@@ -52,7 +52,7 @@ const send = async ({ to, subject, html, replyTo }) => {
 };
 
 export const sendBookingEmail = async (booking) => {
-  await send({
+  return await send({
     to: process.env.TO_EMAIL,
     replyTo: booking.email,
     subject: ` New Appointment Request: ${booking.service}`,
@@ -70,7 +70,7 @@ export const sendBookingEmail = async (booking) => {
 };
 
 export const sendClientBookingEmail = async (booking) => {
-  await send({
+  return await send({
     to: booking.email,
     subject: ` Reservation Requested: ${booking.service}`,
     html: `
@@ -90,7 +90,7 @@ export const sendClientBookingEmail = async (booking) => {
 };
 
 export const sendApprovalEmail = async (booking) => {
-  await send({
+  return await send({
     to: booking.email,
     subject: ` Your Reservation is Approved: ${booking.service}`,
     html: `
@@ -115,7 +115,7 @@ export const sendResetPasswordEmail = async (user, resetToken) => {
   const frontendUrl =
     process.env.FRONTEND_URL || "https://cc-beauty-system.pages.dev";
   const resetUrl = `${frontendUrl}/reset-password?token=${resetToken}`;
-  await send({
+  return await send({
     to: user.email,
     subject: `Private Access Reset - CC.BEAUTY.CLINIC`,
     html: `
@@ -132,7 +132,7 @@ export const sendResetPasswordEmail = async (user, resetToken) => {
 };
 
 export const sendReminderEmail = async (booking) => {
-  await send({
+  return await send({
     to: booking.email,
     subject: ` Reminder: Your Reservation Tomorrow at CC Beauty`,
     html: `
@@ -150,7 +150,7 @@ export const sendReminderEmail = async (booking) => {
 };
 
 export const sendEnquiryEmail = async (enquiry) => {
-  await send({
+  return await send({
     to: process.env.TO_EMAIL,
     replyTo: enquiry.email,
     subject: `New Enquiry: ${enquiry.name}`,

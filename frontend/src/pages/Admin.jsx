@@ -66,6 +66,24 @@ const getMonthYear = (dateStr) => {
   return d.toLocaleString("default", { month: "short", year: "numeric" });
 };
 
+// Custom tooltip for revenue chart
+const RevenueTooltip = ({ active, payload, label }) => {
+  if (active && payload && payload.length) {
+    return (
+      <div className="bg-[#1a1a1a] border border-gold/30 p-4 text-xs">
+        <p className="text-gold font-black uppercase tracking-widest mb-2">
+          {label}
+        </p>
+        <p className="text-white font-bold">
+          ksh {payload[0]?.value?.toLocaleString()}
+        </p>
+        <p className="text-gray-400 mt-1">{payload[1]?.value} services</p>
+      </div>
+    );
+  }
+  return null;
+};
+
 const Admin = () => {
   const { user, loading: authLoading } = useAuth();
   const [appointments, setAppointments] = useState([]);
@@ -527,24 +545,6 @@ const Admin = () => {
       </div>
     );
   }
-
-  // Custom tooltip for revenue chart
-  const RevenueTooltip = ({ active, payload, label }) => {
-    if (active && payload && payload.length) {
-      return (
-        <div className="bg-[#1a1a1a] border border-gold/30 p-4 text-xs">
-          <p className="text-gold font-black uppercase tracking-widest mb-2">
-            {label}
-          </p>
-          <p className="text-white font-bold">
-            ksh {payload[0]?.value?.toLocaleString()}
-          </p>
-          <p className="text-gray-400 mt-1">{payload[1]?.value} services</p>
-        </div>
-      );
-    }
-    return null;
-  };
 
   // ── Render ─────────────────────────────────────────────────────────────────
   return (
@@ -2281,5 +2281,28 @@ const Admin = () => {
   );
 };
 
+// ── Export to CSV Helper ───────────────────────────────────────────────
+const exportToCSV = (data, filename) => {
+  if (!data || data.length === 0) return;
+  const headers = Object.keys(data[0]);
+  const csvContent = [
+    headers.join(","),
+    ...data.map((row) =>
+      headers.map((header) => `"${row[header] || ""}"`).join(","),
+    ),
+  ].join("\n");
+
+  const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" });
+  const link = document.createElement("a");
+  if (link.download !== undefined) {
+    const url = URL.createObjectURL(blob);
+    link.setAttribute("href", url);
+    link.setAttribute("download", `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.style.visibility = "hidden";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  }
+};
+
 export default Admin;
-min;

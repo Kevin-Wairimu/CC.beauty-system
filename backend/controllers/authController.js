@@ -209,7 +209,16 @@ export const forgotPassword = async (req, res) => {
       }
     });
 
-    await sendResetPasswordEmail({ ...user, resetPasswordToken, resetPasswordExpire }, resetToken);
+    const emailResult = await sendResetPasswordEmail({ ...user, resetPasswordToken, resetPasswordExpire }, resetToken);
+    
+    if (emailResult?.success === false) {
+      return res.status(500).json({ 
+        message: emailResult.error?.message?.includes("API key") 
+          ? "System email service configuration error. Please contact admin."
+          : "Failed to send reset email. Please try again later."
+      });
+    }
+
     res.json({ message: "Password reset link sent to your email" });
   } catch (error) {
     console.error("Forgot Password Error:", error.message);
