@@ -18,41 +18,41 @@ import { Icon } from "@iconify/react";
 
 const SERVICE_IMAGE_MAP = {
   // NAILS
-  "manicure plain": "/images/Manicure.JPG",
-  "pedicure plain": "/images/milk and honey.JPG",
+  "plain manicure": "/images/Manicure.JPG",
+  "plain pedicure": "/images/milk and honey.JPG",
   "manicure gel": "/images/Manicure.JPG",
   "pedicure gel": "/images/milk and honey.JPG",
-  "jelly pedicure (2 step)": "/images/milk and honey.JPG",
-  "jelly pedicure (4 step)": "/images/milk and honey.JPG",
-  santorini: "/images/Manicure.JPG",
+  "jelly pedicure (2 steps)": "/images/milk and honey.JPG",
+  "jelly pedicure (4 steps)": "/images/milk and honey.JPG",
   "tips gel": "/images/tips builder.JPG",
   "tips builder": "/images/tips builder.JPG",
-  "tips gumgel": "/images/Overlay gumgel.JPG",
+  "tips gum gel": "/images/Overlay gumgel.JPG",
   "overlay builder": "/images/Overlay builder.JPG",
-  "overlay gumgel": "/images/Overlay gumgel.JPG",
+  "overlay gum gel": "/images/Overlay gumgel.JPG",
   sculpting: "/images/Sculpting.JPG",
-  "gel x": "/images/Gel x.JPG",
-  acrylics: "/images/acrylic overlay.JPG",
-  "acrylic overlay": "/images/acrylic overlay.JPG",
+  "gel (full set)": "/images/Gel x.JPG",
+  "overlay acrylic": "/images/acrylic overlay.JPG",
+  "tips acrylic": "/images/acrylic overlay.JPG",
 
   // LASHES
-  clusters: "/images/Cluster lashes.JPG",
+  cluster: "/images/Cluster lashes.JPG",
   "individual classic": "/images/classic.JPG",
-  "individual hybrid": "/images/hybrid.JPG",
-  "individual volume": "/images/volume.JPG",
-  "individual mega volume": "/images/mega.JPG",
-  "individual recession (refill/retouch)": "/images/Refill.JPG",
+  hybrid: "/images/hybrid.JPG",
+  volume: "/images/volume.JPG",
+  "mega volume": "/images/mega.JPG",
+  russian: "/images/mega.JPG",
   "mink lashes": "/images/mink lashes.JPG",
   "strip lashes": "/images/strip lashes.JPG",
 
   // WIGS
-  "wig laundry": "/images/Wig laundry.JPG",
-  "wig gluing": "/images/Wig styling.JPG",
-  "gluing + edges": "/images/Wig styling.JPG",
+  "wig installation (gluing)": "/images/Wig styling.JPG",
+  "wig gluing + edges": "/images/Wig styling.JPG",
   "wig styling": "/images/Wig styling.JPG",
-  "flat iron": "/images/flat iron.JPG",
-  tinting: "/images/Wig curling.JPG",
-  "cut lacing": "/images/Wig styling.JPG",
+  "wig curling": "/images/Wig curling.JPG",
+  "wig flat ironing": "/images/flat iron.JPG",
+  "wig tinting": "/images/Wig curling.JPG",
+  "lace cutting": "/images/Wig styling.JPG",
+  "wig laundry": "/images/Wig laundry.JPG",
 
   // MAKEUP
   "touch up": "/images/Touch up makeup.JPG",
@@ -60,58 +60,14 @@ const SERVICE_IMAGE_MAP = {
   "full makeup": "/images/full makeup.JPG",
   "bridal makeup": "/images/bridal makeup.JPG",
   "bridal team": "/images/Brides makeup.JPG",
-
-  // EYEBROWS
-  "eyebrow tinting": "/images/Touch up makeup.JPG",
-  "eyebrow threading": "/images/Touch up makeup.JPG",
-  "eyebrow tweezing": "/images/Touch up makeup.JPG",
-  "eyebrow trimming": "/images/Touch up makeup.JPG",
-
-  // FACIAL
-  "mini facial": "/images/mini facial.JPG",
-  scrubbing: "/images/scrubbing.JPG",
-  "full facial": "/images/full facial.JPG",
+  "photo shoot": "/images/full makeup.JPG",
 
   // HAIR
-  "hair wash": "/images/Wash.JPG",
-  "wash and straightening": "/images/Wash.JPG",
-  "wash and full blowdry": "/images/wash and full blowdry.JPG",
-  "undoing twistouts": "/images/Wash.JPG",
-  "undoing cornrows": "/images/Wash.JPG",
-  "undoing braids": "/images/Wash.JPG",
+  "dread wash / braid hair": "/images/Wash.JPG",
+  "wash & straighten": "/images/Wash.JPG",
+  "wash & blowdry": "/images/wash and full blowdry.JPG",
   "kids lines": "/images/center kids cornrows.JPG",
-  "big lines": "/images/center kids cornrows.JPG",
-  "lip cornrows": "/images/center kids cornrows.JPG",
-  "fulani cornrows": "/images/center kids cornrows.JPG",
-  "back ghanaians": "/images/center kids cornrows.JPG",
-  "up ghanaians": "/images/center kids cornrows.JPG",
-  "knotless braids": "/images/center kids cornrows.JPG",
-  "knotless twist braids": "/images/center kids cornrows.JPG",
-  "jumbo knotless braids": "/images/center kids cornrows.JPG",
-  crochets: "/images/center kids cornrows.JPG",
-  "stitch lines": "/images/center kids cornrows.JPG",
-  "box braids": "/images/center kids cornrows.JPG",
-  "boho knotless braids": "/images/center kids cornrows.JPG",
-  "boho bob braids": "/images/center kids cornrows.JPG",
-  "latest braids": "/images/center kids cornrows.JPG",
-  "marley twists": "/images/center kids cornrows.JPG",
-  "spring twists": "/images/center kids cornrows.JPG",
-  "twist outs": "/images/center kids cornrows.JPG",
-  "mini twists": "/images/center kids cornrows.JPG",
-  "coily twists": "/images/center kids cornrows.JPG",
-  "havana curl": "/images/center kids cornrows.JPG",
-  "invisible locs": "/images/center kids cornrows.JPG",
-  "gel styling": "/images/center kids cornrows.JPG",
-  "butterfly locs": "/images/center kids cornrows.JPG",
-  "gypsy locs": "/images/center kids cornrows.JPG",
-  "mermaid braids": "/images/center kids cornrows.JPG",
-  "italian curls": "/images/center kids cornrows.JPG",
-  "natural twists": "/images/center kids cornrows.JPG",
-  "lemonade braids": "/images/center kids cornrows.JPG",
-  "boho braids cornrows": "/images/center kids cornrows.JPG",
-  "sisterlocs retouch": "/images/center kids cornrows.JPG",
-  "loc retwist": "/images/center kids cornrows.JPG",
-  "boho locks": "/images/center kids cornrows.JPG",
+  "havana curls": "/images/Wig styling.JPG",
 };
 
 const CATEGORY_FALLBACKS = {
@@ -126,27 +82,36 @@ const CATEGORY_FALLBACKS = {
 };
 
 /**
+ * getDynamicImageUrl — returns a keyword-based placeholder from LoremFlickr.
+ * This is used when no local asset is found.
+ */
+const getDynamicImageUrl = (serviceName) => {
+  if (!serviceName) return "";
+  // Use a random seed to ensure different images for different services
+  // and prevent browser caching of the placeholder
+  const seed = encodeURIComponent(serviceName.trim().toLowerCase());
+  return `https://loremflickr.com/500/500/beauty,${seed}/all?lock=${seed.length}`;
+};
+
+/**
  * isValidImage — rejects any src that is clearly not a beauty/clinic image.
- * This catches cases where a service.image field was accidentally set to
- * an unrelated/animal image URL from a third-party source.
- *
- * Strategy: only trust images that are either:
- *   a) relative paths starting with /images/  (our own assets)
- *   b) from our own API domain
- *
- * Any absolute URL pointing elsewhere is rejected and falls through
- * to the name-based map.
  */
 const isValidImage = (src) => {
   if (!src) return false;
   // Accept our own relative paths
   if (src.startsWith("/images/")) return true;
+  // Accept whitelisted dynamic providers
+  if (src.includes("loremflickr.com")) return true;
   // Accept relative paths without leading slash (edge case)
   if (!src.startsWith("http")) return true;
-  // For absolute URLs: only trust our own backend domain
+  // For absolute URLs: only trust our own backend domain + LoremFlickr
   try {
     const url = new URL(src);
-    const ownDomains = ["localhost", "cc-beauty-system.onrender.com"];
+    const ownDomains = [
+      "localhost",
+      "cc-beauty-system.onrender.com",
+      "loremflickr.com",
+    ];
     return ownDomains.some((d) => url.hostname.includes(d));
   } catch {
     return false;
@@ -154,16 +119,22 @@ const isValidImage = (src) => {
 };
 
 /**
- * getServiceImage — 3-tier priority:
+ * getServiceImage — 4-tier priority:
  *   1. service.image from API — only if it passes isValidImage()
  *   2. SERVICE_IMAGE_MAP lookup by normalised name
- *   3. CATEGORY_FALLBACKS → DEFAULT
+ *   3. Dynamic LoremFlickr image matching the service name
+ *   4. CATEGORY_FALLBACKS → DEFAULT
  */
 const getServiceImage = (service) => {
   if (isValidImage(service?.image)) return service.image;
 
   const key = (service?.name ?? "").trim().toLowerCase();
   if (SERVICE_IMAGE_MAP[key]) return SERVICE_IMAGE_MAP[key];
+
+  // If no specific image, try dynamic search before generic category fallback
+  if (service?.name) {
+    return getDynamicImageUrl(service.name);
+  }
 
   return (
     CATEGORY_FALLBACKS[(service?.category ?? "").toUpperCase()] ??

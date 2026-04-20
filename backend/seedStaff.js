@@ -18,6 +18,13 @@ const staffData = [
     specialization: ["NAILS"],
   },
   {
+    name: "Purity",
+    email: "steve@ccbeauty.com",
+    password: "password123",
+    role: "staff",
+    specialization: ["NAILS", "MAKEUP", "WIGS", "LASHES"],
+  },
+  {
     name: "Sam",
     email: "sam@ccbeauty.com",
     password: "password123",
@@ -29,7 +36,7 @@ const staffData = [
     email: "wangari@ccbeauty.com",
     password: "password123",
     role: "staff",
-    specialization: ["HAIR", "RECEPTIONIST"],
+    specialization: ["HAIR", "RECEPTIONIST","WIGS"],
   },
   {
     name: "Milka",
@@ -43,7 +50,7 @@ const staffData = [
     email: "ccbeautyclinic21@gmail.com",
     password: "cynthiawairimu@2022",
     role: "admin",
-    specialization: ["WIGS", "NAILS"], // Added specializations to make her 'Staff'
+    specialization: ["WIGS", "NAILS", "MAKEUP"], // Added specializations to make her 'Staff'
     approveBookings: true,
     manageStaff: true,
     manageServices: true,

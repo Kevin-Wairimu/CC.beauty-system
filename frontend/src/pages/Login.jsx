@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
-import { Sparkles, Mail, Lock, ArrowRight, ShieldCheck } from "lucide-react";
+import { Sparkles, Mail, Lock, ArrowRight, ShieldCheck, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const { login, user } = useAuth();
   const navigate = useNavigate();
@@ -96,13 +97,24 @@ const Login = () => {
                 <div className="flex items-center border-b-2 border-gold/10 group-focus-within:border-gold transition-all pb-2">
                   <Lock className="h-4 w-4 text-gold/40 mr-3" />
                   <input
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     required
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="w-full bg-transparent outline-none text-white text-lg font-light placeholder:text-white/10"
                     placeholder="••••••••"
                   />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="text-gold/40 hover:text-gold transition-colors focus:outline-none"
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
                 </div>
               </div>
             </div>
