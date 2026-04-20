@@ -1039,7 +1039,22 @@ const Admin = () => {
                       >
                         <Plus className="h-3 w-3" /> Manual Entry
                       </button>
-                      <button className="text-[8px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-1.5 border border-white/10 px-3 py-1.5 hover:bg-white/5 transition-all">
+                      <button 
+                        onClick={() => {
+                          const completed = appointments.filter(a => a.status === 'completed').map(a => ({
+                            Date: a.date,
+                            Client: a.name,
+                            Email: a.email,
+                            Service: a.service,
+                            Price: a.price,
+                            Staff: a.staffId?.name || '',
+                            Receipt: a.receiptNo || ''
+                          }));
+                          if (completed.length > 0) exportToCSV(completed, 'cc_beauty_ledger');
+                          else toast.error("No data to export");
+                        }}
+                        className="text-[8px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-1.5 border border-white/10 px-3 py-1.5 hover:bg-white/5 transition-all"
+                      >
                         <Download className="h-3 w-3" /> Export Ledger
                       </button>
                     </div>
@@ -2267,3 +2282,4 @@ const Admin = () => {
 };
 
 export default Admin;
+min;

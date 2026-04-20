@@ -29,9 +29,7 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     const { data } = await api.post('/auth/login', { email, password });
     setUser(data);
-    // Persistent across tabs
     localStorage.setItem('userInfo', JSON.stringify(data));
-    // Specific to this tab (allows multiple different logins)
     sessionStorage.setItem('userInfo', JSON.stringify(data));
   };
 
@@ -49,6 +47,14 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.setItem('userInfo', JSON.stringify(data));
   };
 
+  const updateProfile = async (profileData) => {
+    const { data } = await api.put('/auth/profile', profileData);
+    setUser(data);
+    localStorage.setItem('userInfo', JSON.stringify(data));
+    sessionStorage.setItem('userInfo', JSON.stringify(data));
+    return data;
+  };
+
   const logout = () => {
     setUser(null);
     localStorage.removeItem('userInfo');
@@ -58,7 +64,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register, loginWithGoogle }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, register, loginWithGoogle, updateProfile }}>
       {children}
     </AuthContext.Provider>
   );

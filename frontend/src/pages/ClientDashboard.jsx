@@ -385,7 +385,7 @@ const ClientDashboard = () => {
                     emptyMsg="No active requests awaiting review."
                   />
                 </>
-              ) : (
+              ) : activeTab === "history" ? (
                 <Section
                   icon={<HistoryIcon className="h-4 w-4" />}
                   title="Service History"
@@ -394,6 +394,64 @@ const ClientDashboard = () => {
                   statusType="completed"
                   emptyMsg="Your service journey begins today."
                 />
+              ) : (
+                <div className="max-w-md mx-auto">
+                  <div className="flex items-center gap-4 mb-8 pb-4 border-b border-white/5">
+                    <User className="text-gold h-4 w-4" />
+                    <h2 className="text-sm font-black uppercase tracking-[0.3em] text-gold">
+                      Your Profile Sanctuary
+                    </h2>
+                  </div>
+
+                  <form onSubmit={handleProfileUpdate} className="space-y-8 glass-panel p-10 bg-[#121212] border-gold/10">
+                    <div className="space-y-6">
+                      <div className="group">
+                        <label className="block text-[9px] font-black uppercase tracking-[0.3em] text-gold/40 mb-3">
+                          Full Name
+                        </label>
+                        <input
+                          type="text"
+                          value={profileData.name}
+                          onChange={(e) => setProfileData({ ...profileData, name: e.target.value })}
+                          className="w-full bg-transparent border-b border-white/10 py-2 outline-none focus:border-gold transition-colors text-white font-serif"
+                        />
+                      </div>
+
+                      <div className="group">
+                        <label className="block text-[9px] font-black uppercase tracking-[0.3em] text-gold/40 mb-3">
+                          Email Address
+                        </label>
+                        <input
+                          type="email"
+                          value={profileData.email}
+                          onChange={(e) => setProfileData({ ...profileData, email: e.target.value })}
+                          className="w-full bg-transparent border-b border-white/10 py-2 outline-none focus:border-gold transition-colors text-white font-serif"
+                        />
+                      </div>
+
+                      <div className="group">
+                        <label className="block text-[9px] font-black uppercase tracking-[0.3em] text-gold/40 mb-3">
+                          Signature Password (Leave blank to keep current)
+                        </label>
+                        <input
+                          type="password"
+                          value={profileData.password}
+                          onChange={(e) => setProfileData({ ...profileData, password: e.target.value })}
+                          className="w-full bg-transparent border-b border-white/10 py-2 outline-none focus:border-gold transition-colors text-white"
+                          placeholder="••••••••"
+                        />
+                      </div>
+                    </div>
+
+                    <button
+                      type="submit"
+                      disabled={isUpdating}
+                      className="w-full btn-gold py-4 text-[10px] font-black uppercase tracking-widest disabled:opacity-50"
+                    >
+                      {isUpdating ? "Securing Changes..." : "Update Credentials"}
+                    </button>
+                  </form>
+                </div>
               )}
             </motion.div>
 

@@ -1,15 +1,18 @@
 import express from 'express';
 import { 
   authUser, registerUser, forgotPassword, resetPassword,
-  getUsers, updateUserRole, deleteUser, getStaff, googleLogin 
+  getUsers, updateUserRole, deleteUser, getStaff, googleLogin, updateUserProfile 
 } from '../controllers/authController.js';
 import { protect, authorize } from '../middleware/authMiddleware.js';
+import { validate } from '../middleware/validationMiddleware.js';
+import { loginSchema, registerSchema, profileUpdateSchema } from '../utils/schemas.js';
 
 const router = express.Router();
 
-router.post('/login', authUser);
-router.post('/register', registerUser);
+router.post('/login', validate(loginSchema), authUser);
+router.post('/register', validate(registerSchema), registerUser);
 router.post('/google', googleLogin);
+router.put('/profile', protect, validate(profileUpdateSchema), updateUserProfile);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
 

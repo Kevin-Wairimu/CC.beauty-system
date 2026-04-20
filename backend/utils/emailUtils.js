@@ -131,6 +131,24 @@ export const sendResetPasswordEmail = async (user, resetToken) => {
   });
 };
 
+export const sendReminderEmail = async (booking) => {
+  await send({
+    to: booking.email,
+    subject: ` Reminder: Your Reservation Tomorrow at CC Beauty`,
+    html: `
+      <div style="font-family: serif; color: #1a1a1a; padding: 30px; border: 2px solid #D4AF37; max-width: 600px; margin: auto;">
+        <h2 style="color: #D4AF37; text-align: center; text-transform: uppercase;">Appointment Reminder</h2>
+        <p>Hello ${booking.name},</p>
+        <p>This is a friendly reminder of your appointment tomorrow:</p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p><strong>Service:</strong> ${booking.service}</p>
+        <p><strong>Schedule:</strong> ${booking.date} at ${booking.time}</p>
+        <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;" />
+        <p style="text-align: center; margin-top: 30px; font-weight: bold; color: #D4AF37;">CC BEAUTY CLINIC</p>
+      </div>`,
+  });
+};
+
 export const sendEnquiryEmail = async (enquiry) => {
   await send({
     to: process.env.TO_EMAIL,

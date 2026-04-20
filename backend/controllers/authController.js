@@ -64,6 +64,38 @@ export const googleLogin = async (req, res) => {
   }
 };
 
+// @desc    Update user profile
+export const updateUserProfile = async (req, res) => {
+  const user = await prisma.user.findUnique({ where: { id: req.user.id } });
+
+  if (user) {
+    const data = {
+      name: req.body.name || user.name,
+      email: (req.body.email || user.email).trim().toLowerCase(),
+    };
+
+    if (req.body.password) {
+      const salt = await bcrypt.genSalt(10);
+      data.password = await bcrypt.hash(req.body.password, salt);
+    }
+
+    const updatedUser = await prisma.user.update({
+      where: { id: req.user.id },
+      data,
+    });
+
+    res.json({
+      _id: updatedUser.id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+      token: generateToken(updatedUser.id),
+    });
+  } else {
+    res.status(404).json({ message: "User not found" });
+  }
+};
+
 // @desc    Auth user & get token
 export const authUser = async (req, res) => {
   const { email, password } = req.body;
