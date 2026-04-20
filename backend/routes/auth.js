@@ -1,7 +1,7 @@
 import express from 'express';
 import { 
   authUser, registerUser, forgotPassword, resetPassword,
-  getUsers, updateUserRole, deleteUser, getStaff 
+  getUsers, updateUserRole, deleteUser, getStaff, googleLogin 
 } from '../controllers/authController.js';
 import { protect, authorize } from '../middleware/authMiddleware.js';
 
@@ -9,6 +9,7 @@ const router = express.Router();
 
 router.post('/login', authUser);
 router.post('/register', registerUser);
+router.post('/google', googleLogin);
 router.post('/forgot-password', forgotPassword);
 router.post('/reset-password/:token', resetPassword);
 

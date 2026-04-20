@@ -4,13 +4,14 @@ import { useAuth } from "../context/AuthContext";
 import { Sparkles, Mail, Lock, ArrowRight, ShieldCheck, Eye, EyeOff } from "lucide-react";
 import { motion } from "framer-motion";
 import { toast } from "react-hot-toast";
+import { GoogleLogin } from '@react-oauth/google';
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { login, user } = useAuth();
+  const { login, loginWithGoogle, user } = useAuth();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -142,6 +143,30 @@ const Login = () => {
                 </>
               )}
             </button>
+
+            <div className="flex flex-col items-center gap-6 mt-6">
+              <div className="flex items-center gap-4 w-full">
+                <div className="h-px bg-gold/10 flex-1"></div>
+                <span className="text-[10px] text-gold/30 uppercase font-black tracking-widest">Or Secure Login via</span>
+                <div className="h-px bg-gold/10 flex-1"></div>
+              </div>
+              
+              <div className="w-full flex justify-center">
+                <GoogleLogin
+                  onSuccess={credentialResponse => {
+                    loginWithGoogle(credentialResponse.credential);
+                    toast.success("Google Authentication Successful");
+                  }}
+                  onError={() => {
+                    toast.error('Google Authentication Failed');
+                  }}
+                  theme="dark"
+                  shape="square"
+                  size="large"
+                  width="300"
+                />
+              </div>
+            </div>
           </form>
 
           {/* Form Footer */}

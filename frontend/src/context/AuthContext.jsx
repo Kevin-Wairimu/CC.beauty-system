@@ -35,6 +35,13 @@ export const AuthProvider = ({ children }) => {
     sessionStorage.setItem('userInfo', JSON.stringify(data));
   };
 
+  const loginWithGoogle = async (idToken) => {
+    const { data } = await api.post('/auth/google', { idToken });
+    setUser(data);
+    localStorage.setItem('userInfo', JSON.stringify(data));
+    sessionStorage.setItem('userInfo', JSON.stringify(data));
+  };
+
   const register = async (name, email, password) => {
     const { data } = await api.post('/auth/register', { name, email, password });
     setUser(data);
@@ -51,7 +58,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, register }}>
+    <AuthContext.Provider value={{ user, loading, login, logout, register, loginWithGoogle }}>
       {children}
     </AuthContext.Provider>
   );

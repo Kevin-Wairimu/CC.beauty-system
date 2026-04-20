@@ -165,7 +165,7 @@ const Navbar = () => {
                   to="/register"
                   className="btn-gold py-2.5! px-6! text-[10px] font-black uppercase tracking-widest"
                 >
-                  Join Now
+                  Register
                 </Link>
               </div>
             )}
@@ -338,14 +338,14 @@ const Navbar = () => {
                         onClick={closeMenu}
                         className="bg-gold text-black py-5 text-center text-[10px] font-black uppercase tracking-[0.3em] hover:bg-white transition-colors"
                       >
-                        login
+                        Register
                       </Link>
                       <Link
                         to="/login"
                         onClick={closeMenu}
                         className="text-center text-gold/60 hover:text-gold text-[9px] font-black uppercase tracking-[0.4em] py-3 border border-white/5 hover:border-gold/20 transition-all"
                       >
-                        Register
+                        login
                       </Link>
                     </div>
                   )}

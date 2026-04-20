@@ -4,10 +4,64 @@ import crypto from "crypto";
 import bcrypt from "bcryptjs";
 import { sendResetPasswordEmail } from "../utils/emailUtils.js";
 
+import { OAuth2Client } from "google-auth-library";
+
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
 const VALID_SPECIALIZATIONS = ["NAILS", "MAKEUP", "LASHES", "WIGS", "HAIR", "EYEBROWS", "FACIAL", "SKIN"];
 
 const generateToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, { expiresIn: "30d" });
+};
+
+// @desc    Google Login
+export const googleLogin = async (req, res) => {
+  const { idToken } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { email, name, sub: googleId } = ticket.getPayload();
+
+    let user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
+    if (!user) {
+      // Create user if not exists
+      const salt = await bcrypt.genSalt(10);
+      const generatedPassword = await bcrypt.hash(googleId, salt); // Use googleId as seed for dummy password
+
+      user = await prisma.user.create({
+        data: {
+          name,
+          email: email.toLowerCase(),
+          password: generatedPassword,
+          role: "client",
+        },
+      });
+    }
+
+    res.json({
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+      specialization: user.specialization,
+      permissions: {
+        approveBookings: user.approveBookings,
+        manageStaff: user.manageStaff,
+        manageServices: user.manageServices,
+      },
+      token: generateToken(user.id),
+    });
+  } catch (error) {
+    console.error("Google Login Error:", error.message);
+    res.status(401).json({ message: "Google authentication failed" });
+  }
 };
 
 // @desc    Auth user & get token
@@ -15,7 +69,9 @@ export const authUser = async (req, res) => {
   const { email, password } = req.body;
 
   try {
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    const user = await prisma.user.findUnique({ 
+      where: { email: email.trim().toLowerCase() } 
+    });
 
     if (user) {
       const isMatch = await bcrypt.compare(password, user.password);
@@ -48,7 +104,9 @@ export const registerUser = async (req, res) => {
   const { name, email, password, role, specialization } = req.body;
 
   try {
-    const userExists = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    const userExists = await prisma.user.findUnique({ 
+      where: { email: email.trim().toLowerCase() } 
+    });
 
     if (userExists) {
       return res.status(400).json({ message: "User already exists" });
@@ -60,7 +118,7 @@ export const registerUser = async (req, res) => {
     const user = await prisma.user.create({
       data: {
         name,
-        email: email.toLowerCase(),
+        email: email.trim().toLowerCase(),
         password: hashedPassword,
         role: role || "client",
         specialization: specialization || [],
@@ -94,7 +152,9 @@ export const registerUser = async (req, res) => {
 export const forgotPassword = async (req, res) => {
   const { email } = req.body;
   try {
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    const user = await prisma.user.findUnique({ 
+      where: { email: email.trim().toLowerCase() } 
+    });
 
     if (!user) {
       return res
@@ -214,7 +274,7 @@ export const updateUserRole = async (req, res) => {
     if (user) {
       const data = {};
       if (req.body.name) data.name = req.body.name;
-      if (req.body.email) data.email = req.body.email.toLowerCase();
+      if (req.body.email) data.email = req.body.email.trim().toLowerCase();
       if (req.body.role) data.role = req.body.role;
       if (req.body.password) {
         const salt = await bcrypt.genSalt(10);

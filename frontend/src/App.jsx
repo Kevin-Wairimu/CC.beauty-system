@@ -6,6 +6,7 @@ import ScrollToTop from './components/ScrollToTop';
 import { AuthProvider } from './context/AuthContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from 'react-hot-toast';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 // Lazy load pages for performance
 const Home = lazy(() => import('./pages/Home'));
@@ -28,48 +29,50 @@ const LoadingFallback = () => (
 
 function App() {
   return (
-    <AuthProvider>
-      <Router>
-        <ScrollToTop />
-        <Toaster position="top-center" reverseOrder={false} />
-        <div className="flex flex-col min-h-screen">
-          <Navbar />
-          <main className="flex-grow">
-            <Suspense fallback={<LoadingFallback />}>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/booking" element={<Booking />} />
-                <Route path="/contact" element={<Contact />} />
-                
-                <Route path="/dashboard" element={
-                  <ProtectedRoute allowedRoles={['client']}>
-                    <ClientDashboard />
-                  </ProtectedRoute>
-                } />
-                
-                <Route path="/admin" element={
-                  <ProtectedRoute allowedRoles={['admin', 'manager']}>
-                    <Admin />
-                  </ProtectedRoute>
-                } />
+    <GoogleOAuthProvider clientId="990886836301-nhuqk3dh8od1rh3iql4fekmqn17664uj.apps.googleusercontent.com">
+      <AuthProvider>
+        <Router>
+          <ScrollToTop />
+          <Toaster position="top-center" reverseOrder={false} />
+          <div className="flex flex-col min-h-screen">
+            <Navbar />
+            <main className="flex-grow">
+              <Suspense fallback={<LoadingFallback />}>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/booking" element={<Booking />} />
+                  <Route path="/contact" element={<Contact />} />
+                  
+                  <Route path="/dashboard" element={
+                    <ProtectedRoute allowedRoles={['client']}>
+                      <ClientDashboard />
+                    </ProtectedRoute>
+                  } />
+                  
+                  <Route path="/admin" element={
+                    <ProtectedRoute allowedRoles={['admin', 'manager']}>
+                      <Admin />
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/staff" element={
-                  <ProtectedRoute allowedRoles={['staff']}>
-                    <StaffDashboard />
-                  </ProtectedRoute>
-                } />
+                  <Route path="/staff" element={
+                    <ProtectedRoute allowedRoles={['staff']}>
+                      <StaffDashboard />
+                    </ProtectedRoute>
+                  } />
 
-                <Route path="/forgot-password" element={<ForgotPassword />} />
-                <Route path="/reset-password" element={<ResetPassword />} />
-              </Routes>
-            </Suspense>
-          </main>
-          <Footer />
-        </div>
-      </Router>
-    </AuthProvider>
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route path="/reset-password" element={<ResetPassword />} />
+                </Routes>
+              </Suspense>
+            </main>
+            <Footer />
+          </div>
+        </Router>
+      </AuthProvider>
+    </GoogleOAuthProvider>
   );
 }
 

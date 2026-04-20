@@ -4,6 +4,7 @@ import { useAuth } from '../context/AuthContext';
 import { Mail, Lock, User, UserPlus, ArrowRight, CheckCircle2, Eye, EyeOff } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'react-hot-toast';
+import { GoogleLogin } from '@react-oauth/google';
 
 const Register = () => {
   const [name, setName] = useState('');
@@ -11,8 +12,21 @@ const Register = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
-  const { register } = useAuth();
+  const { register, loginWithGoogle, user } = useAuth();
   const navigate = useNavigate();
+
+  React.useEffect(() => {
+    if (user) {
+      const role = user.role?.toLowerCase();
+      if (role === "admin" || role === "manager" || user.isAdmin) {
+        navigate("/admin");
+      } else if (role === "staff") {
+        navigate("/staff");
+      } else {
+        navigate("/dashboard");
+      }
+    }
+  }, [user, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -20,7 +34,6 @@ const Register = () => {
     try {
       await register(name, email, password);
       toast.success('Welcome to CC Beauty.');
-      navigate('/dashboard');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration Failed');
     }
@@ -131,6 +144,30 @@ const Register = () => {
                 </>
               )}
             </button>
+
+            <div className="flex flex-col items-center gap-6 mt-6">
+              <div className="flex items-center gap-4 w-full">
+                <div className="h-px bg-gold/10 flex-1"></div>
+                <span className="text-[10px] text-gold/30 uppercase font-black tracking-widest">Or Fast Access via</span>
+                <div className="h-px bg-gold/10 flex-1"></div>
+              </div>
+              
+              <div className="w-full flex justify-center">
+                <GoogleLogin
+                  onSuccess={credentialResponse => {
+                    loginWithGoogle(credentialResponse.credential);
+                    toast.success("Welcome to CC Beauty.");
+                  }}
+                  onError={() => {
+                    toast.error('Google Registration Failed');
+                  }}
+                  theme="dark"
+                  shape="square"
+                  size="large"
+                  width="300"
+                />
+              </div>
+            </div>
           </form>
 
           <div className="mt-10 text-center">
