@@ -164,8 +164,7 @@ const Booking = () => {
   // Title derived only from VALID_SPECS — RECEPTIONIST and unknowns stripped
   const getStaffTitle = (specializations) => {
     const specs = (specializations || [])
-      .map((s) => s.toUpperCase())
-      .filter((s) => VALID_SPECS.includes(s));
+      .map((s) => s.toUpperCase());
 
     if (specs.length === 0) return "Master Technician";
 
@@ -176,10 +175,13 @@ const Booking = () => {
         if (s === "LASHES") return "Lash Technician";
         if (s === "WIGS") return "Wig Stylist";
         if (s === "HAIR") return "Hairdresser";
-        if (s === "EYEBROWS") return "Brow Specialist";
+        if (s === "EYEBROWS") return "Eyebrow Specialist";
         if (s === "FACIAL") return "Esthetician";
         if (s === "SKIN") return "Skin Specialist";
-        return s;
+        if (s === "RECEPTIONIST") return "Receptionist";
+        if (s === "LOCTICIAN") return "Loctician";
+        // Convert to Title Case for others
+        return s.charAt(0) + s.slice(1).toLowerCase();
       })
       .join(", ");
   };
