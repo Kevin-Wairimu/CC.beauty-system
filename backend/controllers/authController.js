@@ -27,7 +27,7 @@ export const googleLogin = async (req, res) => {
     const { email, name, sub: googleId } = ticket.getPayload();
 
     let user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
+      where: { email: email.trim().toLowerCase() },
     });
 
     if (!user) {
@@ -38,7 +38,7 @@ export const googleLogin = async (req, res) => {
       user = await prisma.user.create({
         data: {
           name,
-          email: email.toLowerCase(),
+          email: email.trim().toLowerCase(),
           password: generatedPassword,
           role: "client",
         },

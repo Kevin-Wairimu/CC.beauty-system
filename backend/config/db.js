@@ -1,43 +1,22 @@
 import pg from 'pg';
-const { Pool, types } = pg;
+const { Pool } = pg;
 import { PrismaPg } from '@prisma/adapter-pg';
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
-import path from 'path';
-import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-// Ensure env variables are loaded
 dotenv.config();
 
 const connectionString = process.env.DATABASE_URL;
 
 if (!connectionString) {
   console.error("DATABASE_URL is missing. Database connection will fail.");
-} else if (
-  connectionString.includes("@") &&
-  connectionString.split("@").length > 2
-) {
-  console.warn(
-    'Your DATABASE_URL contains multiple "@" symbols. Ensure your password is percent-encoded (e.g., replace "@" with "%40").',
-  );
 }
 
-// Parse numbers from Postgres numeric to JS float
-types.setTypeParser(1700, function(val) {
-  return parseFloat(val);
-});
-
-// Explicit SSL configuration for pg Pool
 const pool = new Pool({ 
   connectionString,
   ssl: connectionString && (connectionString.includes('localhost') || connectionString.includes('127.0.0.1')) ? false : {
     rejectUnauthorized: false
   },
-  max: 5,
-  connectionTimeoutMillis: 30000,
 });
 
 const adapter = new PrismaPg(pool);
@@ -47,7 +26,7 @@ const connectDB = async () => {
   try {
     // Simple query to test connectivity
     await prisma.$queryRaw`SELECT 1`;
-    console.log(' PostgreSQL Connected (Supabase via Pooler)');
+    console.log(' PostgreSQL Connected');
   } catch (error) {
     console.error(` PostgreSQL Connection Error: ${error.message}`);
   }
