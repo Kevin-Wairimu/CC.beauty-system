@@ -161,7 +161,7 @@ const ClientDashboard = () => {
             {/* Price for completed */}
             {isCompleted && app.price > 0 && (
               <p className="pl-5 text-xs text-gold/60 font-black uppercase tracking-widest">
-                KSh {parseFloat(app.price).toLocaleString()}
+                ksh {parseFloat(app.price).toLocaleString()}
               </p>
             )}
           </div>
@@ -308,7 +308,7 @@ const ClientDashboard = () => {
                 },
                 {
                   label: "Total Spend",
-                  val: `KSh ${totalSpend.toLocaleString()}`,
+                  val: `ksh ${totalSpend.toLocaleString()}`,
                   color: "text-white",
                 },
               ].map((s, i) => (
@@ -525,7 +525,7 @@ const ClientDashboard = () => {
                     Total Amount Paid
                   </span>
                   <span className="text-3xl font-serif font-black text-gold print:text-black">
-                    KSh {parseFloat(receiptApp.price || 0).toLocaleString()}
+                    ksh {parseFloat(receiptApp.price || 0).toLocaleString()}
                   </span>
                 </div>
               </div>

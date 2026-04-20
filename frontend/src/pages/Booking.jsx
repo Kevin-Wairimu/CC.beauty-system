@@ -298,7 +298,7 @@ const Booking = () => {
                     value={s.name}
                     className="bg-[#1a1a1a] text-white"
                   >
-                    {s.name} (KSh {s.price})
+                    {s.name} (ksh {s.price})
                   </option>
                 ))}
               </select>

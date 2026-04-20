@@ -73,16 +73,14 @@ const SERVICE_IMAGE_MAP = {
   "full facial": "/images/full facial.JPG",
 
   // HAIR
-  "blow dry": "/images/wash and full blowdry.JPG",
-  "wash & set": "/images/Wash and set.JPG",
   "hair wash": "/images/Wash.JPG",
   "wash and straightening": "/images/Wash.JPG",
   "wash and full blowdry": "/images/wash and full blowdry.JPG",
-  "undoing twists": "/images/Wash.JPG",
+  "undoing twistouts": "/images/Wash.JPG",
   "undoing cornrows": "/images/Wash.JPG",
   "undoing braids": "/images/Wash.JPG",
   "kids lines": "/images/center kids cornrows.JPG",
-  "kito lines": "/images/center kids cornrows.JPG",
+  "big lines": "/images/center kids cornrows.JPG",
   "lip cornrows": "/images/center kids cornrows.JPG",
   "fulani cornrows": "/images/center kids cornrows.JPG",
   "back ghanaians": "/images/center kids cornrows.JPG",
@@ -90,20 +88,18 @@ const SERVICE_IMAGE_MAP = {
   "knotless braids": "/images/center kids cornrows.JPG",
   "knotless twist braids": "/images/center kids cornrows.JPG",
   "jumbo knotless braids": "/images/center kids cornrows.JPG",
-  crotchets: "/images/center kids cornrows.JPG",
-  "fulani stitchlines": "/images/center kids cornrows.JPG",
-  "up stitchlines": "/images/center kids cornrows.JPG",
-  "back stitchlines": "/images/center kids cornrows.JPG",
+  crochets: "/images/center kids cornrows.JPG",
+  "stitch lines": "/images/center kids cornrows.JPG",
   "box braids": "/images/center kids cornrows.JPG",
   "boho knotless braids": "/images/center kids cornrows.JPG",
   "boho bob braids": "/images/center kids cornrows.JPG",
-  "twist braids": "/images/center kids cornrows.JPG",
+  "latest braids": "/images/center kids cornrows.JPG",
   "marley twists": "/images/center kids cornrows.JPG",
   "spring twists": "/images/center kids cornrows.JPG",
   "twist outs": "/images/center kids cornrows.JPG",
   "mini twists": "/images/center kids cornrows.JPG",
   "coily twists": "/images/center kids cornrows.JPG",
-  "havana curls": "/images/center kids cornrows.JPG",
+  "havana curl": "/images/center kids cornrows.JPG",
   "invisible locs": "/images/center kids cornrows.JPG",
   "gel styling": "/images/center kids cornrows.JPG",
   "butterfly locs": "/images/center kids cornrows.JPG",
@@ -112,10 +108,10 @@ const SERVICE_IMAGE_MAP = {
   "italian curls": "/images/center kids cornrows.JPG",
   "natural twists": "/images/center kids cornrows.JPG",
   "lemonade braids": "/images/center kids cornrows.JPG",
-  "boho/bohemian braids/curls": "/images/center kids cornrows.JPG",
-  "sisterlocks retouch": "/images/center kids cornrows.JPG",
+  "boho braids cornrows": "/images/center kids cornrows.JPG",
+  "sisterlocs retouch": "/images/center kids cornrows.JPG",
   "loc retwist": "/images/center kids cornrows.JPG",
-  "boho locs": "/images/center kids cornrows.JPG",
+  "boho locks": "/images/center kids cornrows.JPG",
 };
 
 const CATEGORY_FALLBACKS = {
@@ -365,7 +361,7 @@ const Home = () => {
                           {service.name}
                         </h3>
                         <span className="text-lg md:text-2xl font-serif font-black text-gold shrink-0">
-                          KSh {service.price}
+                          ksh {service.price}
                         </span>
                       </div>
                       <p className="text-[9px] md:text-xs uppercase tracking-[0.2em] text-white/40 font-bold group-hover:text-white/60 transition-colors line-clamp-2 italic">
@@ -552,7 +548,7 @@ const Home = () => {
                             Charge
                           </p>
                           <p className="text-3xl md:text-4xl font-serif font-black text-gold">
-                            KSh {selectedService.price}
+                            ksh {selectedService.price}
                           </p>
                         </div>
                       </motion.div>
