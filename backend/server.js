@@ -68,6 +68,11 @@ app.use(cors({
 
 app.use(express.json());
 
+// API Health Check / Wake-up
+app.get('/api/ping', (req, res) => {
+  res.json({ status: 'online', timestamp: new Date().toISOString() });
+});
+
 // API Routes
 app.use('/api/services', serviceRoutes);
 app.use('/api/appointments', appointmentRoutes);

@@ -219,6 +219,20 @@ const Booking = () => {
           </motion.div>
         )}
 
+        {status.error && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-red-500/10 border border-red-500/30 p-4 mb-10 text-center"
+          >
+            <p className="text-red-500 uppercase text-[10px] tracking-widest font-black">
+              {status.error === "Failed to load data" 
+                ? "The connection is taking longer than expected. The server might be waking up. Please try refreshing."
+                : status.error}
+            </p>
+          </motion.div>
+        )}
+
         <motion.form
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

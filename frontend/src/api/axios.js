@@ -6,10 +6,28 @@ const baseURL =
     ? "http://localhost:5001/api"
     : "https://cc-beauty-system.onrender.com/api");
 
+console.log("API Base URL:", baseURL);
+
 const api = axios.create({
   baseURL: baseURL,
-  timeout: 15000,
+  timeout: 60000, // 60 seconds
 });
+
+// Detailed error logging interceptor
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    const errorInfo = {
+      message: error.message,
+      code: error.code,
+      url: error.config?.url,
+      method: error.config?.method,
+      status: error.response?.status,
+    };
+    console.error("Axios Detail:", errorInfo);
+    return Promise.reject(error);
+  }
+);
 
 // Add a request interceptor to include the token in headers
 api.interceptors.request.use((config) => {

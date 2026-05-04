@@ -91,12 +91,18 @@ const withResolvedImage = (doc) => {
 
 // @desc    Get all services — images auto-resolved if missing
 export const getServices = async (req, res) => {
+  const start = Date.now();
   try {
     const services = await prisma.service.findMany({});
+    console.log(`FETCH_SERVICES: Found ${services.length} items in ${Date.now() - start}ms`);
     res.json(services.map(withResolvedImage));
   } catch (error) {
     console.error(`SERVICE_CONTROLLER_ERROR:`, error.message);
-    res.status(500).json({ message: "Operation failed", error: error.message });
+    res.status(500).json({ 
+      message: "Operation failed", 
+      error: error.message,
+      hint: "Check if the database project is active and the connection string is correct." 
+    });
   }
 };
 
@@ -165,6 +171,10 @@ export const deleteService = async (req, res) => {
     }
   } catch (error) {
     console.error(`SERVICE_CONTROLLER_ERROR:`, error.message);
-    res.status(500).json({ message: "Operation failed", error: error.message });
+    res.status(500).json({ 
+      message: "Operation failed", 
+      error: error.message,
+      hint: "Check if the database project is active and the connection string is correct." 
+    });
   }
 };

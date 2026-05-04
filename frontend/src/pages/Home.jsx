@@ -169,6 +169,7 @@ const handleImgError = (e, service) => {
 const Home = () => {
   const [services, setServices] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [activeCategory, setActiveCategory] = useState("");
   const [selectedService, setSelectedService] = useState(null);
   const reviewContainerRef = React.useRef(null);
@@ -177,11 +178,16 @@ const Home = () => {
   useEffect(() => {
     const fetchServices = async () => {
       try {
+        setError(null);
         const { data } = await api.get("/services");
         setServices(data);
         if (data.length > 0) setActiveCategory(data[0].category);
       } catch (err) {
         console.error("Failed to fetch services:", err);
+        const detailedMsg = err.code === 'ECONNABORTED' 
+          ? "The server is taking too long to respond (Timeout). It might be starting up." 
+          : err.message;
+        setError(`Luxury collection load failed: ${detailedMsg}. Please try refreshing in a few moments.`);
       } finally {
         setLoading(false);
       }
@@ -314,6 +320,18 @@ const Home = () => {
             {loading ? (
               <div className="col-span-full py-20 text-center text-gold animate-pulse uppercase text-[10px] tracking-[0.5em] font-black">
                 Refining Masterpieces...
+              </div>
+            ) : error ? (
+              <div className="col-span-full py-20 text-center px-4">
+                <p className="text-gold uppercase text-[10px] tracking-[0.3em] font-black mb-4">
+                  {error}
+                </p>
+                <button 
+                  onClick={() => window.location.reload()}
+                  className="px-6 py-2 border border-gold text-gold text-[9px] uppercase tracking-widest hover:bg-gold hover:text-black transition-all"
+                >
+                  Retry Connection
+                </button>
               </div>
             ) : (
               groupedServices[activeCategory]?.map((service) => {
