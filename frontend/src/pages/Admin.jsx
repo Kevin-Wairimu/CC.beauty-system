@@ -67,6 +67,7 @@ const getMonthYear = (dateStr) => {
 };
 
 // Custom tooltip for revenue chart
+const COMMISSION_RATE = 0.4; // 40% commission per transaction
 const RevenueTooltip = ({ active, payload, label }) => {
   if (active && payload && payload.length) {
     return (
@@ -230,10 +231,13 @@ const Admin = () => {
       monthlyMap[label].services += 1;
     });
 
-    // Sort months chronologically
-    const monthlyData = Object.values(monthlyMap).sort((a, b) => {
-      return new Date(a.month) - new Date(b.month);
-    });
+    // Sort months chronologically and add commission per month
+    const monthlyData = Object.values(monthlyMap)
+      .sort((a, b) => new Date(a.month) - new Date(b.month))
+      .map(m => ({
+        ...m,
+        commission: Math.round(m.revenue * COMMISSION_RATE),
+      }));
 
     return {
       totalRevenue,
@@ -251,6 +255,7 @@ const Admin = () => {
       todayRevenue: completed
         .filter((a) => isToday(a.date))
         .reduce((s, a) => s + parseFloat(a.price || 0), 0),
+      totalCommission: Math.round(totalRevenue * COMMISSION_RATE),
     };
   }, [appointments, enquiries, staff]);
 
@@ -1553,6 +1558,11 @@ const Admin = () => {
                     label: "Months Active",
                     val: stats.monthlyData.length,
                   },
+                  {
+                    label: "Total Commission",
+                    val: `ksh ${stats.totalCommission?.toLocaleString()}`,
+                    icon: <DollarSign className="h-3.5 w-3.5" />, // reuse icon
+                  },
                 ].map((s, i) => (
                   <div key={i} className="p-6 bg-white/[0.02]">
                     <p className="text-[9px] uppercase font-black tracking-widest text-gold/50 mb-1">
@@ -1663,6 +1673,7 @@ const Admin = () => {
                             <th className="p-4 text-center">Services</th>
                             <th className="p-4 text-right">Revenue</th>
                             <th className="p-4 text-right">Avg / Service</th>
+                            <th className="p-4 text-right">Commission</th>
                             <th className="p-4 text-right">% of Total</th>
                           </tr>
                         </thead>
@@ -1689,6 +1700,7 @@ const Admin = () => {
                                     ).toLocaleString()
                                   : 0}
                               </td>
+                              <td className="p-4 text-right font-serif font-bold text-gold">ksh {row.commission?.toLocaleString()}</td>
                               <td className="p-4 text-right text-[10px] font-black text-gold/60">
                                 {stats.totalRevenue > 0
                                   ? (

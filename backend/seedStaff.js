@@ -11,39 +11,11 @@ dotenv.config({ path: path.join(__dirname, ".env"), override: true });
 
 const staffData = [
   {
-    name: "Steve",
-    email: "steve@ccbeauty.com",
-    password: "password123",
-    role: "staff",
-    specialization: ["NAILS", "WIGS"],
-  },
-  {
-    name: "Purity",
-    email: "purity@ccbeauty.com",
-    password: "password123",
-    role: "staff",
-    specialization: ["MAKEUP", "WIGS", "LASHES", "EYEBROWS"],
-  },
-  {
-    name: "Sam",
-    email: "sam@ccbeauty.com",
-    password: "password123",
-    role: "staff",
-    specialization: ["MAKEUP", "LASHES", "NAILS"],
-  },
-  {
     name: "Wangari",
     email: "wangari@ccbeauty.com",
     password: "password123",
     role: "staff",
     specialization: ["HAIR", "RECEPTIONIST", "WIGS", "loctician"],
-  },
-  {
-    name: "Milka",
-    email: "milka@ccbeauty.com",
-    password: "password123",
-    role: "staff",
-    specialization: ["HAIR", "loctician"],
   },
   {
     name: "Jenny",
@@ -61,6 +33,26 @@ const staffData = [
     approveBookings: true,
     manageStaff: true,
     manageServices: true,
+  },
+  {
+    name: "Yvonne",
+    email: "vyonnewanjiru105@gmail.com",
+    password: "password123",
+    role: "manager",
+    specialization: ["NAILS"],
+    approveBookings: true,
+    manageStaff: false,
+    manageServices: false,
+  },
+  {
+    name: "Conslate Aluoch Boyi",
+    email: "conslateboyi@gmail.com",
+    password: "password123",
+    role: "manager",
+    specialization: ["HAIR"],
+    approveBookings: true,
+    manageStaff: false,
+    manageServices: false,
   },
 ];
 

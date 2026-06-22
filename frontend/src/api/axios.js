@@ -23,6 +23,7 @@ api.interceptors.response.use(
       url: error.config?.url,
       method: error.config?.method,
       status: error.response?.status,
+      data: error.response?.data,
     };
     console.error("Axios Detail:", errorInfo);
     return Promise.reject(error);

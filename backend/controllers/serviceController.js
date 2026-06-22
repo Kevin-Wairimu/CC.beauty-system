@@ -97,11 +97,12 @@ export const getServices = async (req, res) => {
     console.log(`FETCH_SERVICES: Found ${services.length} items in ${Date.now() - start}ms`);
     res.json(services.map(withResolvedImage));
   } catch (error) {
-    console.error(`SERVICE_CONTROLLER_ERROR:`, error.message);
+    console.error(`SERVICE_CONTROLLER_ERROR [getServices]:`, error);
     res.status(500).json({ 
-      message: "Operation failed", 
+      message: "Failed to fetch services", 
       error: error.message,
-      hint: "Check if the database project is active and the connection string is correct." 
+      stack: process.env.NODE_ENV === 'production' ? null : error.stack,
+      hint: "Check if the DATABASE_URL is correct and tables are migrated." 
     });
   }
 };
