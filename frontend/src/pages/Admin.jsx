@@ -136,13 +136,22 @@ const Admin = () => {
   const fetchData = React.useCallback(async () => {
     try {
       setLoading(true);
+      // ✅ FIX: removed `includeDeleted=true`. The backend now correctly
+      // excludes soft-deleted appointments (isDeleted: true) by default,
+      // so deleting a record actually makes it disappear from the UI.
       const [appRes, enqRes, serRes] = await Promise.all([
-        api.get("/appointments?includeDeleted=true").catch(() => ({ data: [] })),
+        api.get("/appointments").catch(() => ({ data: [] })),
         api.get("/enquiry").catch(() => ({ data: [] })),
         api.get("/services").catch(() => ({ data: [] })),
       ]);
 
-      setAppointments(Array.isArray(appRes.data) ? appRes.data : []);
+      // Safety net: even if the backend ever sends deleted records back
+      // (e.g. includeDeleted is reintroduced, caching, etc.), never show them.
+      const liveAppointments = (
+        Array.isArray(appRes.data) ? appRes.data : []
+      ).filter((a) => !a.isDeleted);
+
+      setAppointments(liveAppointments);
       setEnquiries(Array.isArray(enqRes.data) ? enqRes.data : []);
       setServices(Array.isArray(serRes.data) ? serRes.data : []);
 
@@ -153,12 +162,13 @@ const Admin = () => {
           .catch(() => ({ data: [] }));
         const allUsers = Array.isArray(userRes.data) ? userRes.data : [];
         setUsers(allUsers);
-        
+
         // ✅ Include anyone with a specialization in the ledger (Admin, Manager, or Staff)
         setStaff(
-          allUsers.filter((u) => 
-            u.role?.toLowerCase() === "staff" || 
-            (u.specialization && u.specialization.length > 0)
+          allUsers.filter(
+            (u) =>
+              u.role?.toLowerCase() === "staff" ||
+              (u.specialization && u.specialization.length > 0),
           ),
         );
       }
@@ -234,7 +244,7 @@ const Admin = () => {
     // Sort months chronologically and add commission per month
     const monthlyData = Object.values(monthlyMap)
       .sort((a, b) => new Date(a.month) - new Date(b.month))
-      .map(m => ({
+      .map((m) => ({
         ...m,
         commission: Math.round(m.revenue * COMMISSION_RATE),
       }));
@@ -297,11 +307,13 @@ const Admin = () => {
     }
   };
 
-  // ── Active appointments (exclude completed/cancelled/rejected) ─────────────
+  // ── Active appointments (exclude completed/cancelled/rejected/deleted) ─────
   const activeAppointments = useMemo(
     () =>
       appointments.filter(
-        (a) => !["completed", "cancelled", "rejected"].includes(a.status),
+        (a) =>
+          !["completed", "cancelled", "rejected"].includes(a.status) &&
+          !a.isDeleted,
       ),
     [appointments],
   );
@@ -330,10 +342,28 @@ const Admin = () => {
     try {
       const payload = {
         ...userData,
-        specialization: (typeof userData.specialization === "string")
-          ? userData.specialization.split(",").map((s) => s.trim().toUpperCase()).filter(s => s !== "")
-          : userData.specialization || [],
+        specialization:
+          typeof userData.specialization === "string"
+            ? userData.specialization
+                .split(",")
+                .map((s) => s.trim().toUpperCase())
+                .filter((s) => s !== "")
+            : userData.specialization || [],
       };
+
+      // Password handling: do not send empty password, and enforce minimal policy
+      if (payload.password && payload.password.trim() !== "") {
+        const pwd = payload.password.trim();
+        const pwdValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(pwd);
+        if (!pwdValid) {
+          toast.error("Password must be at least 8 characters and contain a letter and a number");
+          return;
+        }
+        // keep the password as is (already in payload)
+      } else {
+        // Remove password field so backend does not overwrite it with an empty string
+        delete payload.password;
+      }
 
       if (editingUser) {
         await api.put(`/auth/users/${editingUser._id}/role`, payload);
@@ -352,7 +382,10 @@ const Admin = () => {
 
   const handleUpdateRole = async (userId, role) => {
     try {
-      const { data: updatedUser } = await api.put(`/auth/users/${userId}/role`, { role });
+      const { data: updatedUser } = await api.put(
+        `/auth/users/${userId}/role`,
+        { role },
+      );
       toast.success("Role Updated");
 
       // If updating yourself, update the auth context to trigger re-routing
@@ -438,10 +471,13 @@ const Admin = () => {
     if (!window.confirm("Erase this record from history?")) return;
     try {
       await api.delete(`/appointments/${id}`);
-      fetchData();
+      // Optimistically remove it from local state immediately, so the UI
+      // reflects the delete even before the refetch completes.
+      setAppointments((prev) => prev.filter((a) => a._id !== id));
       toast.success("Record Erased");
-    } catch {
-      toast.error("Delete failed");
+      fetchData();
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Delete failed");
     }
   };
 
@@ -482,7 +518,7 @@ const Admin = () => {
       formData.append("category", serviceData.category);
       formData.append("price", serviceData.price);
       formData.append("description", serviceData.description || "");
-      
+
       if (selectedImage) {
         formData.append("image", selectedImage);
       } else {
@@ -510,6 +546,11 @@ const Admin = () => {
   };
 
   const deleteService = async (id) => {
+    // Only admins (or managers) can delete services
+    if (userRole !== "admin" && userRole !== "manager") {
+      toast.error("Only admins can delete services");
+      return;
+    }
     if (!window.confirm("Remove this service from menu?")) return;
     try {
       await api.delete(`/services/${id}`);
@@ -636,7 +677,8 @@ const Admin = () => {
             <div className="w-16 h-16 border-t-2 border-gold rounded-full animate-spin mx-auto mb-6" />
             <p className="text-gold uppercase tracking-[0.5em] text-[10px] font-black">
               cc beauty
-            </p>          </div>
+            </p>{" "}
+          </div>
         ) : (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -946,82 +988,88 @@ const Admin = () => {
                       <Award className="h-5 w-5 text-gold opacity-50" />
                     </div>
                   </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {stats.staffPerformance.map((s, idx) => {
-                    const avgPerService =
-                      s.services > 0 ? Math.round(s.revenue / s.services) : 0;
-                    const pctOfToday =
-                      stats.todayRevenue > 0
-                        ? ((s.revenue / stats.todayRevenue) * 100).toFixed(1)
-                        : "0.0";
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    {stats.staffPerformance.map((s, idx) => {
+                      const avgPerService =
+                        s.services > 0
+                          ? Math.round(s.revenue / s.services)
+                          : 0;
+                      const pctOfToday =
+                        stats.todayRevenue > 0
+                          ? ((s.revenue / stats.todayRevenue) * 100).toFixed(
+                              1,
+                            )
+                          : "0.0";
 
-                    return (
-                      <div
-                        key={idx}
-                        className="glass-panel p-6 bg-[#121212] border-white/10 group hover:border-gold/30 transition-all"
-                      >
-                        <div className="flex items-center gap-4 mb-6">
-                          <div className="h-12 w-12 bg-gold/10 border border-gold/20 flex items-center justify-center text-gold font-bold text-xl">
-                            {s.name.charAt(0)}
+                      return (
+                        <div
+                          key={idx}
+                          className="glass-panel p-6 bg-[#121212] border-white/10 group hover:border-gold/30 transition-all"
+                        >
+                          <div className="flex items-center gap-4 mb-6">
+                            <div className="h-12 w-12 bg-gold/10 border border-gold/20 flex items-center justify-center text-gold font-bold text-xl">
+                              {s.name.charAt(0)}
+                            </div>
+                            <div>
+                              <h3 className="text-xl font-bold text-white tracking-tighter group-hover:text-gold transition-colors">
+                                {s.name}
+                              </h3>
+                              <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest">
+                                {s.specialization?.join(", ")}
+                              </p>
+                            </div>
                           </div>
-                          <div>
-                            <h3 className="text-xl font-bold text-white tracking-tighter group-hover:text-gold transition-colors">
-                              {s.name}
-                            </h3>
-                            <p className="text-[9px] text-gray-500 uppercase font-black tracking-widest">
-                              {s.specialization?.join(", ")}
-                            </p>
+
+                          <div className="grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
+                            <div>
+                              <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
+                                Services
+                              </p>
+                              <p className="text-lg font-bold">
+                                {s.services}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
+                                Revenue
+                              </p>
+                              <p className="text-lg font-serif font-bold text-gold">
+                                ksh {s.revenue.toLocaleString()}
+                              </p>
+                            </div>
+                            <div>
+                              <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
+                                Avg/Service
+                              </p>
+                              <p className="text-xs font-bold text-gray-400">
+                                ksh {avgPerService.toLocaleString()}
+                              </p>
+                            </div>
+                            <div className="text-right">
+                              <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
+                                Share
+                              </p>
+                              <p className="text-xs font-black text-gold">
+                                {pctOfToday}%
+                              </p>
+                            </div>
+                          </div>
+
+                          <div className="mt-4 h-1 bg-white/5 overflow-hidden">
+                            <div
+                              className="h-full bg-gold transition-all duration-1000"
+                              style={{ width: `${pctOfToday}%` }}
+                            />
                           </div>
                         </div>
-
-                        <div className="grid grid-cols-2 gap-4 border-t border-white/5 pt-4">
-                          <div>
-                            <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
-                              Services
-                            </p>
-                            <p className="text-lg font-bold">{s.services}</p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
-                              Revenue
-                            </p>
-                            <p className="text-lg font-serif font-bold text-gold">
-                              ksh {s.revenue.toLocaleString()}
-                            </p>
-                          </div>
-                          <div>
-                            <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
-                              Avg/Service
-                            </p>
-                            <p className="text-xs font-bold text-gray-400">
-                              ksh {avgPerService.toLocaleString()}
-                            </p>
-                          </div>
-                          <div className="text-right">
-                            <p className="text-[8px] text-gray-500 uppercase font-black mb-1">
-                              Share
-                            </p>
-                            <p className="text-xs font-black text-gold">
-                              {pctOfToday}%
-                            </p>
-                          </div>
-                        </div>
-
-                        <div className="mt-4 h-1 bg-white/5 overflow-hidden">
-                          <div
-                            className="h-full bg-gold transition-all duration-1000"
-                            style={{ width: `${pctOfToday}%` }}
-                          />
-                        </div>
+                      );
+                    })}
+                    {stats.staffPerformance.length === 0 && (
+                      <div className="col-span-full py-20 text-center text-gray-600 italic uppercase text-[9px] tracking-[0.5em]">
+                        No services completed today yet.
                       </div>
-                    );
-                  })}
-                  {stats.staffPerformance.length === 0 && (
-                    <div className="col-span-full py-20 text-center text-gray-600 italic uppercase text-[9px] tracking-[0.5em]">
-                      No services completed today yet.
-                    </div>
-                  )}
-                </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Transaction History */}
@@ -1031,12 +1079,17 @@ const Admin = () => {
                       Transaction History
                     </h3>
                     <div className="flex gap-2">
-                      <button 
+                      <button
                         onClick={() => {
                           setEditingTransaction(null);
                           setTransactionData({
-                            name: "", email: "", phone: "", service: "", price: "", staffId: "", 
-                            date: new Date().toISOString().split("T")[0]
+                            name: "",
+                            email: "",
+                            phone: "",
+                            service: "",
+                            price: "",
+                            staffId: "",
+                            date: new Date().toISOString().split("T")[0],
                           });
                           setShowTransactionForm(true);
                         }}
@@ -1044,18 +1097,21 @@ const Admin = () => {
                       >
                         <Plus className="h-3 w-3" /> Manual Entry
                       </button>
-                      <button 
+                      <button
                         onClick={() => {
-                          const completed = appointments.filter(a => a.status === 'completed').map(a => ({
-                            Date: a.date,
-                            Client: a.name,
-                            Email: a.email,
-                            Service: a.service,
-                            Price: a.price,
-                            Staff: a.staffId?.name || '',
-                            Receipt: a.receiptNo || ''
-                          }));
-                          if (completed.length > 0) exportToCSV(completed, 'cc_beauty_ledger');
+                          const completed = appointments
+                            .filter((a) => a.status === "completed")
+                            .map((a) => ({
+                              Date: a.date,
+                              Client: a.name,
+                              Email: a.email,
+                              Service: a.service,
+                              Price: a.price,
+                              Staff: a.staffId?.name || "",
+                              Receipt: a.receiptNo || "",
+                            }));
+                          if (completed.length > 0)
+                            exportToCSV(completed, "cc_beauty_ledger");
                           else toast.error("No data to export");
                         }}
                         className="text-[8px] font-black uppercase tracking-widest text-gray-500 flex items-center gap-1.5 border border-white/10 px-3 py-1.5 hover:bg-white/5 transition-all"
@@ -1116,7 +1172,9 @@ const Admin = () => {
                                 <div className="flex justify-end gap-1.5">
                                   {app.receiptNo && (
                                     <button
-                                      onClick={() => setReceiptAppointment(app)}
+                                      onClick={() =>
+                                        setReceiptAppointment(app)
+                                      }
                                       className="p-1.5 text-gold/60 hover:text-gold border border-gold/10 hover:border-gold/30 transition-all"
                                       title="View Receipt"
                                     >
@@ -1132,8 +1190,15 @@ const Admin = () => {
                                         phone: app.phone,
                                         service: app.service,
                                         price: app.price,
-                                        staffId: app.staffId?._id || app.staffId || "",
-                                        date: app.date || new Date().toISOString().split("T")[0]
+                                        staffId:
+                                          app.staffId?._id ||
+                                          app.staffId ||
+                                          "",
+                                        date:
+                                          app.date ||
+                                          new Date()
+                                            .toISOString()
+                                            .split("T")[0],
                                       });
                                       setShowTransactionForm(true);
                                     }}
@@ -1142,7 +1207,9 @@ const Admin = () => {
                                     <Edit className="h-3.5 w-3.5" />
                                   </button>
                                   <button
-                                    onClick={() => handleDeleteAppointment(app._id)}
+                                    onClick={() =>
+                                      handleDeleteAppointment(app._id)
+                                    }
                                     className="p-1.5 text-red-500/50 hover:text-red-500 border border-red-500/10 hover:border-red-500/30 transition-all"
                                   >
                                     <Trash2 className="h-3.5 w-3.5" />
@@ -1501,7 +1568,8 @@ const Admin = () => {
                           </div>
                         </div>
                       ))}
-                    {users.filter((u) => u.role === "client").length === 0 && (
+                    {users.filter((u) => u.role === "client").length ===
+                      0 && (
                       <div className="col-span-full py-12 text-center text-gray-600 italic uppercase text-[9px] tracking-widest">
                         No clients registered yet.
                       </div>
@@ -1700,7 +1768,9 @@ const Admin = () => {
                                     ).toLocaleString()
                                   : 0}
                               </td>
-                              <td className="p-4 text-right font-serif font-bold text-gold">ksh {row.commission?.toLocaleString()}</td>
+                              <td className="p-4 text-right font-serif font-bold text-gold">
+                                ksh {row.commission?.toLocaleString()}
+                              </td>
                               <td className="p-4 text-right text-[10px] font-black text-gold/60">
                                 {stats.totalRevenue > 0
                                   ? (
@@ -1843,7 +1913,9 @@ const Admin = () => {
                   </span>
                   <span className="text-3xl font-serif font-black text-gold print:text-black">
                     ksh{" "}
-                    {parseFloat(receiptAppointment.price || 0).toLocaleString()}
+                    {parseFloat(
+                      receiptAppointment.price || 0,
+                    ).toLocaleString()}
                   </span>
                 </div>
               </div>
@@ -1958,11 +2030,15 @@ const Admin = () => {
                       Service Image
                     </label>
                     <div className="flex items-center gap-4">
-                      { (selectedImage || serviceData.image) && (
+                      {(selectedImage || serviceData.image) && (
                         <div className="h-12 w-12 border border-gold/30 overflow-hidden bg-black flex-shrink-0">
-                          <img 
-                            src={selectedImage ? URL.createObjectURL(selectedImage) : serviceData.image} 
-                            alt="Preview" 
+                          <img
+                            src={
+                              selectedImage
+                                ? URL.createObjectURL(selectedImage)
+                                : serviceData.image
+                            }
+                            alt="Preview"
                             className="w-full h-full object-cover"
                           />
                         </div>
@@ -2032,7 +2108,10 @@ const Admin = () => {
                       type="email"
                       value={userData.email}
                       onChange={(e) =>
-                        setUserFormData({ ...userData, email: e.target.value })
+                        setUserFormData({
+                          ...userData,
+                          email: e.target.value,
+                        })
                       }
                       className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
                     />
@@ -2073,7 +2152,8 @@ const Admin = () => {
                     />
                   </div>
                 </div>
-                {(userData.role === "staff" || userData.role === "manager") && (
+                {(userData.role === "staff" ||
+                  userData.role === "manager") && (
                   <div className="space-y-2">
                     <label className="text-[9px] uppercase tracking-widest text-gold font-black">
                       Specialization (e.g. NAILS, HAIR, WIGS)
@@ -2136,7 +2216,12 @@ const Admin = () => {
                     <input
                       required
                       value={transactionData.name}
-                      onChange={(e) => setTransactionData({...transactionData, name: e.target.value})}
+                      onChange={(e) =>
+                        setTransactionData({
+                          ...transactionData,
+                          name: e.target.value,
+                        })
+                      }
                       className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
                     />
                   </div>
@@ -2147,7 +2232,12 @@ const Admin = () => {
                     <input
                       required
                       value={transactionData.phone}
-                      onChange={(e) => setTransactionData({...transactionData, phone: e.target.value})}
+                      onChange={(e) =>
+                        setTransactionData({
+                          ...transactionData,
+                          phone: e.target.value,
+                        })
+                      }
                       className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
                     />
                   </div>
@@ -2160,11 +2250,20 @@ const Admin = () => {
                     <select
                       required
                       value={transactionData.service}
-                      onChange={(e) => setTransactionData({...transactionData, service: e.target.value})}
+                      onChange={(e) =>
+                        setTransactionData({
+                          ...transactionData,
+                          service: e.target.value,
+                        })
+                      }
                       className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
                     >
                       <option value="">Select Service</option>
-                      {services.map(s => <option key={s._id} value={s.name}>{s.name}</option>)}
+                      {services.map((s) => (
+                        <option key={s._id} value={s.name}>
+                          {s.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div className="space-y-2">
@@ -2175,7 +2274,12 @@ const Admin = () => {
                       required
                       type="number"
                       value={transactionData.price}
-                      onChange={(e) => setTransactionData({...transactionData, price: e.target.value})}
+                      onChange={(e) =>
+                        setTransactionData({
+                          ...transactionData,
+                          price: e.target.value,
+                        })
+                      }
                       className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
                     />
                   </div>
@@ -2188,11 +2292,20 @@ const Admin = () => {
                     <select
                       required
                       value={transactionData.staffId}
-                      onChange={(e) => setTransactionData({...transactionData, staffId: e.target.value})}
+                      onChange={(e) =>
+                        setTransactionData({
+                          ...transactionData,
+                          staffId: e.target.value,
+                        })
+                      }
                       className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
                     >
                       <option value="">Select Specialist</option>
-                      {staff.map(s => <option key={s._id} value={s._id}>{s.name}</option>)}
+                      {staff.map((s) => (
+                        <option key={s._id} value={s._id}>
+                          {s.name}
+                        </option>
+                      ))}
                     </select>
                   </div>
                   <div className="space-y-2">
@@ -2203,7 +2316,12 @@ const Admin = () => {
                       required
                       type="date"
                       value={transactionData.date}
-                      onChange={(e) => setTransactionData({...transactionData, date: e.target.value})}
+                      onChange={(e) =>
+                        setTransactionData({
+                          ...transactionData,
+                          date: e.target.value,
+                        })
+                      }
                       className="w-full bg-black border border-white/10 p-3 text-white outline-none focus:border-gold"
                     />
                   </div>
@@ -2309,7 +2427,10 @@ const exportToCSV = (data, filename) => {
   if (link.download !== undefined) {
     const url = URL.createObjectURL(blob);
     link.setAttribute("href", url);
-    link.setAttribute("download", `${filename}_${new Date().toISOString().split('T')[0]}.csv`);
+    link.setAttribute(
+      "download",
+      `${filename}_${new Date().toISOString().split("T")[0]}.csv`,
+    );
     link.style.visibility = "hidden";
     document.body.appendChild(link);
     link.click();
