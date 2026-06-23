@@ -31,8 +31,16 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
+    // Password policy: at least 8 characters, at least one letter and one number
+    const pwd = password.trim();
+    const pwdValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(pwd);
+    if (!pwdValid) {
+      toast.error('Password must be at least 8 characters and contain a letter and a number');
+      setLoading(false);
+      return;
+    }
     try {
-      await register(name, email, password);
+      await register(name, email, pwd);
       toast.success('Welcome to CC Beauty.');
     } catch (err) {
       toast.error(err.response?.data?.message || 'Registration Failed');

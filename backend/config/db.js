@@ -14,11 +14,13 @@ if (!connectionString) {
 
 const isLocal = connectionString && (connectionString.includes('localhost') || connectionString.includes('127.0.0.1'));
 
-const pool = new Pool({ 
+// NOTE: Make sure DATABASE_URL includes `?pgbouncer=true&sslmode=require`
+// when connecting through Supabase's pooler (port 6543). With sslmode=require
+// set properly in the connection string, we no longer need to disable
+// certificate verification.
+const pool = new Pool({
   connectionString,
-  ssl: isLocal ? false : {
-    rejectUnauthorized: false
-  },
+  ssl: isLocal ? false : true,
 });
 
 const adapter = new PrismaPg(pool);
@@ -26,18 +28,19 @@ const prisma = new PrismaClient({ adapter });
 
 const connectDB = async () => {
   if (!connectionString) {
-    console.error(' PostgreSQL Connection Error: DATABASE_URL environment variable is not defined.');
+    console.error('PostgreSQL Connection Error: DATABASE_URL environment variable is not defined.');
     return;
   }
 
   try {
     // Simple query to test connectivity
     await prisma.$queryRaw`SELECT 1`;
-    console.log(' PostgreSQL Connected');
+    console.log('PostgreSQL Connected');
   } catch (error) {
-    console.error(` PostgreSQL Connection Error: ${error.message}`);
-    if (error.message.includes('relation "Service" does not exist')) {
-      console.error(' HINT: Tables are missing. Run "npx prisma db push" or seed the database.');
+    // Log the full error, not just .message, so the real cause is visible
+    console.error('PostgreSQL Connection Error:', error);
+    if (error.message?.includes('relation "Service" does not exist')) {
+      console.error('HINT: Tables are missing. Run "npx prisma db push" or seed the database.');
     }
   }
 };
