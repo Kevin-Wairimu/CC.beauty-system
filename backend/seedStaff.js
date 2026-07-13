@@ -29,7 +29,7 @@ const staffData = [
     email: "ccbeautyclinic21@gmail.com",
     password: "cynthiawairimu@2022",
     role: "admin",
-    specialization: ["WIGS", "NAILS", "MAKEUP"], // Added specializations to make her 'Staff'
+    specialization: ["WIGS", "NAILS", "MAKEUP"],
     approveBookings: true,
     manageStaff: true,
     manageServices: true,
@@ -57,13 +57,13 @@ const staffData = [
 ];
 
 const seedStaff = async () => {
-  try {
-    console.log("Connecting to PostgreSQL...");
-    const salt = await bcrypt.genSalt(10);
+  console.log("Connecting to PostgreSQL...");
+  const salt = await bcrypt.genSalt(10);
 
-    for (const s of staffData) {
-      const hashedPassword = await bcrypt.hash(s.password, salt);
+  for (const s of staffData) {
+    const hashedPassword = await bcrypt.hash(s.password, salt);
 
+    try {
       await prisma.user.upsert({
         where: { email: s.email },
         update: {
@@ -81,14 +81,27 @@ const seedStaff = async () => {
         },
       });
       console.log(`Synced staff: ${s.name} (${s.email})`);
+    } catch (error) {
+      // Print everything we can about this specific record's failure
+      // before moving on, so one bad record doesn't hide the others.
+      console.error(`\n--- FAILED on ${s.name} (${s.email}) ---`);
+      console.error("error.message:", error.message);
+      console.error("error.code:", error.code);
+      console.error("error.meta:", error.meta);
+      console.error("Full error object:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+      console.error("--- continuing to next staff member ---\n");
     }
-
-    console.log("--- STAFF & ADMIN COLLECTION SYNCED ---");
-    process.exit();
-  } catch (error) {
-    console.error(`Error: ${error.message}`);
-    process.exit(1);
   }
+
+  console.log("--- STAFF & ADMIN COLLECTION SYNC ATTEMPT FINISHED ---");
+  process.exit();
 };
 
-seedStaff();
+seedStaff().catch((error) => {
+  console.error("\n--- TOP-LEVEL SCRIPT FAILURE ---");
+  console.error("error.message:", error.message);
+  console.error("error.code:", error.code);
+  console.error("error.meta:", error.meta);
+  console.error("Full error object:", JSON.stringify(error, Object.getOwnPropertyNames(error), 2));
+  process.exit(1);
+});

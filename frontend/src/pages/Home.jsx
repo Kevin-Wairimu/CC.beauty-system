@@ -231,18 +231,18 @@ const Home = () => {
   return (
     <div className="bg-black min-h-screen text-white relative selection:bg-gold selection:text-black">
       {/* ── HERO ─────────────────────────────────────────────────────────────── */}
-      <section className="relative h-[65vh] flex items-center justify-center overflow-hidden z-10 border-b border-gold/20">
-        <div className="absolute inset-0 bg-black/70 z-10" />
-        <img
-          src="/images/full facial.JPG"
-          alt="CC Beauty Clinic"
-          className="absolute inset-0 w-full h-full object-cover grayscale opacity-40"
-          loading="eager"
-          onError={(e) => {
-            e.target.onerror = null;
-            e.target.src = CATEGORY_FALLBACKS.DEFAULT;
-          }}
-        />
+     <section className="relative h-[85vh] md:h-[90vh] flex items-center justify-center overflow-hidden z-10 border-b border-gold/20">
+  <div className="absolute inset-0 bg-black/40 z-10" />
+  <img
+    src="/images/hero-portrait.jpg"
+  alt="CC Beauty Clinic"
+  className="absolute inset-0 w-full h-full object-contain opacity-80"
+  loading="eager"
+    onError={(e) => {
+      e.target.onerror = null;
+      e.target.src = CATEGORY_FALLBACKS.DEFAULT;
+    }}
+  />
         <div className="relative z-20 text-center px-4 max-w-6xl">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

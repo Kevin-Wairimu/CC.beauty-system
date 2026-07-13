@@ -33,7 +33,9 @@ const Register = () => {
     setLoading(true);
     // Password policy: at least 8 characters, at least one letter and one number
     const pwd = password.trim();
-    const pwdValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/.test(pwd);
+    const pwdValid = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d@$!%*#?&.,_-]{8,}$/.test(
+      pwd,
+    );
     if (!pwdValid) {
       toast.error('Password must be at least 8 characters and contain a letter and a number');
       setLoading(false);
