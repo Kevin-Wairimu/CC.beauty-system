@@ -410,6 +410,13 @@ const Home = () => {
                 desc: "The ultimate squad retreat.",
               },
               {
+                title: "Luxury wigs",
+                guests: " -",
+                discount: "5% OFF",
+                icon: "mdi:face-woman-shimmer",
+                desc: "Elevate your crown, effortlessly..",
+              },
+              {
                 title: "The Trio",
                 guests: "3 People",
                 discount: "10% OFF",

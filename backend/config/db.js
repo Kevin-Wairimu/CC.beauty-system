@@ -14,20 +14,9 @@ if (!connectionString) {
 
 const isLocal = connectionString && (connectionString.includes('localhost') || connectionString.includes('127.0.0.1'));
 
-// NOTE: Make sure DATABASE_URL includes `?pgbouncer=true&sslmode=require&connect_timeout=30`
-// when connecting through Supabase's pooler (port 6543). The longer connect_timeout
-// gives Supabase time to wake a paused/idle project before Prisma gives up.
-//
-// ssl: { rejectUnauthorized: false } (not just `true`) — Supabase's pooler
-// presents a certificate chain that Node's default TLS verification doesn't
-// trust, which surfaces as "self-signed certificate in certificate chain".
-// This disables strict chain verification while keeping the connection
-// encrypted, which is the standard approach for Supabase/PgBouncer poolers.
 const pool = new Pool({
   connectionString,
   ssl: isLocal ? false : { rejectUnauthorized: false },
-  // Supabase free-tier projects can go idle and take a few seconds to wake up.
-  // These give the pool more breathing room instead of failing fast.
   connectionTimeoutMillis: 30000, // 30s to establish a connection
   idleTimeoutMillis: 30000,       // close idle clients after 30s
   max: 10,                        // cap pool size (pgbouncer transaction mode prefers small pools)
