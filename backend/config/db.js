@@ -17,9 +17,15 @@ const isLocal = connectionString && (connectionString.includes('localhost') || c
 // NOTE: Make sure DATABASE_URL includes `?pgbouncer=true&sslmode=require&connect_timeout=30`
 // when connecting through Supabase's pooler (port 6543). The longer connect_timeout
 // gives Supabase time to wake a paused/idle project before Prisma gives up.
+//
+// ssl: { rejectUnauthorized: false } (not just `true`) — Supabase's pooler
+// presents a certificate chain that Node's default TLS verification doesn't
+// trust, which surfaces as "self-signed certificate in certificate chain".
+// This disables strict chain verification while keeping the connection
+// encrypted, which is the standard approach for Supabase/PgBouncer poolers.
 const pool = new Pool({
   connectionString,
-  ssl: isLocal ? false : true,
+  ssl: isLocal ? false : { rejectUnauthorized: false },
   // Supabase free-tier projects can go idle and take a few seconds to wake up.
   // These give the pool more breathing room instead of failing fast.
   connectionTimeoutMillis: 30000, // 30s to establish a connection
@@ -67,6 +73,9 @@ const connectDB = async (retries = 3, delayMs = 2000) => {
       console.error('PostgreSQL Connection Error:', error);
       if (error.message?.includes('relation "Service" does not exist')) {
         console.error('HINT: Tables are missing. Run "npx prisma db push" or seed the database.');
+      }
+      if (error.message?.includes('self-signed certificate')) {
+        console.error('HINT: TLS chain verification issue. Ensure ssl is set to { rejectUnauthorized: false } for pooled Supabase connections.');
       }
       if (isTimeout) {
         console.error('HINT: Connection timed out after retries. Check if your Supabase project is paused, or increase connect_timeout in DATABASE_URL.');
