@@ -2154,7 +2154,8 @@ const Admin = () => {
                   </div>
                 </div>
                 {(userData.role === "staff" ||
-                  userData.role === "manager") && (
+                  userData.role === "manager" ||
+                  userData.role === "admin") && (
                   <div className="space-y-2">
                     <label className="text-[9px] uppercase tracking-widest text-gold font-black">
                       Specialization (e.g. NAILS, HAIR, WIGS)
