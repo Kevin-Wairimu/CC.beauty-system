@@ -70,7 +70,9 @@ model Appointment {
   paymentStatus      String   @default("unpaid") // unpaid, paid, partial
   paymentMethod      String?
   receiptNo          String?  @unique
-  
+
+  sessionId          String?  // Links multiple services booked together in one visit
+
   handledById        String?
   handledBy          User?    @relation("HandledBy", fields: [handledById], references: [id])
   
@@ -81,6 +83,8 @@ model Appointment {
   
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
+
+  @@index([sessionId])
 }
 
 model Enquiry {

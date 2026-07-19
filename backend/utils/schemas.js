@@ -24,8 +24,9 @@ export const appointmentSchema = z.object({
     phone: z.string().min(10, 'Phone must be at least 10 digits').max(15).optional().or(z.literal('')),
     name: z.string().optional().or(z.literal('')),
     notes: z.string().optional().or(z.literal('')),
-    serviceId: z.string().uuid().optional(),
-    staffId: z.string().uuid().optional(),
+    serviceId: z.string().uuid().optional().or(z.literal('')),
+    staffId: z.string().uuid().optional().or(z.literal('')),
+    sessionId: z.string().optional().or(z.literal('')),
   }),
 });
 

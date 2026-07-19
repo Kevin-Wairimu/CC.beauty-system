@@ -33,6 +33,7 @@ export const createAppointment = async (req, res) => {
       serviceId,
       staffId,
       price,
+      sessionId, // Links multiple services booked together in one visit
     } = req.body;
 
     const clientId = req.user ? req.user.id : null;
@@ -44,11 +45,16 @@ export const createAppointment = async (req, res) => {
       if (staffExists) validStaffId = staffId;
     }
 
-    // Auto-resolve price from service catalog if not provided
+    // Normalize serviceId: treat empty string as "not provided" to avoid
+    // sending an invalid foreign key value to Prisma
+    let validServiceId = null;
     let resolvedPrice = parseFloat(price) || 0;
-    if (!resolvedPrice && serviceId) {
+    if (serviceId) {
       const svc = await prisma.service.findUnique({ where: { id: serviceId } });
-      if (svc?.price) resolvedPrice = parseFloat(svc.price) || 0;
+      if (svc) {
+        validServiceId = serviceId;
+        if (!resolvedPrice && svc.price) resolvedPrice = parseFloat(svc.price) || 0;
+      }
     }
 
     const appointment = await prisma.appointment.create({
@@ -61,9 +67,10 @@ export const createAppointment = async (req, res) => {
         time,
         notes,
         clientId,
-        serviceId,
+        serviceId: validServiceId,
         staffId: validStaffId,
         price: resolvedPrice,
+        sessionId: sessionId || null,
       },
       include: {
         staff: { select: { id: true, name: true } },
